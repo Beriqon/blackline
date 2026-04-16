@@ -1,0 +1,56 @@
+{
+  "bookings": [
+    {
+      "id": "bk_g1kcb4xumo1k5dyl",
+      "category": "exotic-car",
+      "itemId": "bmw-m5",
+      "startIso": "2026-04-17T07:00:00.000Z",
+      "endIso": "2026-04-22T18:00:00.000Z",
+      "bookingMode": "self-drive",
+      "totalUsd": 4194,
+      "depositUsd": 1258,
+      "status": "paid",
+      "paymentMode": "skip_with_code",
+      "customerName": "Ruchan",
+      "customerEmail": "owner@blackline.local",
+      "source": "instagram",
+      "selection": {
+        "category": "exotic-car",
+        "itemId": "bmw-m5",
+        "rentalMode": "self-drive",
+        "startDate": "2026-04-17",
+        "endDate": "2026-04-22",
+        "startTime": "09:00",
+        "endTime": "20:00"
+      },
+      "createdAtIso": "2026-04-16T14:11:36.045Z",
+      "updatedAtIso": "2026-04-16T14:11:36.045Z"
+    },
+    {
+      "id": "bk_5k90uk5smo1kl4mz",
+      "category": "exotic-car",
+      "itemId": "mercedes-g63-green",
+      "startIso": "2026-04-20T07:00:00.000Z",
+      "endIso": "2026-04-23T18:00:00.000Z",
+      "bookingMode": "self-drive",
+      "totalUsd": 2796,
+      "depositUsd": 839,
+      "status": "owner_reserved",
+      "paymentMode": "skip_with_code",
+      "customerName": "kees",
+      "customerEmail": "owner@blackline.local",
+      "source": "instagram",
+      "selection": {
+        "category": "exotic-car",
+        "itemId": "mercedes-g63-green",
+        "rentalMode": "self-drive",
+        "startDate": "2026-04-20",
+        "endDate": "2026-04-23",
+        "startTime": "09:00",
+        "endTime": "20:00"
+      },
+      "createdAtIso": "2026-04-16T14:23:50.459Z",
+      "updatedAtIso": "2026-04-16T14:23:50.459Z"
+    }
+  ]
+}
