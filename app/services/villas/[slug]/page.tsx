@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 import { VillaFleetProduct } from "@/components/villa-fleet-product";
 import { getVillaBySlug, VILLAS } from "@/lib/villas-data";
@@ -27,5 +28,9 @@ export default async function VillaPage({ params }: Props) {
   const { slug } = await params;
   const villa = getVillaBySlug(slug);
   if (!villa) notFound();
-  return <VillaFleetProduct villa={villa} />;
+  return (
+    <Suspense fallback={null}>
+      <VillaFleetProduct villa={villa} />
+    </Suspense>
+  );
 }
