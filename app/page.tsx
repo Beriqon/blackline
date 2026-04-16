@@ -24,7 +24,16 @@ const btnOutlineStrong =
 const linkSubtle =
   "text-sm font-medium tracking-wide text-gold-secondary underline-offset-8 transition-all duration-300 ease-out hover:text-gold hover:underline hover:drop-shadow-[0_0_14px_rgba(198,164,108,0.35)]";
 
-const services = [
+type ServiceItem = {
+  title: string;
+  description: string;
+  href: string;
+  image: string;
+  imageAlt: string;
+  collageImages?: { src: string; alt: string }[];
+};
+
+const services: ServiceItem[] = [
   {
     title: "Exotic Car Rentals",
     description:
@@ -107,15 +116,13 @@ const services = [
     image: "/sitephotos/securityguard2.jpg",
     imageAlt: "Velvet rope and evening venue entrance with soft lighting",
   },
-] as const;
-
-type Service = (typeof services)[number];
+];
 
 function ServiceEditorialCard({
   s,
   variant,
 }: {
-  s: Service;
+  s: ServiceItem;
   variant: "feature" | "compact";
 }) {
   const isFeature = variant === "feature";
