@@ -25,6 +25,15 @@ export const metadata: Metadata = {
   },
   description:
     "Yachts, private jets, exotic cars, villas, and VIP table RSVP in Miami. Live Miami's Ultimate Dream.",
+  icons: {
+    icon: [
+      {
+        url: "/logo/blacklinelogotransparant.png",
+        type: "image/png",
+      },
+    ],
+    apple: "/logo/blacklinelogotransparant.png",
+  },
 };
 
 export default function RootLayout({

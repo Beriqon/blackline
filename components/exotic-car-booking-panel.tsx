@@ -16,6 +16,7 @@ import {
   type AvailabilityWindow,
   type ExoticCarBookingMode,
 } from "@/lib/bookings";
+import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import type { ExoticCar } from "@/lib/exotic-cars-data";
 import { cn } from "@/lib/utils";
 
@@ -355,7 +356,7 @@ export function ExoticCarBookingPanel({ car, className }: Props) {
         </button>
         {!quote?.payableOnline && !alreadyInCart ? (
           <Link
-            href="/contact"
+            href={CONTACT_TRIP_BUILDER_HREF}
             className="inline-flex min-h-11 items-center justify-center border border-gold/22 px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-cream/85 transition-colors hover:border-gold/40"
           >
             Request custom quote

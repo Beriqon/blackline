@@ -4,6 +4,7 @@ import { Building2, ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react
 import Image from "next/image";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
+import { ChauffeurServiceCrosslink } from "@/components/chauffeur-service-crosslink";
 import { SectionReveal } from "@/components/section-reveal";
 import { VillaStaysBackLink } from "@/components/villa-stays-back-link";
 import type { Villa } from "@/lib/villas-data";
@@ -116,6 +117,7 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-cream/58 sm:text-[0.9375rem]">
             {villa.lede}
           </p>
+          <ChauffeurServiceCrosslink variant="villa" />
         </div>
       </SectionReveal>
 

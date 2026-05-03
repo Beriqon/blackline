@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { ClientMomentsCarousel } from "@/components/client-moments-carousel";
 import { SectionReveal } from "@/components/section-reveal";
+import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import { PHOTOGRAPHER_SHOOT_SLIDES } from "@/lib/photographer-shoots-data";
 import { SERVICE_LINKS } from "@/lib/nav";
 import { cn } from "@/lib/utils";
@@ -76,7 +77,7 @@ export default function PhotographerPage() {
               schedule so you stay in the moment.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
-              <Link href="/contact" className={cn(btnPrimary, "sm:min-w-[200px]")}>
+              <Link href={CONTACT_TRIP_BUILDER_HREF} className={cn(btnPrimary, "sm:min-w-[200px]")}>
                 Add to my booking
               </Link>
               <a href="#past-shoots-heading" className={btnOutlineStrong}>

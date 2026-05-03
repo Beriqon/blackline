@@ -11,6 +11,7 @@ import {
   formatCartLinesForMessage,
   isSingleUnitInventory,
 } from "@/lib/cart-types";
+import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import { cn } from "@/lib/utils";
 import { whatsAppUrlWithText } from "@/lib/whatsapp";
 import { SECURITY_GUARD_RATE_CARDS } from "@/lib/security-guards-data";
@@ -430,109 +431,6 @@ export function CartDrawer() {
               ))}
             </ul>
           )}
-
-          {items.length > 0 ? (
-            <div className="mt-6 border border-gold/18 bg-[#202020] p-4">
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.32em] text-gold/90">
-                Add-ons (whole request)
-              </p>
-              <p className="mt-2 text-[0.72rem] leading-relaxed text-cream/62">
-                Applies to your itinerary — not tied to only yachts. Final scope
-                is confirmed by the team.
-              </p>
-              {!hasSecurityItems ? (
-                <>
-                  <label className="mt-4 flex cursor-pointer items-start gap-3 border border-gold/16 bg-[#262626] p-3">
-                    <input
-                      type="checkbox"
-                      className="mt-1 size-4 shrink-0 border-gold/30"
-                      checked={addonsForRequest.securityArmed}
-                      onChange={(e) =>
-                        patchAddons({ securityArmed: e.target.checked })
-                      }
-                    />
-                    <span className="text-[0.8125rem] leading-snug text-cream/88">
-                      Security (armed) guard add-on
-                      <span className="ml-2 text-[0.65rem] text-cream/62">
-                        {`$${armedRateCard.hourlyRateUsd}/hr · ${armedRateCard.minimumHours}h min ($${formatUsdNoCents(armedRateCard.minimumTotalUsd)})`}
-                      </span>
-                    </span>
-                  </label>
-                  <label className="mt-3 flex cursor-pointer items-start gap-3 border border-gold/16 bg-[#262626] p-3">
-                    <input
-                      type="checkbox"
-                      className="mt-1 size-4 shrink-0 border-gold/30"
-                      checked={addonsForRequest.securityUnarmed}
-                      onChange={(e) =>
-                        patchAddons({ securityUnarmed: e.target.checked })
-                      }
-                    />
-                    <span className="text-[0.8125rem] leading-snug text-cream/88">
-                      Security (unarmed) guard add-on
-                      <span className="ml-2 text-[0.65rem] text-cream/62">
-                        {`$${unarmedRateCard.hourlyRateUsd}/hr · ${unarmedRateCard.minimumHours}h min ($${formatUsdNoCents(unarmedRateCard.minimumTotalUsd)})`}
-                      </span>
-                    </span>
-                  </label>
-                </>
-              ) : null}
-              <label className="mt-4 flex cursor-pointer items-start gap-3 border border-gold/16 bg-[#262626] p-3">
-                <input
-                  type="checkbox"
-                  className="mt-1 size-4 shrink-0 border-gold/30"
-                  checked={addons.femaleHosts}
-                  onChange={(e) =>
-                    patchAddons({ femaleHosts: e.target.checked })
-                  }
-                />
-                <span className="text-[0.8125rem] leading-snug text-cream/88">
-                  Female hostess(es) — hospitality / yacht-style hosting
-                </span>
-              </label>
-              {addons.femaleHosts ? (
-                <div className="mt-3 pl-1">
-                  <label
-                    htmlFor="addon-host-count"
-                    className="text-[0.6rem] font-medium uppercase tracking-[0.24em] text-gold/65"
-                  >
-                    Headcount
-                  </label>
-                  <input
-                    id="addon-host-count"
-                    type="number"
-                    min={1}
-                    max={8}
-                    value={addons.femaleHostsCount}
-                    onChange={(e) => {
-                      const n = Number.parseInt(e.target.value, 10);
-                      patchAddons({
-                        femaleHostsCount: Number.isFinite(n)
-                          ? Math.min(8, Math.max(1, n))
-                          : 1,
-                      });
-                    }}
-                    className="mt-1.5 w-full max-w-[6rem] border border-gold/18 bg-[#1b1b1b] px-2 py-1.5 text-sm text-cream"
-                  />
-                </div>
-              ) : null}
-              <label className="mt-3 flex cursor-pointer items-start gap-3 border border-gold/16 bg-[#262626] p-3">
-                <input
-                  type="checkbox"
-                  className="mt-1 size-4 shrink-0 border-gold/30"
-                  checked={addons.photoshoot}
-                  onChange={(e) =>
-                    patchAddons({ photoshoot: e.target.checked })
-                  }
-                />
-                <span className="text-[0.8125rem] leading-snug text-cream/88">
-                  Photo / video shoot add-on (content session)
-                </span>
-              </label>
-              <p className="mt-3 text-[0.65rem] leading-relaxed text-cream/58">
-                Summary: {formatCartAddonsForMessage(addonsForRequest)}
-              </p>
-            </div>
-          ) : null}
         </div>
 
         <div className="border-t border-gold/18 bg-[#1b1b1b] p-4 sm:p-5">
@@ -695,6 +593,116 @@ export function CartDrawer() {
               Clear all
             </button>
           </div>
+
+          {items.length > 0 ? (
+            <div className="mt-5 border-t border-gold/[0.08] pt-5">
+              <p className="text-[0.55rem] font-semibold uppercase tracking-[0.26em] text-gold/55">
+                Optional add-ons
+              </p>
+              <p className="mt-1.5 text-[0.65rem] leading-relaxed text-cream/48">
+                Whole request — scope confirmed by the team.
+              </p>
+              <div className="mt-3 rounded-sm border border-gold/10 bg-[#181818]/90 p-2.5">
+                {!hasSecurityItems ? (
+                  <>
+                    <label className="flex cursor-pointer items-start gap-2 border-b border-gold/[0.06] pb-2.5">
+                      <input
+                        type="checkbox"
+                        className="mt-0.5 size-3.5 shrink-0 border-gold/25"
+                        checked={addonsForRequest.securityArmed}
+                        onChange={(e) =>
+                          patchAddons({ securityArmed: e.target.checked })
+                        }
+                      />
+                      <span className="text-[0.72rem] leading-snug text-cream/75">
+                        Armed security
+                        <span className="ml-1.5 text-[0.6rem] text-cream/45">
+                          {`$${armedRateCard.hourlyRateUsd}/hr · ${armedRateCard.minimumHours}h min ($${formatUsdNoCents(armedRateCard.minimumTotalUsd)})`}
+                        </span>
+                      </span>
+                    </label>
+                    <label className="mt-2 flex cursor-pointer items-start gap-2 border-b border-gold/[0.06] pb-2.5">
+                      <input
+                        type="checkbox"
+                        className="mt-0.5 size-3.5 shrink-0 border-gold/25"
+                        checked={addonsForRequest.securityUnarmed}
+                        onChange={(e) =>
+                          patchAddons({ securityUnarmed: e.target.checked })
+                        }
+                      />
+                      <span className="text-[0.72rem] leading-snug text-cream/75">
+                        Unarmed security
+                        <span className="ml-1.5 text-[0.6rem] text-cream/45">
+                          {`$${unarmedRateCard.hourlyRateUsd}/hr · ${unarmedRateCard.minimumHours}h min ($${formatUsdNoCents(unarmedRateCard.minimumTotalUsd)})`}
+                        </span>
+                      </span>
+                    </label>
+                  </>
+                ) : null}
+                <label
+                  className={cn(
+                    "flex cursor-pointer items-start gap-2 border-b border-gold/[0.06] pb-2.5",
+                    !hasSecurityItems && "pt-2",
+                  )}
+                >
+                  <input
+                    type="checkbox"
+                    className="mt-0.5 size-3.5 shrink-0 border-gold/25"
+                    checked={addons.femaleHosts}
+                    onChange={(e) =>
+                      patchAddons({ femaleHosts: e.target.checked })
+                    }
+                  />
+                  <span className="text-[0.72rem] leading-snug text-cream/75">
+                    Female hostess(es)
+                  </span>
+                </label>
+                {addons.femaleHosts ? (
+                  <div className="mt-2 pl-5">
+                    <label
+                      htmlFor="addon-host-count"
+                      className="text-[0.55rem] font-medium uppercase tracking-[0.2em] text-gold/50"
+                    >
+                      Headcount
+                    </label>
+                    <input
+                      id="addon-host-count"
+                      type="number"
+                      min={1}
+                      max={8}
+                      value={addons.femaleHostsCount}
+                      onChange={(e) => {
+                        const n = Number.parseInt(e.target.value, 10);
+                        patchAddons({
+                          femaleHostsCount: Number.isFinite(n)
+                            ? Math.min(8, Math.max(1, n))
+                            : 1,
+                        });
+                      }}
+                      className="mt-1 w-full max-w-[5rem] border border-gold/14 bg-[#141414] px-2 py-1 text-xs text-cream"
+                    />
+                  </div>
+                ) : null}
+                <label className="mt-2 flex cursor-pointer items-start gap-2 border-t border-gold/[0.06] pt-2.5">
+                  <input
+                    type="checkbox"
+                    className="mt-0.5 size-3.5 shrink-0 border-gold/25"
+                    checked={addons.photoshoot}
+                    onChange={(e) =>
+                      patchAddons({ photoshoot: e.target.checked })
+                    }
+                  />
+                  <span className="text-[0.72rem] leading-snug text-cream/75">
+                    Photo / video shoot
+                  </span>
+                </label>
+                <p className="mt-2 border-t border-gold/[0.06] pt-2 text-[0.58rem] leading-relaxed text-cream/42">
+                  {formatCartAddonsForMessage(addonsForRequest)}
+                </p>
+              </div>
+            </div>
+          ) : null}
+
           <p className="mt-3 text-[0.65rem] leading-relaxed text-cream/58">
             Secure checkout via Stripe. Cars and yachts with a configured booking
             window now use live pricing and availability. Other services can stay
@@ -713,7 +721,7 @@ export function CartDrawer() {
               </button>
             ) : (
               <Link
-                href="/contact"
+                href={CONTACT_TRIP_BUILDER_HREF}
                 className="text-gold/70 underline-offset-2 hover:underline"
                 onClick={() => setOpen(false)}
               >
@@ -742,6 +750,12 @@ function labelForCategory(c: CartCategory): string {
       return "Jet ski";
     case "jetcar":
       return "Jetcar";
+    case "kayak":
+      return "Kayak";
+    case "paddleboard":
+      return "Paddle board (SUP)";
+    case "parasailing":
+      return "Parasailing";
     case "security-armed":
       return "Security (armed)";
     case "security-unarmed":

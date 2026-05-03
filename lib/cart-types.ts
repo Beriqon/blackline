@@ -7,6 +7,9 @@ export type CartCategory =
   | "fishing"
   | "jetski"
   | "jetcar"
+  | "kayak"
+  | "paddleboard"
+  | "parasailing"
   | "security-armed"
   | "security-unarmed"
   | "other";

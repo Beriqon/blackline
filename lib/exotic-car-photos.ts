@@ -1,6 +1,6 @@
 /**
  * Car photography in `public/photography/carphotos/`.
- * Used on the exotic cars catalog page and the photo/video add-on strip.
+ * Used on the exotic cars and chauffeur catalog photo/video add-on strips.
  */
 
 const base = "/photography/carphotos";
@@ -27,10 +27,19 @@ export const CAR_PHOTO_PATHS = [
   `${base}/carphoto19.png`,
   `${base}/carphoto20.png`,
   `${base}/carphoto21.png`,
+  `${base}/carphoto22.jpg`,
+  `${base}/carphoto23.jpg`,
+  `${base}/carphoto24.jpg`,
+  `${base}/carphoto25.jpg`,
+  `${base}/carphoto26.jpg`,
+  `${base}/carphoto27.jpg`,
+  `${base}/carphoto28.jpg`,
+  `${base}/carphoto29.jpg`,
+  `${base}/carphoto30.jpg`,
 ] as const;
 
 /**
- * All carphotos for the “Add photo or video shoots” marquee — order is shuffled on the client (exotic cars page).
+ * All carphotos for the “Add photo or video shoots” marquee — order is shuffled on the client (exotic cars and chauffeur pages).
  */
 export const EXOTIC_PHOTOGRAPHY_ADDON_IMAGES = CAR_PHOTO_PATHS.map(
   (src, i) => ({

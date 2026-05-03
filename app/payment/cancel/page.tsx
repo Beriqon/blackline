@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -32,7 +33,7 @@ export default function PaymentCancelPage() {
           <Link href="/" className={cn(btnPrimary, "w-full sm:w-auto")}>
             Home
           </Link>
-          <Link href="/contact" className={cn(btnGhost, "w-full sm:w-auto")}>
+          <Link href={CONTACT_TRIP_BUILDER_HREF} className={cn(btnGhost, "w-full sm:w-auto")}>
             Contact us
           </Link>
         </div>

@@ -4,11 +4,17 @@ import { ChevronDown } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
 import {
+  CHAUFFEUR_FLEET_SORTED,
+  chauffeurQuoteRateLine,
+} from "@/lib/chauffeur-fleet-data";
+import {
   EXOTIC_CARS_DAILY,
   EXOTIC_CARS_HOURLY_GROUPS,
   type ExoticCar,
 } from "@/lib/exotic-cars-data";
+import { CUSTOM_PACKAGE_MISC_ADDONS } from "@/lib/custom-package-addons";
 import { JETSKIS_OFFERINGS } from "@/lib/jetskis-jetcars-data";
+import { PRIVATE_JETS } from "@/lib/private-jets-data";
 import {
   vipFeaturedVenues,
   vipSouthBeachClubs,
@@ -20,7 +26,7 @@ import {
   YACHT_HOSTESS_ADDON,
   YACHT_HOSTESS_ADDON_SECTION_TITLE,
 } from "@/lib/yacht-hostess-addon";
-import { YACHTS_QUOTABLE } from "@/lib/yachts-data";
+import { YACHTS } from "@/lib/yachts-data";
 import { whatsAppUrlWithText } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
 
@@ -45,6 +51,28 @@ const inputClass =
 
 const checkboxClass =
   "mt-0.5 size-4 shrink-0 rounded border-gold/30 bg-[#141414] text-gold focus:ring-gold/40";
+
+/** “Interest only — pick later” toggles; counted in WhatsApp without naming a catalog item. */
+const OPEN_TBD = {
+  chauffeur: "open:chauffeur",
+  exoticCar: "open:exoticCar",
+  villa: "open:villa",
+  yacht: "open:yacht",
+  privateJet: "open:privateJet",
+} as const;
+
+const OPEN_TBD_MESSAGE_LINE: Record<string, string> = {
+  [OPEN_TBD.chauffeur]:
+    "Chauffeur — specific vehicle not chosen yet; open to recommendations from your fleet",
+  [OPEN_TBD.exoticCar]:
+    "Exotic car — specific model not chosen yet; open to options",
+  [OPEN_TBD.villa]:
+    "Villa / stay — property not chosen yet; open to recommendations for our dates & group",
+  [OPEN_TBD.yacht]:
+    "Yacht charter — vessel not chosen yet; open to recommendations",
+  [OPEN_TBD.privateJet]:
+    "Private jet charter — aircraft not chosen yet; open to recommendations (route & timing in notes)",
+};
 
 function PickRow({
   selected,
@@ -158,6 +186,9 @@ export function CustomPackageWhatsApp({
   const [hostessCount, setHostessCount] = useState<string>(
     HOSTESS_HEADCOUNT_OPTIONS[0],
   );
+  const [securityMode, setSecurityMode] = useState<
+    null | "armed" | "unarmed"
+  >(null);
   const sid = idSuffix ? `-${idSuffix}` : "";
   const [creatingQuoteRequest, setCreatingQuoteRequest] = useState(false);
   const [quoteRequestError, setQuoteRequestError] = useState<string | null>(
@@ -169,13 +200,17 @@ export function CustomPackageWhatsApp({
   }, []);
 
   const anyYachtSelected = useMemo(
-    () => YACHTS_QUOTABLE.some((y) => sel[`yacht:${y.id}`]),
+    () =>
+      YACHTS.some((y) => sel[`yacht:${y.id}`]) || !!sel[OPEN_TBD.yacht],
     [sel],
   );
 
   const hasSelection = useMemo(
-    () => Object.values(sel).some(Boolean),
-    [sel],
+    () =>
+      Object.values(sel).some(Boolean) ||
+      securityMode === "armed" ||
+      securityMode === "unarmed",
+    [sel, securityMode],
   );
 
   const message = useMemo(() => {
@@ -194,47 +229,103 @@ export function CustomPackageWhatsApp({
       if (sel[`car:${c.id}`]) cars.push(c);
     }
 
-    const villas = VILLAS.filter((v) => sel[`villa:${v.id}`]);
-    const yachts = YACHTS_QUOTABLE.filter((y) => sel[`yacht:${y.id}`]);
-    const jetskiPicks = JETSKIS_OFFERINGS.filter((_, i) => sel[`jetski:${i}`]);
-
-    const chauffeurWanted =
-      sel.chauffeur ||
-      vipTransport.options.some((_, i) => sel[`chauffOpt:${i}`]);
+    const chauffeurPicks = CHAUFFEUR_FLEET_SORTED.filter(
+      (c) => sel[`chauffeur:${c.id}`],
+    );
     const chauffeurPrefs = vipTransport.options.filter(
       (_, i) => sel[`chauffOpt:${i}`],
+    );
+
+    const villas = VILLAS.filter((v) => sel[`villa:${v.id}`]);
+    const yachts = YACHTS.filter((y) => sel[`yacht:${y.id}`]);
+    const jetskiPicks = JETSKIS_OFFERINGS.filter((_, i) => sel[`jetski:${i}`]);
+    const miscAddonPicks = CUSTOM_PACKAGE_MISC_ADDONS.filter(
+      (a) => !!sel[`addon:${a.id}`],
     );
 
     const vipFeat = vipFeaturedVenues.filter((v) => sel[`vip:${v.name}`]);
     const vipSb = vipSouthBeachClubs.filter((_, i) => sel[`vipsb:${i}`]);
 
+    const selectedPrivateJets = PRIVATE_JETS.filter((j) => sel[`pj:${j.id}`]);
+
     const sections: { title: string; items: string[] }[] = [];
 
-    if (cars.length > 0) {
+    if (
+      chauffeurPicks.length > 0 ||
+      chauffeurPrefs.length > 0 ||
+      sel[OPEN_TBD.chauffeur]
+    ) {
+      const items: string[] = [];
+      if (sel[OPEN_TBD.chauffeur]) {
+        items.push(OPEN_TBD_MESSAGE_LINE[OPEN_TBD.chauffeur]);
+      }
+      if (chauffeurPicks.length > 0) {
+        items.push(
+          ...chauffeurPicks.map(
+            (c) =>
+              `${c.name} — ${chauffeurQuoteRateLine(c)} (chauffeur)`,
+          ),
+        );
+      }
+      if (chauffeurPrefs.length > 0) {
+        items.push(
+          `Vehicle / ground preferences: ${chauffeurPrefs.join(", ")}`,
+        );
+      }
       sections.push({
-        title: "Exotic cars (fleet picks)",
-        items: cars.map(
-          (c) =>
-            `${c.name} — ${c.priceLine} (${c.section === "daily" ? "daily self-drive" : "hourly / chauffeur by arrangement"})`,
-        ),
+        title: "Chauffeur services",
+        items,
       });
     }
 
-    if (villas.length > 0) {
+    if (cars.length > 0 || sel[OPEN_TBD.exoticCar]) {
+      const items: string[] = [];
+      if (sel[OPEN_TBD.exoticCar]) {
+        items.push(OPEN_TBD_MESSAGE_LINE[OPEN_TBD.exoticCar]);
+      }
+      if (cars.length > 0) {
+        items.push(
+          ...cars.map(
+            (c) =>
+              `${c.name} — ${c.priceLine} (${c.section === "daily" ? "daily self-drive" : "hourly rental"})`,
+          ),
+        );
+      }
+      sections.push({
+        title: "Exotic cars (self-drive / hourly catalog picks)",
+        items,
+      });
+    }
+
+    if (villas.length > 0 || sel[OPEN_TBD.villa]) {
+      const items: string[] = [];
+      if (sel[OPEN_TBD.villa]) {
+        items.push(OPEN_TBD_MESSAGE_LINE[OPEN_TBD.villa]);
+      }
+      if (villas.length > 0) {
+        items.push(...villas.map((v) => `${v.name} — ${v.cardTagline}`));
+      }
       sections.push({
         title: "Villas & stays",
-        items: villas.map(
-          (v) => `${v.name} — ${v.cardTagline}`,
-        ),
+        items,
       });
     }
 
-    if (yachts.length > 0) {
+    if (yachts.length > 0 || sel[OPEN_TBD.yacht]) {
+      const items: string[] = [];
+      if (sel[OPEN_TBD.yacht]) {
+        items.push(OPEN_TBD_MESSAGE_LINE[OPEN_TBD.yacht]);
+      }
+      if (yachts.length > 0) {
+        items.push(
+          ...yachts.map(
+            (y) => `${y.name} (${y.subtitle}) — ${y.cardPriceLine}`,
+          ),
+        );
+      }
       sections.push({
         title: "Yachts",
-        items: yachts.map(
-          (y) => `${y.name} (${y.subtitle}) — ${y.cardPriceLine}`,
-        ),
+        items,
       });
     }
 
@@ -250,26 +341,52 @@ export function CustomPackageWhatsApp({
 
     if (jetskiPicks.length > 0) {
       sections.push({
-        title: "Jet skis, jetcars & on-water",
+        title: "Jet skis, jetcars & fishing",
         items: jetskiPicks.map((j) => j.title),
       });
     }
 
-    if (chauffeurWanted) {
-      const line =
-        chauffeurPrefs.length > 0
-          ? `Chauffeur / ground transport — preferences: ${chauffeurPrefs.join(", ")}`
-          : "Chauffeur / ground transport (vehicle class TBD with team)";
+    if (miscAddonPicks.length > 0) {
       sections.push({
-        title: "Chauffeur",
-        items: [line],
+        title: "Add-ons & on-water extras",
+        items: miscAddonPicks.map((a) =>
+          a.hint ? `${a.title} — ${a.hint}` : a.title,
+        ),
       });
     }
 
-    if (sel.privateJet) {
+    if (securityMode === "unarmed") {
       sections.push({
-        title: "Private jet",
-        items: ["Charter coordination — route & timing to confirm"],
+        title: "Security guards",
+        items: [
+          "Unarmed professional guards — roster, coverage windows, and detail confirmed on inquiry",
+        ],
+      });
+    } else if (securityMode === "armed") {
+      sections.push({
+        title: "Security guards",
+        items: [
+          "Armed professional guards — licensing, roster, and coverage confirmed on inquiry",
+        ],
+      });
+    }
+
+    if (selectedPrivateJets.length > 0 || sel[OPEN_TBD.privateJet]) {
+      const items: string[] = [];
+      if (sel[OPEN_TBD.privateJet]) {
+        items.push(OPEN_TBD_MESSAGE_LINE[OPEN_TBD.privateJet]);
+      }
+      if (selectedPrivateJets.length > 0) {
+        items.push(
+          ...selectedPrivateJets.map(
+            (j) =>
+              `${j.name} (${j.categoryLabel}) — charter coordination; route & timing to confirm`,
+          ),
+        );
+      }
+      sections.push({
+        title: "Private jets",
+        items,
       });
     }
 
@@ -305,7 +422,7 @@ export function CustomPackageWhatsApp({
 
     if (sections.length === 0) {
       lines.push(
-        "(Nothing selected yet — pick vehicles, villas, yachts, or other options below.)",
+        "(Nothing selected yet — pick catalog items, use the “interested but no specific…” options, or add notes below.)",
       );
     } else {
       for (const block of sections) {
@@ -325,7 +442,15 @@ export function CustomPackageWhatsApp({
     lines.push("");
     lines.push("Please confirm availability and next steps. Thanks!");
     return lines.join("\n");
-  }, [dates, groupSize, hostessCount, notes, sel, whatsAppIntroLine]);
+  }, [
+    dates,
+    groupSize,
+    hostessCount,
+    notes,
+    sel,
+    securityMode,
+    whatsAppIntroLine,
+  ]);
 
   const href = whatsAppUrlWithText(message);
 
@@ -378,12 +503,87 @@ export function CustomPackageWhatsApp({
 
         <div className="mt-5 space-y-3">
           <CatalogSection
-            title="Exotic cars"
-            subtitle="Hourly fleet, SUVs, supercars, and daily self-drive — tap a group to expand."
+            title="Chauffeur services"
+            subtitle="Pick exact vehicles or tick below if you want chauffeur ground transport but haven&apos;t chosen a model yet. Optional class preferences at the bottom."
             defaultOpen
+            badge="Chauffeur"
+          >
+            <div className="max-h-[min(70vh,520px)] space-y-6 overflow-y-auto pr-1">
+              <PickRow
+                selected={!!sel[OPEN_TBD.chauffeur]}
+                onToggle={() => toggle(OPEN_TBD.chauffeur)}
+              >
+                <>
+                  <span className="text-cream/92">
+                    Interested in chauffeur — no specific vehicle yet
+                  </span>
+                  <span className="block text-[0.8125rem] text-cream/50">
+                    We&apos;ll propose options from the fleet for your dates and group.
+                  </span>
+                </>
+              </PickRow>
+              <ul className="grid gap-2" role="list">
+                {CHAUFFEUR_FLEET_SORTED.map((car) => (
+                  <li key={car.id}>
+                    <PickRow
+                      selected={!!sel[`chauffeur:${car.id}`]}
+                      onToggle={() => toggle(`chauffeur:${car.id}`)}
+                      density="compact"
+                    >
+                      <>
+                        <span className="text-cream/92">{car.name}</span>
+                        <span className="text-cream/45"> · </span>
+                        <span className="tabular-nums text-gold-secondary/95">
+                          {chauffeurQuoteRateLine(car)}
+                        </span>
+                        <span className="block text-[0.75rem] text-cream/42">
+                          {car.group} · chauffeur
+                        </span>
+                      </>
+                    </PickRow>
+                  </li>
+                ))}
+              </ul>
+              <div>
+                <p className="mb-2 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-cream/38">
+                  Vehicle class preferences (optional)
+                </p>
+                <ul className="grid gap-2 sm:grid-cols-2" role="list">
+                  {vipTransport.options.map((opt, i) => (
+                    <li key={opt}>
+                      <PickRow
+                        selected={!!sel[`chauffOpt:${i}`]}
+                        onToggle={() => toggle(`chauffOpt:${i}`)}
+                        density="compact"
+                      >
+                        {opt}
+                      </PickRow>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </CatalogSection>
+
+          <CatalogSection
+            title="Exotic cars"
+            subtitle="Hourly fleet, SUVs, supercars, and daily self-drive — or tick below if you want an exotic but haven&apos;t picked a model yet."
             badge="Fleet"
           >
             <div className="max-h-[min(70vh,520px)] space-y-6 overflow-y-auto pr-1">
+              <PickRow
+                selected={!!sel[OPEN_TBD.exoticCar]}
+                onToggle={() => toggle(OPEN_TBD.exoticCar)}
+              >
+                <>
+                  <span className="text-cream/92">
+                    Interested in exotic rental — no specific car yet
+                  </span>
+                  <span className="block text-[0.8125rem] text-cream/50">
+                    Open to recommendations from your fleet for self-drive / hourly.
+                  </span>
+                </>
+              </PickRow>
               {EXOTIC_CARS_HOURLY_GROUPS.length === 0 &&
               EXOTIC_CARS_DAILY.length === 0 ? (
                 <p className="text-sm leading-relaxed text-cream/48">
@@ -437,57 +637,89 @@ export function CustomPackageWhatsApp({
 
           <CatalogSection
             title="Villas & stays"
-            subtitle="Properties from our portfolio — rates and minimum stays on inquiry."
+            subtitle="Pick a property from the list — or tick below if you want a villa stay but haven&apos;t chosen one yet."
             badge="Stays"
           >
-            {VILLAS.length === 0 ? (
-              <p className="text-[0.8125rem] leading-relaxed text-cream/48">
-                Property list is updating — describe your preferred area and
-                dates in your message below.
-              </p>
-            ) : (
-              <ul className="grid gap-2 sm:grid-cols-1" role="list">
-                {VILLAS.map((v) => (
-                  <li key={v.id}>
+            <div className="space-y-4">
+              <PickRow
+                selected={!!sel[OPEN_TBD.villa]}
+                onToggle={() => toggle(OPEN_TBD.villa)}
+              >
+                <>
+                  <span className="text-cream/92">
+                    Interested in a villa — no specific property yet
+                  </span>
+                  <span className="block text-[0.8125rem] text-cream/50">
+                    Open to recommendations based on dates, area, and group size.
+                  </span>
+                </>
+              </PickRow>
+              {VILLAS.length === 0 ? (
+                <p className="text-[0.8125rem] leading-relaxed text-cream/48">
+                  Named inventory is updating — use the option above or describe
+                  your preferred area in the notes below.
+                </p>
+              ) : (
+                <ul className="grid gap-2 sm:grid-cols-1" role="list">
+                  {VILLAS.map((v) => (
+                    <li key={v.id}>
+                      <PickRow
+                        selected={!!sel[`villa:${v.id}`]}
+                        onToggle={() => toggle(`villa:${v.id}`)}
+                      >
+                        <>
+                          <span className="text-cream/92">{v.name}</span>
+                          <span className="block text-[0.8125rem] text-cream/50">
+                            {v.cardTagline} · {v.subtitle}
+                          </span>
+                        </>
+                      </PickRow>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </CatalogSection>
+
+          <CatalogSection
+            title="Yachts"
+            subtitle="Full yacht lineup — or tick below if you want a charter but haven&apos;t picked a vessel yet."
+            badge="Water"
+          >
+            <div className="space-y-4">
+              <PickRow
+                selected={!!sel[OPEN_TBD.yacht]}
+                onToggle={() => toggle(OPEN_TBD.yacht)}
+              >
+                <>
+                  <span className="text-cream/92">
+                    Interested in a yacht — no specific vessel yet
+                  </span>
+                  <span className="block text-[0.8125rem] text-cream/50">
+                    Open to recommendations for day charter timing and group size.
+                  </span>
+                </>
+              </PickRow>
+              <div className="max-h-[min(65vh,560px)] overflow-y-auto pr-1">
+              <ul className="grid gap-2" role="list">
+                {YACHTS.map((y) => (
+                  <li key={y.id}>
                     <PickRow
-                      selected={!!sel[`villa:${v.id}`]}
-                      onToggle={() => toggle(`villa:${v.id}`)}
+                      selected={!!sel[`yacht:${y.id}`]}
+                      onToggle={() => toggle(`yacht:${y.id}`)}
                     >
                       <>
-                        <span className="text-cream/92">{v.name}</span>
+                        <span className="text-cream/92">{y.name}</span>
                         <span className="block text-[0.8125rem] text-cream/50">
-                          {v.cardTagline} · {v.subtitle}
+                          {y.subtitle} — {y.cardPriceLine}
                         </span>
                       </>
                     </PickRow>
                   </li>
                 ))}
               </ul>
-            )}
-          </CatalogSection>
-
-          <CatalogSection
-            title="Yachts"
-            subtitle="Day charters — duration and final pricing confirmed when you book."
-            badge="Water"
-          >
-            <ul className="grid gap-2" role="list">
-              {YACHTS_QUOTABLE.map((y) => (
-                <li key={y.id}>
-                  <PickRow
-                    selected={!!sel[`yacht:${y.id}`]}
-                    onToggle={() => toggle(`yacht:${y.id}`)}
-                  >
-                    <>
-                      <span className="text-cream/92">{y.name}</span>
-                      <span className="block text-[0.8125rem] text-cream/50">
-                        {y.subtitle} — {y.cardPriceLine}
-                      </span>
-                    </>
-                  </PickRow>
-                </li>
-              ))}
-            </ul>
+              </div>
+            </div>
           </CatalogSection>
 
           <div
@@ -558,28 +790,23 @@ export function CustomPackageWhatsApp({
           </CatalogSection>
 
           <CatalogSection
-            title="Chauffeur & ground transport"
-            subtitle="Optional vehicle preferences — we line up the right class for your group."
-            badge="Ground"
+            title="Banana boats, paddleboard, kayak & more"
+            subtitle="Extra on-water activities — quoted with your itinerary."
+            badge="Add-ons"
           >
-            <PickRow
-              selected={!!sel.chauffeur}
-              onToggle={() => toggle("chauffeur")}
-            >
-              Include chauffeur / ground transport (details with team)
-            </PickRow>
-            <p className="mb-2 mt-4 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-cream/38">
-              Vehicle preferences (optional)
-            </p>
-            <ul className="grid gap-2 sm:grid-cols-2" role="list">
-              {vipTransport.options.map((opt, i) => (
-                <li key={opt}>
+            <ul className="grid gap-2 sm:grid-cols-1 lg:grid-cols-2" role="list">
+              {CUSTOM_PACKAGE_MISC_ADDONS.map((a) => (
+                <li key={a.id}>
                   <PickRow
-                    selected={!!sel[`chauffOpt:${i}`]}
-                    onToggle={() => toggle(`chauffOpt:${i}`)}
-                    density="compact"
+                    selected={!!sel[`addon:${a.id}`]}
+                    onToggle={() => toggle(`addon:${a.id}`)}
                   >
-                    {opt}
+                    <>
+                      <span className="text-cream/92">{a.title}</span>
+                      <span className="block text-[0.8125rem] text-cream/50">
+                        {a.hint}
+                      </span>
+                    </>
                   </PickRow>
                 </li>
               ))}
@@ -587,16 +814,114 @@ export function CustomPackageWhatsApp({
           </CatalogSection>
 
           <CatalogSection
-            title="Private jet"
-            subtitle="Charter coordination — share routes and timing in the notes if you know them."
+            title="Security guards"
+            subtitle="Close protection — choose unarmed or armed detail; roster and licensing confirmed on inquiry."
+            badge="Security"
+          >
+            <fieldset>
+              <legend className="sr-only">Security guards</legend>
+              <div className="space-y-2">
+                <label
+                  className={cn(
+                    "flex cursor-pointer items-start gap-3 rounded-sm border px-4 py-3.5 transition-colors",
+                    securityMode === null
+                      ? "border-gold/35 bg-gold/[0.06]"
+                      : "border-gold/12 bg-[#0a0a0a]/80 hover:border-gold/22",
+                  )}
+                >
+                  <input
+                    type="radio"
+                    name={`security-mode${sid}`}
+                    checked={securityMode === null}
+                    onChange={() => setSecurityMode(null)}
+                    className={checkboxClass}
+                  />
+                  <span className="text-[0.875rem] leading-snug text-cream/88">
+                    Not requesting security
+                  </span>
+                </label>
+                <label
+                  className={cn(
+                    "flex cursor-pointer items-start gap-3 rounded-sm border px-4 py-3.5 transition-colors",
+                    securityMode === "unarmed"
+                      ? "border-gold/35 bg-gold/[0.06]"
+                      : "border-gold/12 bg-[#0a0a0a]/80 hover:border-gold/22",
+                  )}
+                >
+                  <input
+                    type="radio"
+                    name={`security-mode${sid}`}
+                    checked={securityMode === "unarmed"}
+                    onChange={() => setSecurityMode("unarmed")}
+                    className={checkboxClass}
+                  />
+                  <span className="text-[0.875rem] leading-snug text-cream/88">
+                    Unarmed guards
+                  </span>
+                </label>
+                <label
+                  className={cn(
+                    "flex cursor-pointer items-start gap-3 rounded-sm border px-4 py-3.5 transition-colors",
+                    securityMode === "armed"
+                      ? "border-gold/35 bg-gold/[0.06]"
+                      : "border-gold/12 bg-[#0a0a0a]/80 hover:border-gold/22",
+                  )}
+                >
+                  <input
+                    type="radio"
+                    name={`security-mode${sid}`}
+                    checked={securityMode === "armed"}
+                    onChange={() => setSecurityMode("armed")}
+                    className={checkboxClass}
+                  />
+                  <span className="text-[0.875rem] leading-snug text-cream/88">
+                    Armed guards
+                  </span>
+                </label>
+              </div>
+            </fieldset>
+          </CatalogSection>
+
+          <CatalogSection
+            title="Private jets"
+            subtitle="Select aircraft — or tick below if you want charter help but haven&apos;t chosen a jet yet. Add routes and timing in the notes when you can."
             badge="Aviation"
           >
-            <PickRow
-              selected={!!sel.privateJet}
-              onToggle={() => toggle("privateJet")}
-            >
-              Private jet charter (coordination through Blackline)
-            </PickRow>
+            <div className="space-y-4">
+              <PickRow
+                selected={!!sel[OPEN_TBD.privateJet]}
+                onToggle={() => toggle(OPEN_TBD.privateJet)}
+              >
+                <>
+                  <span className="text-cream/92">
+                    Interested in private jet charter — no specific aircraft yet
+                  </span>
+                  <span className="block text-[0.8125rem] text-cream/50">
+                    Open to aircraft recommendations for your route and dates.
+                  </span>
+                </>
+              </PickRow>
+              <div className="max-h-[min(60vh,480px)] overflow-y-auto pr-1">
+              <ul className="grid gap-2" role="list">
+                {PRIVATE_JETS.map((j) => (
+                  <li key={j.id}>
+                    <PickRow
+                      selected={!!sel[`pj:${j.id}`]}
+                      onToggle={() => toggle(`pj:${j.id}`)}
+                      density="compact"
+                    >
+                      <>
+                        <span className="text-cream/92">{j.name}</span>
+                        <span className="block text-[0.8125rem] text-cream/50">
+                          {j.categoryLabel} · {j.passengers}
+                        </span>
+                      </>
+                    </PickRow>
+                  </li>
+                ))}
+              </ul>
+              </div>
+            </div>
           </CatalogSection>
 
           <CatalogSection
@@ -752,9 +1077,9 @@ export function CustomPackageWhatsApp({
         )}
         {!hasSelection && (
           <p className="mt-3 text-center text-[0.75rem] text-cream/45">
-            Select at least one vehicle, stay, yacht, venue, photo or video
-            shoot, female hosts add-on, or other option above to enable the
-            link.
+            Select catalog items, any “interested — no specific…” row,
+            venues, photo or video shoot, hosts, add-ons, armed/unarmed
+            security, or another option above to enable the link.
           </p>
         )}
       </div>

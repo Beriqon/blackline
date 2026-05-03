@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { SecurityAddToCartInline } from "@/components/security-add-to-cart-inline";
 import { SectionReveal } from "@/components/section-reveal";
+import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import { SECURITY_GUARD_RATE_CARDS } from "@/lib/security-guards-data";
 import { SERVICE_LINKS } from "@/lib/nav";
 import { cn } from "@/lib/utils";
@@ -22,11 +23,6 @@ const btnOutlineStrong =
 
 const cardClass =
   "group relative flex flex-col border border-gold/12 bg-[#0a0a0a]/90 p-8 shadow-[inset_0_1px_0_0_rgba(198,164,108,0.06),0_24px_64px_-24px_rgba(0,0,0,0.65)] transition-[border-color] duration-500 ease-out hover:border-gold/22 sm:p-10";
-
-const contextBullets = [
-  "Rates are per guard, per hour — tell us headcount and hours when you inquire.",
-  "Subject to licensing, venue requirements, and availability; final details confirmed before the day.",
-] as const;
 
 const pairWithServices = SERVICE_LINKS.filter(
   (s) => s.href !== "/services/security-guards",
@@ -70,7 +66,7 @@ export default function SecurityGuardsPage() {
               concierge team as your cars, yachts, and tables.
             </p>
             <div className="hero-cta-in mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
-              <Link href="/contact" className={cn(btnPrimary, "sm:min-w-[200px]")}>
+              <Link href={CONTACT_TRIP_BUILDER_HREF} className={cn(btnPrimary, "sm:min-w-[200px]")}>
                 Request coverage
               </Link>
               <a href="#rates" className={btnOutlineStrong}>
@@ -162,31 +158,6 @@ export default function SecurityGuardsPage() {
                 />
               </article>
             ))}
-          </div>
-
-          <ul
-            className="mx-auto mt-10 max-w-3xl space-y-3 border-t border-gold/10 pt-8 text-[0.8125rem] leading-relaxed text-cream/48 sm:text-sm lg:mx-0"
-            role="list"
-          >
-            {contextBullets.map((line) => (
-              <li key={line} className="flex gap-2.5">
-                <span className="text-gold/50" aria-hidden>
-                  ·
-                </span>
-                <span>{line}</span>
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
-            <Link href="/contact" className={btnPrimary}>
-              Book through concierge
-            </Link>
-            <p className="max-w-md text-[0.75rem] leading-relaxed text-cream/40">
-              Share dates, neighborhoods, and whether you need armed or unarmed
-              coverage — we confirm feasibility and headcount with you before
-              locking the schedule.
-            </p>
           </div>
         </div>
       </SectionReveal>

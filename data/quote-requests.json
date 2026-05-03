@@ -1,4 +1,15 @@
 {
-  "quoteRequests": []
+  "quoteRequests": [
+    {
+      "id": "qr_i6afx9sjmoht1rnj",
+      "customerName": "Customer",
+      "customerEmail": "",
+      "source": "whatsapp",
+      "status": "pending",
+      "message": "Hi Blackline - I'd like a quote for this stay:\nAstro\nLocation: Hallandale Beach, Miami, FL\n\nPlease confirm availability, rates, and next steps. Thanks!",
+      "summary": "Stay: Astro",
+      "createdAtIso": "2026-04-27T23:05:02.526Z",
+      "updatedAtIso": "2026-04-27T23:05:02.526Z"
+    }
+  ]
 }
-

@@ -1,3 +1,4 @@
+import { ChauffeurServiceCrosslink } from "@/components/chauffeur-service-crosslink";
 import { ServicePhotographyAddon } from "@/components/service-photography-addon";
 import { YachtHostessAddon } from "@/components/yacht-hostess-addon";
 import { SectionReveal } from "@/components/section-reveal";
@@ -22,6 +23,10 @@ export function YachtProductAddons() {
             onto this charter — request either when you book or in your written
             proposal.
           </p>
+          <ChauffeurServiceCrosslink
+            variant="yacht"
+            className="mt-4 max-w-2xl text-[0.8125rem] leading-relaxed text-cream/52 sm:text-sm"
+          />
         </div>
       </SectionReveal>
 

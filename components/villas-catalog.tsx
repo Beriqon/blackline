@@ -3,10 +3,21 @@
 import { Building2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
+import { ChauffeurServiceCrosslink } from "@/components/chauffeur-service-crosslink";
 import { ScrollRevealItem } from "@/components/scroll-reveal-item";
 import { SectionReveal } from "@/components/section-reveal";
+import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
+import { paginateSlice } from "@/lib/pagination";
 import {
   VILLA_NEIGHBORHOODS,
   VILLAS,
@@ -14,6 +25,8 @@ import {
   type VillaNeighborhood,
 } from "@/lib/villas-data";
 import { cn } from "@/lib/utils";
+
+const VILLAS_CATALOG_PAGE_SIZE = 12;
 
 const FEATURED_VILLA_IDS = new Set([
   "emerald",
@@ -117,9 +130,96 @@ function VillaCard({ villa }: { villa: Villa }) {
 
 type NeighborhoodFilter = "all" | VillaNeighborhood;
 
-export function VillasCatalog() {
+function VillaCatalogPagination({
+  page,
+  pageCount,
+  total,
+  pageSize,
+  onPage,
+}: {
+  page: number;
+  pageCount: number;
+  total: number;
+  pageSize: number;
+  onPage: (p: number) => void;
+}) {
+  if (pageCount <= 1) return null;
+
+  const from = (page - 1) * pageSize + 1;
+  const to = Math.min(page * pageSize, total);
+
+  return (
+    <nav
+      className="mt-12 flex flex-col items-center gap-5 border-t border-gold/10 pt-10 sm:flex-row sm:justify-between"
+      aria-label="Villa catalog pages"
+    >
+      <p className="text-[0.72rem] tabular-nums text-cream/42">
+        Showing{" "}
+        <span className="text-cream/55">
+          {from}–{to}
+        </span>{" "}
+        of <span className="text-cream/55">{total}</span> properties
+      </p>
+      <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+        <button
+          type="button"
+          onClick={() => onPage(page - 1)}
+          disabled={page <= 1}
+          className={cn(
+            "min-h-9 min-w-[4.5rem] border px-3 text-[0.62rem] font-semibold uppercase tracking-[0.14em] transition-colors disabled:cursor-not-allowed disabled:opacity-35 sm:min-h-10 sm:text-[0.65rem]",
+            page <= 1
+              ? "border-gold/10 text-cream/30"
+              : "border-gold/18 text-cream/65 hover:border-gold/32 hover:text-cream",
+          )}
+        >
+          Prev
+        </button>
+        {Array.from({ length: pageCount }, (_, i) => i + 1).map((p) => (
+          <button
+            key={p}
+            type="button"
+            onClick={() => onPage(p)}
+            aria-current={p === page ? "page" : undefined}
+            className={cn(
+              "flex h-9 min-w-9 items-center justify-center border text-[0.7rem] font-semibold tabular-nums transition-colors sm:h-10 sm:min-w-10 sm:text-[0.75rem]",
+              p === page
+                ? "border-gold/45 bg-gold/[0.08] text-gold-secondary"
+                : "border-gold/12 text-cream/55 hover:border-gold/25 hover:text-cream/80",
+            )}
+          >
+            {p}
+          </button>
+        ))}
+        <button
+          type="button"
+          onClick={() => onPage(page + 1)}
+          disabled={page >= pageCount}
+          className={cn(
+            "min-h-9 min-w-[4.5rem] border px-3 text-[0.62rem] font-semibold uppercase tracking-[0.14em] transition-colors disabled:cursor-not-allowed disabled:opacity-35 sm:min-h-10 sm:text-[0.65rem]",
+            page >= pageCount
+              ? "border-gold/10 text-cream/30"
+              : "border-gold/18 text-cream/65 hover:border-gold/32 hover:text-cream",
+          )}
+        >
+          Next
+        </button>
+      </div>
+    </nav>
+  );
+}
+
+function VillasCatalogInner() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [neighborhoodFilter, setNeighborhoodFilter] =
     useState<NeighborhoodFilter>("all");
+
+  const requestedPage = useMemo(() => {
+    const raw = searchParams.get("page");
+    const n = parseInt(raw || "1", 10);
+    return Number.isFinite(n) && n >= 1 ? n : 1;
+  }, [searchParams]);
 
   const countsByNeighborhood = useMemo(() => {
     const m = new Map<VillaNeighborhood, number>();
@@ -134,6 +234,56 @@ export function VillasCatalog() {
     if (neighborhoodFilter === "all") return [...VILLAS];
     return VILLAS.filter((v) => v.neighborhood === neighborhoodFilter);
   }, [neighborhoodFilter]);
+
+  const { slice, pageCount, safePage, total } = useMemo(
+    () =>
+      paginateSlice(visibleVillas, requestedPage, VILLAS_CATALOG_PAGE_SIZE),
+    [visibleVillas, requestedPage],
+  );
+
+  const prevNeighborhood = useRef<NeighborhoodFilter | null>(null);
+  useEffect(() => {
+    const cur = neighborhoodFilter;
+    const prev = prevNeighborhood.current;
+    if (prev === null) {
+      prevNeighborhood.current = cur;
+      return;
+    }
+    if (prev === cur) return;
+    prevNeighborhood.current = cur;
+    router.replace(pathname, { scroll: false });
+  }, [neighborhoodFilter, pathname, router]);
+
+  useEffect(() => {
+    if (safePage === requestedPage) return;
+    router.replace(
+      safePage > 1 ? `${pathname}?page=${safePage}` : pathname,
+      { scroll: false },
+    );
+  }, [safePage, requestedPage, pathname, router]);
+
+  const prevCatalogPageRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (prevCatalogPageRef.current === null) {
+      prevCatalogPageRef.current = requestedPage;
+      return;
+    }
+    if (prevCatalogPageRef.current === requestedPage) return;
+    prevCatalogPageRef.current = requestedPage;
+    document.getElementById("villas-properties")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, [requestedPage]);
+
+  const goToCatalogPage = useCallback(
+    (p: number) => {
+      router.replace(p > 1 ? `${pathname}?page=${p}` : pathname, {
+        scroll: false,
+      });
+    },
+    [pathname, router],
+  );
 
   const filterChipClass = (active: boolean) =>
     cn(
@@ -159,12 +309,16 @@ export function VillasCatalog() {
             Curated Miami-area residences — scale, amenities, and policies
             summarized per property so you can shortlist before you inquire.
           </p>
+          <ChauffeurServiceCrosslink variant="villa" />
         </div>
       </SectionReveal>
 
       <div className="section-gradient-divider" aria-hidden />
 
-      <SectionReveal className="border-b border-gold/10 bg-charcoal py-14 sm:py-16 lg:py-20">
+      <SectionReveal
+        id="villas-properties"
+        className="scroll-mt-[calc(4rem+0.75rem)] border-b border-gold/10 bg-charcoal py-14 sm:scroll-mt-[calc(4.25rem+0.75rem)] sm:py-16 lg:py-20"
+      >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
           <h2 className="font-serif text-xl tracking-tight text-cream sm:text-2xl">
             Properties
@@ -251,7 +405,7 @@ export function VillasCatalog() {
               Our property directory is being updated with new residences, full
               details, and photography. Check back soon — or reach out via{" "}
               <Link
-                href="/contact"
+                href={CONTACT_TRIP_BUILDER_HREF}
                 className="font-medium text-gold-secondary/95 underline decoration-gold/25 underline-offset-4 transition-colors hover:text-gold hover:decoration-gold/45"
               >
                 Contact
@@ -264,18 +418,35 @@ export function VillasCatalog() {
               or view all areas.
             </p>
           ) : (
-            <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
-              {visibleVillas.map((villa, index) => (
-                <ScrollRevealItem key={villa.id} index={index}>
-                  <div id={`villa-${villa.id}`}>
-                    <VillaCard villa={villa} />
-                  </div>
-                </ScrollRevealItem>
-              ))}
-            </div>
+            <>
+              <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
+                {slice.map((villa, index) => (
+                  <ScrollRevealItem key={villa.id} index={index}>
+                    <div id={`villa-${villa.id}`}>
+                      <VillaCard villa={villa} />
+                    </div>
+                  </ScrollRevealItem>
+                ))}
+              </div>
+              <VillaCatalogPagination
+                page={safePage}
+                pageCount={pageCount}
+                total={total}
+                pageSize={VILLAS_CATALOG_PAGE_SIZE}
+                onPage={goToCatalogPage}
+              />
+            </>
           )}
         </div>
       </SectionReveal>
     </>
+  );
+}
+
+export function VillasCatalog() {
+  return (
+    <Suspense fallback={null}>
+      <VillasCatalogInner />
+    </Suspense>
   );
 }

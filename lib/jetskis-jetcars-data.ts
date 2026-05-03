@@ -17,12 +17,72 @@ export const JETSKIS_PHOTO_ADDON_IMAGES = [
     alt: "Jet ski on the water — shoot still",
   },
   {
+    src: "/onthewater/bananaboats/bananaboat1.avif",
+    alt: "Banana boat ride on open water",
+  },
+  {
     src: "/photography/jetskiphotos/jetskiphoto2.jpg",
     alt: "Jet ski session — shoot still",
   },
   {
+    src: "/onthewater/kayak/kayak1.jpeg",
+    alt: "Kayak on Miami Beach waters",
+  },
+  {
     src: "/photography/jetskiphotos/jetskiphoto3.jpg",
     alt: "Personal watercraft — shoot still",
+  },
+  {
+    src: "/onthewater/parasailling/parasailling1.webp",
+    alt: "Parasailing over Miami Beach",
+  },
+  {
+    src: "/photography/jetskiphotos/jetski4.jpg",
+    alt: "Jet ski rider carving across the water",
+  },
+  {
+    src: "/onthewater/paddleboard/paddleboard.jpg",
+    alt: "Paddleboard session near the coast",
+  },
+  {
+    src: "/photography/jetskiphotos/jetski5.jpg",
+    alt: "Jet ski action shot on bright water",
+  },
+  {
+    src: "/onthewater/bananaboats/bananaboat3.avif",
+    alt: "Group banana boat adventure",
+  },
+  {
+    src: "/photography/jetskiphotos/jetski6.jpeg",
+    alt: "Jet ski rider in motion",
+  },
+  {
+    src: "/onthewater/kayak/kayak2.jpg",
+    alt: "Kayak route with scenic views",
+  },
+  {
+    src: "/photography/jetskiphotos/jetski7.jpeg",
+    alt: "Jet ski cruising along Miami waters",
+  },
+  {
+    src: "/onthewater/bananaboats/bananaboat.2.avif",
+    alt: "Banana boat turning over light chop",
+  },
+  {
+    src: "/photography/jetskiphotos/jetski8.jpg",
+    alt: "Close-up jet ski run",
+  },
+  {
+    src: "/onthewater/kayak/kayak3.jpg",
+    alt: "Kayak group on calm water",
+  },
+  {
+    src: "/photography/jetskiphotos/jetski9.jpg",
+    alt: "Jet ski spray and speed on the bay",
+  },
+  {
+    src: "/photography/jetskiphotos/jetski10.jpg",
+    alt: "Jet ski rental moment in Miami Beach",
   },
 ] as const;
 
@@ -43,6 +103,10 @@ export const JET_SKI_JETCAR_SECTION = {
     "Permitted zones, marina details, and any seasonal adjustments are confirmed on your booking. Contact us for availability and a firm quote.",
 } as const;
 
+/** Minimum advertised hourly from-rate per unit — used for multi-unit selection estimates. */
+export const JETSKI_HOURLY_FROM_USD_PER_UNIT = 150;
+export const JETCAR_HOURLY_FROM_USD_PER_UNIT = 250;
+
 export const JETSKIS_OFFERINGS = [
   {
     title: "Jet skis",
@@ -50,7 +114,7 @@ export const JETSKIS_OFFERINGS = [
       "Bay and shoreline sessions on personal watercraft — Miami Beach and Fort Lauderdale areas, timed with your stay; safety and fuel handled upfront.",
     image: "/sitephotos/jetski3.jpg",
     imageAlt: "Jet ski on the water",
-    sectionHref: "/services/jetskis-jetcars#jetskis-jetcars-look-and-feel",
+    sectionHref: "/services/jetskis-jetcars?tab=pwc#jetskis-jetcars-look-and-feel",
     ctaLabel: "Rates & details",
   },
   {
@@ -59,7 +123,7 @@ export const JETSKIS_OFFERINGS = [
       "Amphibious jet car runs on the water — Miami Beach or Fort Lauderdale; a high-energy option for groups who want more than a standard rental.",
     image: "/sitephotos/jetcar1.webp",
     imageAlt: "Jet car on the water",
-    sectionHref: "/services/jetskis-jetcars#jetcars-pricing",
+    sectionHref: "/services/jetskis-jetcars?tab=pwc#jetcars-pricing",
     ctaLabel: "Rates & details",
   },
   {
@@ -68,7 +132,7 @@ export const JETSKIS_OFFERINGS = [
       "Cruising, inshore flats, and offshore sport fishing — tournament-ready gear, bait, and Coast Guard–certified setups. Charter options and rates below.",
     image: "/sitephotos/fishing1.webp",
     imageAlt: "Sport fishing from a charter boat",
-    sectionHref: "/services/jetskis-jetcars#fishing-charters",
+    sectionHref: "/services/jetskis-jetcars?tab=fishing#fishing-charters",
     ctaLabel: "Charter options & rates",
   },
 ] as const;
@@ -77,7 +141,16 @@ export const JETSKIS_OFFERINGS = [
 export const FISHING_CRUISING_CHARTER = {
   title: "Cruising charter",
   locations: ["Miami Beach", "Key Biscayne", "Miami River"],
+  /** Shown in the rate callout — billed as fixed blocks below. */
   rate: "$250/hr",
+  /** Bookable duration blocks (hourly rate × hours). */
+  tiers: [
+    { duration: "2 hrs", price: "$500" },
+    { duration: "3 hrs", price: "$750" },
+    { duration: "4 hrs", price: "$1,000" },
+    { duration: "5 hrs", price: "$1,250" },
+    { duration: "6 hrs", price: "$1,500" },
+  ],
 } as const;
 
 export const FISHING_INSHORE_CHARTER = {

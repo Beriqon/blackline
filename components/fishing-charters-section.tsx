@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import {
   FISHING_CHARTER_INCLUSIONS,
@@ -8,6 +10,63 @@ import {
   FISHING_OFFSHORE_CHARTER,
 } from "@/lib/jetskis-jetcars-data";
 import { cn } from "@/lib/utils";
+
+const FISHING_HREF = "/services/jetskis-jetcars?tab=fishing#fishing-charters";
+
+const fishingSelectField =
+  "mt-2 w-full border border-gold/20 bg-[#0b0b0b] px-3 py-2.5 text-sm text-cream outline-none transition-[border-color] focus-visible:border-gold/50";
+
+type FishingTier = { readonly duration: string; readonly price: string };
+
+function FishingTierAddBlock({
+  itemIdPrefix,
+  title,
+  subtitle,
+  tiers,
+}: {
+  itemIdPrefix: string;
+  title: string;
+  subtitle: string;
+  tiers: readonly FishingTier[];
+}) {
+  const [idx, setIdx] = useState(0);
+  const tier = tiers[idx]!;
+  const selectId = `${itemIdPrefix}-duration`;
+
+  return (
+    <div className="mt-6 border-t border-gold/10 pt-6">
+      <label
+        htmlFor={selectId}
+        className="text-[0.6rem] font-medium uppercase tracking-[0.24em] text-gold/65"
+      >
+        Select duration
+      </label>
+      <select
+        id={selectId}
+        value={idx}
+        onChange={(e) => setIdx(Number.parseInt(e.target.value, 10))}
+        className={fishingSelectField}
+      >
+        {tiers.map((t, i) => (
+          <option key={t.duration} value={i}>
+            {t.duration} — {t.price}
+          </option>
+        ))}
+      </select>
+      <AddToCartButton
+        item={{
+          category: "fishing",
+          id: `${itemIdPrefix}-${idx}`,
+          title,
+          subtitle: `${subtitle} · ${tier.duration}`,
+          priceHint: tier.price,
+          href: FISHING_HREF,
+        }}
+        className="mt-4 w-full sm:w-auto"
+      />
+    </div>
+  );
+}
 
 export function PriceRow({
   duration,
@@ -77,37 +136,45 @@ export function FishingChartersSection({ className }: { className?: string }) {
                 <p className="mt-1 font-serif text-3xl tracking-tight text-gold-secondary sm:text-[2rem]">
                   {FISHING_CRUISING_CHARTER.rate}
                 </p>
+                <p className="mt-2 text-[0.65rem] uppercase tracking-[0.18em] text-cream/45">
+                  From {FISHING_CRUISING_CHARTER.tiers[0]!.price}{" "}
+                  <span className="text-cream/35">({FISHING_CRUISING_CHARTER.tiers[0]!.duration})</span>
+                </p>
               </div>
             </div>
-            <div className="mt-8 border-t border-gold/10 pt-6">
-              <AddToCartButton
-                item={{
-                  category: "fishing",
-                  id: "fishing-cruising",
-                  title: FISHING_CRUISING_CHARTER.title,
-                  subtitle: FISHING_CRUISING_CHARTER.locations.join(" · "),
-                  priceHint: FISHING_CRUISING_CHARTER.rate,
-                  href: "/services/jetskis-jetcars#fishing-charters",
-                }}
-                className="w-full sm:w-auto"
-              />
+            <div className="mt-8 border-t border-gold/10 pt-2">
+              {FISHING_CRUISING_CHARTER.tiers.map((row) => (
+                <PriceRow
+                  key={row.duration}
+                  duration={row.duration}
+                  price={row.price}
+                />
+              ))}
             </div>
+            <FishingTierAddBlock
+              itemIdPrefix="fishing-cruising"
+              title={FISHING_CRUISING_CHARTER.title}
+              subtitle={FISHING_CRUISING_CHARTER.locations.join(" · ")}
+              tiers={FISHING_CRUISING_CHARTER.tiers}
+            />
           </div>
 
           {/* Inshore + Offshore */}
           <div className="grid gap-px overflow-hidden border border-gold/12 bg-gold/12 lg:grid-cols-2">
-            <div className="bg-[#0a0a0a]/95 p-6 sm:p-8 lg:p-10">
-              <h3 className="font-serif text-xl tracking-tight text-cream sm:text-[1.35rem]">
-                {FISHING_INSHORE_CHARTER.title}
-              </h3>
-              <p className="mt-2 text-xs font-medium uppercase tracking-[0.2em] text-gold/75">
-                {FISHING_INSHORE_CHARTER.vessel}
-              </p>
-              <p className="mt-4 text-sm leading-relaxed text-cream/55">
-                <span className="text-cream/40">Target species: </span>
-                {FISHING_INSHORE_CHARTER.targets}
-              </p>
-              <div className="mt-6 border-t border-gold/10 pt-2">
+            <div className="flex h-full min-h-0 flex-col bg-[#0a0a0a]/95 p-6 sm:p-8 lg:p-10">
+              <div className="shrink-0">
+                <h3 className="font-serif text-xl tracking-tight text-cream sm:text-[1.35rem]">
+                  {FISHING_INSHORE_CHARTER.title}
+                </h3>
+                <p className="mt-2 text-xs font-medium uppercase tracking-[0.2em] text-gold/75">
+                  {FISHING_INSHORE_CHARTER.vessel}
+                </p>
+                <p className="mt-4 text-sm leading-relaxed text-cream/55">
+                  <span className="text-cream/40">Target species: </span>
+                  {FISHING_INSHORE_CHARTER.targets}
+                </p>
+              </div>
+              <div className="mt-auto shrink-0 border-t border-gold/10 pt-2">
                 {FISHING_INSHORE_CHARTER.tiers.map((row) => (
                   <PriceRow
                     key={row.duration}
@@ -116,33 +183,28 @@ export function FishingChartersSection({ className }: { className?: string }) {
                   />
                 ))}
               </div>
-              <div className="mt-6 border-t border-gold/10 pt-6">
-                <AddToCartButton
-                  item={{
-                    category: "fishing",
-                    id: "fishing-inshore",
-                    title: FISHING_INSHORE_CHARTER.title,
-                    subtitle: FISHING_INSHORE_CHARTER.vessel,
-                    priceHint: "From $525 (4 hrs)",
-                    href: "/services/jetskis-jetcars#fishing-charters",
-                  }}
-                  className="w-full sm:w-auto"
-                />
-              </div>
+              <FishingTierAddBlock
+                itemIdPrefix="fishing-inshore"
+                title={FISHING_INSHORE_CHARTER.title}
+                subtitle={FISHING_INSHORE_CHARTER.vessel}
+                tiers={FISHING_INSHORE_CHARTER.tiers}
+              />
             </div>
 
-            <div className="bg-[#0a0a0a]/95 p-6 sm:p-8 lg:p-10">
-              <h3 className="font-serif text-xl tracking-tight text-cream sm:text-[1.35rem]">
-                {FISHING_OFFSHORE_CHARTER.title}
-              </h3>
-              <p className="mt-2 text-xs font-medium uppercase tracking-[0.2em] text-gold/75">
-                {FISHING_OFFSHORE_CHARTER.vessels.join(" · ")}
-              </p>
-              <p className="mt-4 text-sm leading-relaxed text-cream/55">
-                <span className="text-cream/40">Target species: </span>
-                {FISHING_OFFSHORE_CHARTER.targets}
-              </p>
-              <div className="mt-6 border-t border-gold/10 pt-2">
+            <div className="flex h-full min-h-0 flex-col bg-[#0a0a0a]/95 p-6 sm:p-8 lg:p-10">
+              <div className="shrink-0">
+                <h3 className="font-serif text-xl tracking-tight text-cream sm:text-[1.35rem]">
+                  {FISHING_OFFSHORE_CHARTER.title}
+                </h3>
+                <p className="mt-2 text-xs font-medium uppercase tracking-[0.2em] text-gold/75">
+                  {FISHING_OFFSHORE_CHARTER.vessels.join(" · ")}
+                </p>
+                <p className="mt-4 text-sm leading-relaxed text-cream/55">
+                  <span className="text-cream/40">Target species: </span>
+                  {FISHING_OFFSHORE_CHARTER.targets}
+                </p>
+              </div>
+              <div className="mt-auto shrink-0 border-t border-gold/10 pt-2">
                 {FISHING_OFFSHORE_CHARTER.tiers.map((row) => (
                   <PriceRow
                     key={row.duration}
@@ -151,19 +213,12 @@ export function FishingChartersSection({ className }: { className?: string }) {
                   />
                 ))}
               </div>
-              <div className="mt-6 border-t border-gold/10 pt-6">
-                <AddToCartButton
-                  item={{
-                    category: "fishing",
-                    id: "fishing-offshore",
-                    title: FISHING_OFFSHORE_CHARTER.title,
-                    subtitle: FISHING_OFFSHORE_CHARTER.vessels.join(" · "),
-                    priceHint: "From $575 (4 hrs)",
-                    href: "/services/jetskis-jetcars#fishing-charters",
-                  }}
-                  className="w-full sm:w-auto"
-                />
-              </div>
+              <FishingTierAddBlock
+                itemIdPrefix="fishing-offshore"
+                title={FISHING_OFFSHORE_CHARTER.title}
+                subtitle={FISHING_OFFSHORE_CHARTER.vessels.join(" · ")}
+                tiers={FISHING_OFFSHORE_CHARTER.tiers}
+              />
             </div>
           </div>
 

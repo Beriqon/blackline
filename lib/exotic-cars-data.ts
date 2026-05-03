@@ -554,13 +554,14 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     dualRentalOnCard: true,
     group: "Cadillac",
     priceLine: "$549 / day",
-    chauffeurPriceLine: "XXX / hr",
+    chauffeurPriceLine: "$125 / hr",
     pricing: "daily",
+    featured: true,
     description:
       "The Cadillac Escalade is a full-size luxury SUV that epitomizes opulence and sophistication while offering exceptional space and versatility. As the extended version of the standard Escalade, it features a larger wheelbase, resulting in more interior room, particularly in the cargo area. This SUV is equipped with a powerful V8 engine and advanced driving dynamics for a smooth and confident ride. Inside, the Escalade is adorned with high-quality materials, cutting-edge technology, and premium comfort features, including leather seating, a state-of-the-art infotainment system, and advanced driver-assistance systems. It is ideal for those seeking a luxurious driving experience combined with ample space for passengers and luggage.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "XXX / hr" },
+      { label: "Chauffeur", value: "$125 / hr" },
       { label: "Terms", value: "100 free miles/day | $4/extra mile" },
       { label: "Security deposit", value: "$500–$1000" },
       {
@@ -599,6 +600,7 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     group: "McLaren",
     priceLine: "$999 / day",
     pricing: "daily",
+    featured: true,
     description:
       "The McLaren GT is a refined and luxurious grand tourer that blends high performance with everyday usability. It features a powerful 4.0-liter twin-turbocharged V8 engine, producing impressive acceleration and top speeds. With its lightweight carbon fiber chassis, the McLaren GT offers agility and dynamic handling typically found in supercars, yet it's designed for comfort over long distances. The sleek and aerodynamic exterior is coupled with a spacious, elegantly appointed cabin that includes top-tier materials and cutting-edge technology. Offering ample cargo space and a sophisticated ride, the McLaren GT perfectly balances the thrills of a sports car with the practicality of a long-distance tourer, making it a versatile choice for enthusiasts who crave both style and substance.",
     specs: [
@@ -714,6 +716,7 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     group: "Porsche",
     priceLine: "$1099 / day",
     pricing: "daily",
+    featured: true,
     description:
       "The Porsche 911 Turbo S (992) is the high-performance flagship of the 911 lineup, representing the 992 generation of Porsche's iconic rear-engine sports car. It pairs a potent twin-turbocharged flat-six engine (now with advanced T-Hybrid technology and dual electric turbochargers) with an eight-speed PDK gearbox and all-wheel drive, delivering around 700+ hp, blistering acceleration (about 0–100 km/h in ~2.5 s or less), and top speeds near 200 mph (322 km/h)— making it one of the fastest production 911s ever. The Turbo S blends supercar-level performance with everyday usability, refined handling, and luxury features in a classic 911 silhouette.",
     specs: [
@@ -754,13 +757,13 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     dualRentalOnCard: true,
     group: "Mercedes",
     priceLine: "$899 / day",
-    chauffeurPriceLine: "XXX / hr",
+    chauffeurPriceLine: "$175 / hr",
     pricing: "daily",
     description:
       "A Maybach GLS 600 offers lounge-like comfort in an SUV form. The ride is serene, the cabin hushed, and the materials are first-class. Rear seating prioritizes relaxation with generous space and refined amenities. Despite its size, the GLS 600 moves smoothly through city traffic and glides on the highway. The exterior communicates quiet status—ideal for elegant hotel and restaurant arrivals. Choose the Maybach GLS for uncompromising comfort and VIP practicality. It elevates every transfer to a five-star experience.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "XXX / hr" },
+      { label: "Chauffeur", value: "$175 / hr" },
       { label: "Seats", value: "5+" },
       { label: "Style", value: "SUV" },
       { label: "Color", value: "Black" },
@@ -811,13 +814,13 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     dualRentalOnCard: true,
     group: "Mercedes",
     priceLine: "$499 / day",
-    chauffeurPriceLine: "XXX / hr",
+    chauffeurPriceLine: "$125 / hr",
     pricing: "daily",
     description:
       "An S580 rental is tailored for executive-level comfort. The cabin is whisper-quiet with generous legroom and a refined ride that smooths over city pavement. Ambient lighting and premium audio enhance night cruises and business transfers. Technology supports relaxed driving, while the rear seating area provides space to unwind or work between stops. The exterior communicates understated luxury that suits any venue. Choose the S580 for discreet elegance and first-class comfort. It's the smart pick for meetings, fine dining, and effortless airport runs.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "XXX / hr" },
+      { label: "Chauffeur", value: "$125 / hr" },
       { label: "Seats", value: "5+" },
       { label: "Style", value: "Sedan" },
       { label: "Color", value: "Black" },
@@ -884,13 +887,13 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     dualRentalOnCard: true,
     group: "Mercedes",
     priceLine: "$599 / day",
-    chauffeurPriceLine: "XXX / hr",
+    chauffeurPriceLine: "$125 / hr",
     pricing: "daily",
     description:
       "The Mercedes-Benz S580 is a top-tier luxury sedan renowned for its blend of performance, technology, and comfort. It features a potent 4.0-liter V8 biturbo engine with mild-hybrid EQ Boost, delivering both impressive power and enhanced fuel efficiency. The S580's interior epitomizes modern opulence, with high-quality materials, advanced infotainment systems, and superior comfort features such as massaging seats and ambient lighting. Its exterior design combines sleek aesthetics with aerodynamic efficiency, embodying the sophistication and refinement expected from the iconic S-Class lineup. The Mercedes-Benz S580 is perfect for those who demand the best in automotive innovation and luxury.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "XXX / hr" },
+      { label: "Chauffeur", value: "$125 / hr" },
       { label: "Terms", value: "100 free miles/day | $4/extra mile" },
       { label: "Security deposit", value: "$500–$1000" },
       {
@@ -929,13 +932,13 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     dualRentalOnCard: true,
     group: "Mercedes",
     priceLine: "$849 / day",
-    chauffeurPriceLine: "XXX / hr",
+    chauffeurPriceLine: "$155 / hr",
     pricing: "daily",
     description:
       "The Mercedes-Maybach S680 is a pinnacle of automotive luxury, combining the timeless elegance of the S-Class with exclusive Maybach refinements. Powered by a robust 4.0-liter V8 biturbo engine with mild-hybrid EQ Boost technology, the S680 seamlessly blends power and efficiency for a supremely smooth driving experience. The interior is a sanctuary of opulence, featuring the finest leather, exquisite wood trims, and cutting-edge technology. Rear passengers are treated to an indulgent experience with executive seating. The Maybach S680 captures the essence of luxury and craftsmanship, catering to those who seek ultimate comfort and sophistication.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "XXX / hr" },
+      { label: "Chauffeur", value: "$155 / hr" },
       { label: "Terms", value: "100 free miles/day | $4/extra mile" },
       { label: "Security deposit", value: "$500–$1000" },
       {
@@ -973,13 +976,13 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     dualRentalOnCard: true,
     group: "Mercedes",
     priceLine: "$1099 / day",
-    chauffeurPriceLine: "XXX / hr",
+    chauffeurPriceLine: "$175 / hr",
     pricing: "daily",
     description:
       "The Mercedes-Benz Maybach GLS 600 is the epitome of luxury in the SUV segment. This opulent vehicle combines the commanding presence of an SUV with the unparalleled elegance and craftsmanship of the Maybach brand. Under the hood, it boasts a powerful 4.0-liter V8 biturbo engine with EQ Boost, delivering smooth and effortless performance. The interior is meticulously appointed with the finest materials, including sumptuous leather, wood trim, and state-of-the-art technology. Rear-seat passengers enjoy first-class treatment with features like reclining seats, advanced climate control, and entertainment systems. The Maybach GLS 600 offers an unrivaled blend of luxury, technology, and performance, making it a top choice for those who demand the utmost in automotive excellence.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "XXX / hr" },
+      { label: "Chauffeur", value: "$175 / hr" },
       { label: "Terms", value: "100 free miles/day | $4/extra mile" },
       { label: "Security deposit", value: "$500–$1000" },
       {
@@ -1048,13 +1051,13 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     dualRentalOnCard: true,
     group: "Rolls-Royce",
     priceLine: "$1399 / day",
-    chauffeurPriceLine: "XXX / hr",
+    chauffeurPriceLine: "$250-$300 / hr",
     pricing: "daily",
     description:
       "The white Cullinan emphasizes purity and elegance. It photographs beautifully day or night and suits luxury events, weddings, and premium itineraries. The ride remains tranquil, and the interior is thoughtfully finished. Rear seating accommodates guests with generous space and refined amenities. It's a statement vehicle that maintains calm in every situation. Rent the white Cullinan to pair iconic luxury with a clean, modern look. It turns any Miami plan into a first-class experience.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "XXX / hr" },
+      { label: "Chauffeur", value: "$250-$300 / hr" },
       { label: "Seats", value: "5+" },
       { label: "Style", value: "SUV" },
       { label: "Color", value: "White" },
@@ -1079,13 +1082,13 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     dualRentalOnCard: true,
     group: "Rolls-Royce",
     priceLine: "$1299 / day",
-    chauffeurPriceLine: "XXX / hr",
+    chauffeurPriceLine: "$250-$300 / hr",
     pricing: "daily",
     description:
       "A Rolls-Royce Cullinan rental elevates your Miami experience with unmatched serenity. The black finish projects authority while the cabin isolates road noise for a calm, unhurried ride. Doors open wide to a spacious, handcrafted interior. Passengers enjoy plush seating, premium audio, and an effortless glide over city streets. Every touchpoint communicates craftsmanship and care. Choose the black Cullinan for VIP transport and standout entrances. It signals sophistication while delivering supreme comfort.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "XXX / hr" },
+      { label: "Chauffeur", value: "$250-$300 / hr" },
       { label: "Seats", value: "5+" },
       { label: "Style", value: "SUV" },
       { label: "Color", value: "Black" },
@@ -1110,13 +1113,13 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     dualRentalOnCard: true,
     group: "Rolls-Royce",
     priceLine: "$1299 / day",
-    chauffeurPriceLine: "XXX / hr",
+    chauffeurPriceLine: "$250-$300 / hr",
     pricing: "daily",
     description:
       "The Rolls-Royce Cullinan is the brand's first luxury SUV, embodying the pinnacle of opulence and performance. Named after the largest diamond ever discovered, the Cullinan offers a commanding presence with its bold and elegant design. It features a powerful 6.75-liter V12 engine, providing a silky-smooth, effortless drive. Its lavish interior is adorned with the finest materials, including hand-stitched leather, exquisite wood veneers, and bespoke options. Advanced technology, spacious seating, and state-of-the-art safety features ensure that the Cullinan delivers an unrivaled combination of luxury, comfort, and versatility for both urban and off-road adventures.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "XXX / hr" },
+      { label: "Chauffeur", value: "$250-$300 / hr" },
       { label: "Terms", value: "100 free miles/day | $4/extra mile" },
       { label: "Security deposit", value: "$500–$1000" },
       {
@@ -1152,13 +1155,13 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     dualRentalOnCard: true,
     group: "Rolls-Royce",
     priceLine: "$1299 / day",
-    chauffeurPriceLine: "XXX / hr",
+    chauffeurPriceLine: "$250-$300 / hr",
     pricing: "daily",
     description:
       "The Rolls-Royce Cullinan is the brand's first luxury SUV, embodying the pinnacle of opulence and performance. Named after the largest diamond ever discovered, the Cullinan offers a commanding presence with its bold and elegant design. It features a powerful 6.75-liter V12 engine, providing a silky-smooth, effortless drive. Its lavish interior is adorned with the finest materials, including hand-stitched leather, exquisite wood veneers, and bespoke options. Advanced technology, spacious seating, and state-of-the-art safety features ensure that the Cullinan delivers an unrivaled combination of luxury, comfort, and versatility for both urban and off-road adventures.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "XXX / hr" },
+      { label: "Chauffeur", value: "$250-$300 / hr" },
       { label: "Terms", value: "100 free miles/day | $4/extra mile" },
       { label: "Security deposit", value: "$500–$1000" },
       {
@@ -1594,6 +1597,7 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     group: "Lamborghini",
     priceLine: "$1599 / day",
     pricing: "daily",
+    featured: true,
     description:
       "Step into the next generation of performance with the Lamborghini Temerario, the revolutionary hybrid supercar replacing the iconic Huracán. Designed for pure adrenaline and cutting-edge innovation, the Temerario blends Lamborghini's legendary design with electrified power to create an unforgettable driving experience. Under the hood, the Temerario features a twin-turbocharged 4.0-liter V8 paired with three electric motors, producing over 900 horsepower. This advanced hybrid system launches the car from 0–60 mph in about 2.7 seconds and reaches a top speed of over 210 mph, delivering explosive acceleration and razor-sharp handling. The engine revs to an astonishing 10,000 RPM, creating a sound and sensation unlike any other hybrid supercar. Combined with all-wheel drive, torque vectoring, and lightning-fast dual-clutch transmission, the Temerario offers unmatched control whether cruising the city or unleashing its power on open roads.",
     specs: [
@@ -1798,13 +1802,13 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     dualRentalOnCard: true,
     group: "Mercedes",
     priceLine: "$800 / day",
-    chauffeurPriceLine: "XXX / hr",
+    chauffeurPriceLine: "$175 / hr",
     pricing: "daily",
     description:
       "Experience luxury with this Mercedes-Maybach GLS 600 in Miami—Unit C delivers first-class rear accommodation, refined road presence, and meticulous cabin finish. Perfect for an unforgettable stay, it pairs world-class amenities with attention to detail. Blackline coordinates your booking end to end—self-drive rental (license and insurance required) or optional chauffeur service—timed with the rest of your itinerary.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "XXX / hr" },
+      { label: "Chauffeur", value: "$175 / hr" },
       { label: "Seats", value: "5" },
       { label: "Style", value: "SUV" },
       { label: "Segment", value: "Luxury" },

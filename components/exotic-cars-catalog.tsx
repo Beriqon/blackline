@@ -25,43 +25,18 @@ import { ScrollRevealItem } from "@/components/scroll-reveal-item";
 import { SectionReveal } from "@/components/section-reveal";
 import { ExoticCarBookingPanel } from "@/components/exotic-car-booking-panel";
 import { ServicePhotographyAddon } from "@/components/service-photography-addon";
-import {
-  ALL_EXOTIC_CARS,
-  EXOTIC_CARS_DAILY,
-  EXOTIC_CARS_HOURLY_GROUPS,
-  type ExoticCar,
-} from "@/lib/exotic-cars-data";
+import { EXOTIC_CARS_DAILY, type ExoticCar } from "@/lib/exotic-cars-data";
 import { paginateSlice } from "@/lib/pagination";
 import {
   sortExoticCars,
   type ExoticSortMode,
 } from "@/lib/exotic-catalog-utils";
 import { EXOTIC_PHOTOGRAPHY_ADDON_IMAGES } from "@/lib/exotic-car-photos";
-import { cn } from "@/lib/utils";
-
-/** Fisher–Yates shuffle (new array). */
-function shuffleImmutable<T>(items: readonly T[]): T[] {
-  const next = [...items];
-  for (let i = next.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const t = next[i]!;
-    next[i] = next[j]!;
-    next[j] = t;
-  }
-  return next;
-}
+import { cn, shuffleImmutable } from "@/lib/utils";
 
 const btnPrimary =
   "inline-flex min-h-11 items-center justify-center border border-gold/40 bg-gold px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-[#0b0b0b] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold-secondary hover:bg-gold-secondary hover:shadow-[0_0_0_1px_rgba(224,195,138,0.4),0_14px_48px_rgba(198,164,108,0.2)] active:translate-y-0";
 
-const fleetSegmentTrack =
-  "flex w-full rounded-sm border border-gold/22 bg-[#050505] p-1 sm:inline-flex sm:w-auto";
-const fleetSegmentBtn =
-  "min-h-11 flex-1 px-3 text-[0.65rem] font-semibold uppercase tracking-[0.14em] transition-all duration-200 sm:flex-none sm:px-5 sm:text-[0.68rem] sm:tracking-[0.16em]";
-const fleetSegmentBtnIdle =
-  "rounded-sm text-cream/48 hover:bg-[#0b0b0b] hover:text-cream/72";
-const fleetSegmentBtnOn =
-  "rounded-sm bg-gold/14 text-gold-secondary shadow-[inset_0_0_0_1px_rgba(198,164,108,0.22)]";
 const CATALOG_PAGE_SIZE = 9;
 
 const SORT_OPTIONS: { id: ExoticSortMode; label: string }[] = [
@@ -133,10 +108,6 @@ function CarCard({
   car: ExoticCar;
   onOpen: (car: ExoticCar) => void;
 }) {
-  const rentalMode =
-    car.section === "hourly" ? "Chauffeur" : "Self-drive";
-  const showDualRental =
-    car.section === "daily" && car.dualRentalOnCard === true;
   const brand = car.group.trim() || "Fleet";
 
   return (
@@ -174,27 +145,20 @@ function CarCard({
             />
           )}
           <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-gold/[0.07]" aria-hidden />
-          <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-2 sm:left-4 sm:top-4">
-            {showDualRental ? (
-              <>
-                <span className="border border-gold/25 bg-[#0a0a0a]/88 px-2.5 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.2em] text-gold-secondary backdrop-blur-sm">
-                  Self-drive
+          {car.featured || (car.photosComingSoon && !carCardImageSrc(car)) ? (
+            <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-2 sm:left-4 sm:top-4">
+              {car.featured ? (
+                <span className="border border-gold/50 bg-[#0a0a0a]/85 px-2.5 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.2em] text-gold-secondary backdrop-blur-sm">
+                  Featured
                 </span>
-                <span className="border border-gold/25 bg-[#0a0a0a]/88 px-2.5 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.2em] text-gold-secondary backdrop-blur-sm">
-                  Chauffeur
+              ) : null}
+              {car.photosComingSoon && !carCardImageSrc(car) ? (
+                <span className="border border-gold/15 bg-[#0a0a0a]/75 px-2.5 py-1 text-[0.58rem] font-medium uppercase tracking-[0.18em] text-cream/50 backdrop-blur-sm">
+                  Gallery soon
                 </span>
-              </>
-            ) : (
-              <span className="border border-gold/25 bg-[#0a0a0a]/88 px-2.5 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.2em] text-gold-secondary backdrop-blur-sm">
-                {rentalMode}
-              </span>
-            )}
-            {car.photosComingSoon && !carCardImageSrc(car) ? (
-              <span className="border border-gold/15 bg-[#0a0a0a]/75 px-2.5 py-1 text-[0.58rem] font-medium uppercase tracking-[0.18em] text-cream/50 backdrop-blur-sm">
-                Gallery soon
-              </span>
-            ) : null}
-          </div>
+              ) : null}
+            </div>
+          ) : null}
         </div>
 
         <div className="relative border-t border-gold/12 bg-[#0b0b0b] px-4 py-4 sm:px-5 sm:py-5">
@@ -206,32 +170,10 @@ function CarCard({
           </p>
           <div className="mt-4 flex flex-wrap items-end justify-between gap-3 border-t border-gold/[0.08] pt-4">
             <div className="min-w-0 flex-1">
-              {showDualRental && car.chauffeurPriceLine ? (
-                <div className="flex flex-col gap-2">
-                  <div>
-                    <span className="block text-[0.58rem] font-semibold uppercase tracking-[0.2em] text-cream/42">
-                      Self-drive
-                    </span>
-                    <p className="mt-0.5 font-serif text-base tabular-nums tracking-tight text-gold-secondary sm:text-lg">
-                      {car.priceLine}
-                      {car.pricing === "hourly_range" ? "*" : ""}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="block text-[0.58rem] font-semibold uppercase tracking-[0.2em] text-cream/42">
-                      Chauffeur
-                    </span>
-                    <p className="mt-0.5 font-serif text-base tabular-nums tracking-tight text-gold-secondary sm:text-lg">
-                      {car.chauffeurPriceLine}
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <p className="font-serif text-base tabular-nums tracking-tight text-gold-secondary sm:text-lg">
-                  {car.priceLine}
-                  {car.pricing === "hourly_range" ? "*" : ""}
-                </p>
-              )}
+              <p className="font-serif text-base tabular-nums tracking-tight text-gold-secondary sm:text-lg">
+                {car.priceLine}
+                {car.pricing === "hourly_range" ? "*" : ""}
+              </p>
             </div>
             <span className="inline-flex shrink-0 items-center gap-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-cream/42 transition-colors duration-300 group-hover:text-gold-secondary">
               Open
@@ -422,41 +364,21 @@ function CarDetailDialog({
 
             <div className="min-w-0 flex flex-col p-5 sm:p-7 lg:max-h-[min(70vh,640px)] lg:overflow-y-auto">
               <p className="text-[0.62rem] font-semibold uppercase tracking-[0.42em] text-gold/90">
-                {showDualRental
-                  ? "Rental options"
-                  : car.section === "daily"
-                    ? "Daily rate"
-                    : "Hourly rate"}
+                {car.section === "daily" ? "Daily rate" : "Hourly rate"}
               </p>
-              {showDualRental && car.chauffeurPriceLine ? (
-                <div className="mt-3 flex flex-col gap-4">
-                  <div>
-                    <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.26em] text-cream/48">
-                      Self-drive
-                    </span>
-                    <p className="mt-1 font-serif text-2xl tabular-nums tracking-tight text-gold-secondary sm:text-[1.65rem]">
-                      {car.priceLine}
-                      {car.pricing === "hourly_range" ? "*" : ""}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.26em] text-cream/48">
-                      Chauffeur
-                    </span>
-                    <p className="mt-1 font-serif text-2xl tabular-nums tracking-tight text-gold-secondary sm:text-[1.65rem]">
-                      {car.chauffeurPriceLine}
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <p className="mt-3 font-serif text-2xl tabular-nums tracking-tight text-gold-secondary sm:text-[1.65rem]">
-                  {car.priceLine}
-                  {car.pricing === "hourly_range" ? "*" : ""}
-                </p>
-              )}
+              <p className="mt-3 font-serif text-2xl tabular-nums tracking-tight text-gold-secondary sm:text-[1.65rem]">
+                {car.priceLine}
+                {car.pricing === "hourly_range" ? "*" : ""}
+              </p>
               {car.priceNote ? (
                 <p className="mt-2 text-[0.75rem] leading-relaxed text-cream/48">
                   *{car.priceNote}
+                </p>
+              ) : null}
+              {showDualRental ? (
+                <p className="mt-4 text-[0.8125rem] leading-relaxed text-cream/55">
+                  Also bookable with a chauffeur on request — ask when you
+                  inquire; we&apos;ll confirm availability and hourly pricing.
                 </p>
               ) : null}
               {car.specs && car.specs.length > 0 ? (
@@ -599,8 +521,6 @@ function CarDetailDialog({
   );
 }
 
-type FleetView = "all" | "hourly" | "daily";
-
 function ExoticCatalogPagination({
   page,
   pageCount,
@@ -686,8 +606,6 @@ function ExoticCarsCatalogInner() {
   const searchParams = useSearchParams();
 
   const [selected, setSelected] = useState<ExoticCar | null>(null);
-  const [fleetView, setFleetView] = useState<FleetView>("all");
-  /** Make / brand — matches `ExoticCar.group` for both chauffeur and self-drive. */
   const [brandFilter, setBrandFilter] = useState<string>("all");
   const [sortMode, setSortMode] = useState<ExoticSortMode>("featured-first");
 
@@ -698,7 +616,7 @@ function ExoticCarsCatalogInner() {
 
   const fleetBrandOptions = useMemo(() => {
     const set = new Set<string>();
-    for (const car of ALL_EXOTIC_CARS) {
+    for (const car of EXOTIC_CARS_DAILY) {
       const g = car.group.trim();
       if (g) set.add(g);
     }
@@ -706,9 +624,6 @@ function ExoticCarsCatalogInner() {
       a.localeCompare(b, "en", { sensitivity: "base" }),
     );
   }, []);
-
-  const hourlyVisible = fleetView === "all" || fleetView === "hourly";
-  const dailyVisible = fleetView === "all" || fleetView === "daily";
 
   const carMatchesBrand = useCallback(
     (car: ExoticCar) =>
@@ -723,36 +638,13 @@ function ExoticCarsCatalogInner() {
   }, [searchParams]);
 
   const flattenedCars = useMemo(() => {
-    const ids = new Set<string>();
     const out: ExoticCar[] = [];
-
-    const pushUnique = (car: ExoticCar) => {
-      if (!carMatchesBrand(car)) return;
-      if (ids.has(car.id)) return;
-      ids.add(car.id);
+    for (const car of EXOTIC_CARS_DAILY) {
+      if (!carMatchesBrand(car)) continue;
       out.push(car);
-    };
-
-    if (hourlyVisible) {
-      for (const g of EXOTIC_CARS_HOURLY_GROUPS) {
-        for (const car of g.cars) {
-          pushUnique(car);
-        }
-      }
-      for (const car of EXOTIC_CARS_DAILY) {
-        if (car.dualRentalOnCard === true) {
-          pushUnique(car);
-        }
-      }
     }
-    if (dailyVisible) {
-      for (const car of EXOTIC_CARS_DAILY) {
-        pushUnique(car);
-      }
-    }
-
     return sortExoticCars(out, sortMode);
-  }, [hourlyVisible, dailyVisible, carMatchesBrand, sortMode]);
+  }, [carMatchesBrand, sortMode]);
 
   const { slice, pageCount, safePage, total } = useMemo(
     () => paginateSlice(flattenedCars, requestedPage, CATALOG_PAGE_SIZE),
@@ -760,25 +652,23 @@ function ExoticCarsCatalogInner() {
   );
 
   const prevFilters = useRef<{
-    fleetView: FleetView;
     brandFilter: string;
     sortMode: ExoticSortMode;
   } | null>(null);
   useEffect(() => {
-    const cur = { fleetView, brandFilter, sortMode };
+    const cur = { brandFilter, sortMode };
     const prev = prevFilters.current;
     if (!prev) {
       prevFilters.current = cur;
       return;
     }
     const changed =
-      prev.fleetView !== cur.fleetView ||
       prev.brandFilter !== cur.brandFilter ||
       prev.sortMode !== cur.sortMode;
     prevFilters.current = cur;
     if (!changed) return;
     router.replace(pathname, { scroll: false });
-  }, [fleetView, brandFilter, sortMode, pathname, router]);
+  }, [brandFilter, sortMode, pathname, router]);
 
   useEffect(() => {
     if (safePage === requestedPage) return;
@@ -811,10 +701,7 @@ function ExoticCarsCatalogInner() {
     [pathname, router],
   );
 
-  const hourlyConfigEmpty =
-    fleetView === "hourly" && EXOTIC_CARS_HOURLY_GROUPS.length === 0;
-  const dailyConfigEmpty =
-    fleetView === "daily" && EXOTIC_CARS_DAILY.length === 0;
+  const dailyConfigEmpty = EXOTIC_CARS_DAILY.length === 0;
 
   return (
     <div className="bg-[#0b0b0b] [color-scheme:dark]">
@@ -829,15 +716,19 @@ function ExoticCarsCatalogInner() {
             Exotic car rentals
           </h1>
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-cream/58 sm:text-[0.9375rem]">
-            Browse hourly chauffeur-style rates and daily self-drive rentals.
-            Use View to switch fleet type, Brand to filter by make across both,
-            then sort — tap a vehicle for full details and photos.
+            Daily self-drive fleet — filter by brand, sort the list, then open
+            a vehicle for full details, gallery, and booking.
           </p>
           <p className="mt-6 max-w-2xl rounded-sm border border-gold/15 bg-[#050505] px-4 py-3 text-[0.8125rem] leading-relaxed text-cream/55 sm:mt-7">
-            Many self-drive vehicles can also be booked{" "}
-            <span className="text-cream/72">with a chauffeur</span>. Which
-            models qualify and the hourly chauffeur rate are confirmed when
-            you inquire — we&apos;re updating the full list.
+            Dedicated chauffeur vehicles and hourly rates are on our{" "}
+            <Link
+              href="/services/chauffeur-services"
+              className="text-cream/72 underline-offset-4 transition-colors hover:text-gold-secondary hover:underline"
+            >
+              chauffeur service
+            </Link>{" "}
+            page. Select models here can still be arranged with a driver when
+            you inquire.
           </p>
         </div>
       </SectionReveal>
@@ -850,52 +741,6 @@ function ExoticCarsCatalogInner() {
         <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 sm:py-4 lg:px-10">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-8">
             <div className="min-w-0 flex-1 space-y-3">
-              <div>
-                <p
-                  id="exotic-filter-view-label"
-                  className="mb-1.5 text-[0.58rem] font-semibold uppercase tracking-[0.28em] text-gold/55"
-                >
-                  View
-                </p>
-                <div
-                  className={fleetSegmentTrack}
-                  role="group"
-                  aria-labelledby="exotic-filter-view-label"
-                >
-                  {(
-                    [
-                      ["all", "All"],
-                      ["hourly", "Chauffeur"],
-                      ["daily", "Self-drive"],
-                    ] as const
-                  ).map(([id, label]) => (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => setFleetView(id)}
-                      aria-pressed={fleetView === id}
-                      className={cn(
-                        fleetSegmentBtn,
-                        fleetView === id
-                          ? fleetSegmentBtnOn
-                          : fleetSegmentBtnIdle,
-                      )}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-                {fleetView === "all" ? (
-                  <p className="mt-3 max-w-2xl text-[0.68rem] leading-relaxed text-cream/42">
-                    Brand uses the same make list for chauffeur and self-drive
-                    (for example Mercedes matches both where that make applies).
-                    Vehicles offered both ways appear under Chauffeur and under
-                    Self-drive when you switch View — each car is listed once in
-                    All.
-                  </p>
-                ) : null}
-              </div>
-
               {fleetBrandOptions.length > 0 ? (
                 <div>
                   <label
@@ -960,19 +805,12 @@ function ExoticCarsCatalogInner() {
           <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-gold/[0.08] pt-3">
             <p className="text-[0.68rem] leading-relaxed text-cream/40">
               <span className="tabular-nums text-cream/55">{total}</span>{" "}
-              {hourlyVisible && dailyVisible
-                ? "vehicles shown"
-                : hourlyVisible
-                  ? `chauffeur vehicle${total === 1 ? "" : "s"}`
-                  : `self-drive vehicle${total === 1 ? "" : "s"}`}
+              {`self-drive vehicle${total === 1 ? "" : "s"}`}
             </p>
-            {fleetView !== "all" ||
-            brandFilter !== "all" ||
-            sortMode !== "featured-first" ? (
+            {brandFilter !== "all" || sortMode !== "featured-first" ? (
               <button
                 type="button"
                 onClick={() => {
-                  setFleetView("all");
                   setBrandFilter("all");
                   setSortMode("featured-first");
                 }}
@@ -992,12 +830,7 @@ function ExoticCarsCatalogInner() {
         className="scroll-mt-[calc(4rem+0.75rem)] border-b border-gold/10 bg-[#0b0b0b] py-14 sm:scroll-mt-[calc(4.25rem+0.75rem)] sm:py-16 lg:py-20"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-          {hourlyConfigEmpty ? (
-            <p className="mt-0 max-w-xl text-sm leading-relaxed text-cream/52">
-              Hourly fleet lineup is being updated. Contact us for current
-              chauffeur vehicles and indicative rates.
-            </p>
-          ) : dailyConfigEmpty ? (
+          {dailyConfigEmpty ? (
             <p className="mt-0 max-w-xl text-sm leading-relaxed text-cream/52">
               Daily self-drive options are being refreshed — ask the team for
               what&apos;s available on your dates.
@@ -1009,18 +842,6 @@ function ExoticCarsCatalogInner() {
                   No vehicles for this brand with the current view. Try{" "}
                   <span className="text-cream/60">All brands</span> or{" "}
                   <span className="text-cream/60">Clear filters</span>.
-                </>
-              ) : fleetView === "hourly" ? (
-                <>
-                  No chauffeur vehicles match your filters. Try{" "}
-                  <span className="text-cream/60">Clear filters</span> or a
-                  different View.
-                </>
-              ) : fleetView === "daily" ? (
-                <>
-                  No self-drive vehicles match your filters. Try{" "}
-                  <span className="text-cream/60">Clear filters</span> or
-                  another View.
                 </>
               ) : (
                 <>
@@ -1045,7 +866,7 @@ function ExoticCarsCatalogInner() {
                 pageSize={CATALOG_PAGE_SIZE}
                 onPage={goToCatalogPage}
               />
-              {ALL_EXOTIC_CARS.some((c) => c.pricing === "hourly_range") ? (
+              {EXOTIC_CARS_DAILY.some((c) => c.pricing === "hourly_range") ? (
                 <p className="mt-12 border-t border-gold/10 pt-8 text-[0.75rem] leading-relaxed text-cream/42">
                   *Range pricing is confirmed on inquiry based on your
                   schedule.

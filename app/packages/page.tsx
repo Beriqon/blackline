@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
+import { CustomPackageWhatsApp } from "@/components/custom-package-whatsapp";
 import { SectionReveal } from "@/components/section-reveal";
+import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -47,7 +49,7 @@ const packages: readonly PackageCard[] = [
     image:
       "https://images.unsplash.com/photo-1757439402268-1da284675170?auto=format&fit=crop&q=88&w=2000",
     imageAlt: "Modern luxury villa pool at night",
-    cta: { label: "Request availability", href: "/contact" },
+    cta: { label: "Request availability", href: CONTACT_TRIP_BUILDER_HREF },
   },
   {
     id: "weekend-signature",
@@ -67,7 +69,7 @@ const packages: readonly PackageCard[] = [
     image:
       "https://images.unsplash.com/photo-1669815503102-7c417112b3eb?auto=format&fit=crop&q=88&w=2000",
     imageAlt: "Downtown Miami skyline and bay at dusk",
-    cta: { label: "Plan this package", href: "/contact" },
+    cta: { label: "Plan this package", href: CONTACT_TRIP_BUILDER_HREF },
     variant: "highlight",
   },
   {
@@ -87,9 +89,9 @@ const packages: readonly PackageCard[] = [
     image:
       "https://images.unsplash.com/photo-1603377817563-5ccd33e57d05?auto=format&fit=crop&q=88&w=2000",
     imageAlt: "Superyacht on the water at golden hour",
-    cta: { label: "Build a water day", href: "/contact" },
+    cta: { label: "Build a water day", href: CONTACT_TRIP_BUILDER_HREF },
   },
-] as const;
+];
 
 function PackageCardView({ pkg }: { pkg: PackageCard }) {
   const highlight = pkg.variant === "highlight";
@@ -254,7 +256,7 @@ export default function PackagesPage() {
               access into one clear itinerary.
             </p>
             <div className="hero-cta-in mt-9 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
-              <Link href="/contact" className={btnOutlineStrong}>
+              <Link href="/packages#custom-package-builder" className={btnOutlineStrong}>
                 Custom package
               </Link>
               <Link href="/services" className={btnGhost}>
@@ -297,9 +299,12 @@ export default function PackagesPage() {
 
       <div className="section-gradient-divider" aria-hidden />
 
-      <SectionReveal className="border-b border-gold/10 bg-background py-16 sm:py-20 lg:py-24">
+      <SectionReveal
+        id="custom-package-builder"
+        className="scroll-mt-24 border-b border-gold/10 bg-background py-16 sm:py-20 lg:py-24"
+      >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-          <div className="mx-auto max-w-xl text-center">
+          <div className="mx-auto max-w-2xl text-center lg:mx-auto lg:max-w-3xl">
             <p className="text-[0.65rem] font-medium uppercase tracking-[0.5em] text-gold/90">
               Your itinerary
             </p>
@@ -308,34 +313,18 @@ export default function PackagesPage() {
               Custom package
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-cream/58">
-              Pick exact vehicles, villas, yachts, clubs, and add-ons — reach
-              out on the contact page for a tailored quote (you can use the trip
-              builder there if you like).
+              Pick cars, villas, yachts, jet skis, banana boats, female hosts,
+              security, private jet, VIP nightlife — then open WhatsApp with a
+              ready-to-send message.
             </p>
           </div>
 
-          <div className="mx-auto mt-10 max-w-5xl">
-            <PackageCardView
-              pkg={{
-                id: "custom",
-                eyebrow: "Fully bespoke",
-                title: "Build your own bundle",
-                tagline:
-                  "Tick the services you want — exotic cars, chauffeur, yachts, villas, jets, nightlife, jet skis, plus separate photo and video shoots — and send it in one message.",
-                includes: [
-                  "Specific cars, villas, yachts & venues from our site",
-                  "Jet skis, chauffeur prefs, jets, photo and/or video shoots",
-                  "Optional dates, group size & notes",
-                  "Trip builder on the contact page — or message us directly",
-                ],
-                image:
-                  "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=88&w=2000",
-                imageAlt: "Modern waterfront home with pool at dusk",
-                cta: {
-                  label: "Configure custom package",
-                  href: "/contact",
-                },
-              }}
+          <div className="mx-auto mt-12 max-w-4xl rounded-sm border border-gold/12 bg-[#070707]/90 p-6 shadow-[inset_0_1px_0_0_rgba(198,164,108,0.06),0_24px_64px_-24px_rgba(0,0,0,0.65)] sm:p-8 lg:p-10">
+            <CustomPackageWhatsApp
+              idSuffix="packages"
+              buildHeading="Build your package"
+              buildDescription="Tick what you want quoted — same fleet and options as across the site. Preview below; one tap opens WhatsApp with this text."
+              whatsAppIntroLine="Hi Blackline — I'd like a custom Miami concierge package (via website builder)."
             />
           </div>
         </div>

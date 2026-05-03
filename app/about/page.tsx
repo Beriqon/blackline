@@ -3,13 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { SectionReveal } from "@/components/section-reveal";
+import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import { SERVICE_LINKS } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Blackline Concierge coordinates Miami luxury end to end — yachts, private jets, exotic cars, villas, VIP nightlife, and more. One team, one line of communication.",
+    "Blackline Concierge — Miami luxury coordination with chauffeur ground transport at the core: professional drivers, Maybach vans, SUVs, and executive vehicles. Plus yachts, jets, villas, and VIP nightlife.",
 };
 
 const btnPrimary =
@@ -67,9 +68,14 @@ export default function AboutPage() {
             </h1>
             <p className="mt-4 max-w-2xl text-[0.95rem] leading-[1.65] text-cream/72 sm:text-base">
               Blackline Concierge is a Miami-based team that plans and runs
-              high-touch trips — from wheels and water to stays and VIP
-              nightlife — so you spend less time coordinating and more time in
-              the moment.
+              high-touch trips.{" "}
+              <span className="text-cream/82">
+                Chauffeur-driven ground transport is at the center of how we
+                operate
+              </span>{" "}
+              — airport runs, nights out, and multi-stop days — layered with
+              yachts, stays, aviation, and VIP access when you want the full
+              arc.
             </p>
           </div>
         </div>
@@ -105,11 +111,115 @@ export default function AboutPage() {
                 , keeps the plan coherent, and adjusts when your group does.
               </p>
               <p>
+                Day to day,{" "}
+                <span className="text-cream/78">
+                  chauffeur services are the backbone of what we do
+                </span>
+                : professional drivers, curated vehicles from executive SUVs and
+                Mercedes-Maybach vans to high-spec sedans and VIP vans — timed to
+                your flights, reservations, and dockside pickups. When the ground
+                leg is locked in, everything else — yachts, villas, jets, clubs —
+                snaps into place around it.
+              </p>
+              <p>
                 Whether you need a self-drive exotic, a crewed charter, a private
                 residence, aviation, or a table when the room is hard to book, we
                 route requests through a single line — text or call — so you
                 always know who is handling what.
               </p>
+            </div>
+          </div>
+        </div>
+      </SectionReveal>
+
+      <div className="section-gradient-divider" aria-hidden />
+
+      <SectionReveal
+        className="border-b border-gold/10 bg-charcoal py-14 sm:py-16 lg:py-20"
+        aria-labelledby="about-chauffeur-heading"
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+          <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-14">
+            <div className="relative aspect-[4/3] w-full overflow-hidden border border-gold/12 bg-[#050505] shadow-[inset_0_1px_0_0_rgba(198,164,108,0.06)] lg:order-2">
+              <Image
+                src="/exoticcar/chauffeur/exclusivesprinter/exclusivesprinter1.jpg"
+                alt="VIP chauffeur sprinter — executive group transport"
+                fill
+                sizes="(max-width: 1024px) 100vw, 42vw"
+                className="object-cover object-center brightness-[0.92] contrast-[1.05]"
+              />
+              <div
+                className="absolute inset-0 bg-gradient-to-tr from-[#0b0b0b]/55 via-transparent to-transparent"
+                aria-hidden
+              />
+            </div>
+            <div className="lg:order-1">
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.48em] text-gold/90">
+                Chauffeur services
+              </p>
+              <div className="mt-4 h-px w-12 bg-gold/30" aria-hidden />
+              <h2
+                id="about-chauffeur-heading"
+                className="mt-6 font-serif text-2xl tracking-tight text-cream sm:text-3xl md:text-[2.1rem]"
+              >
+                Ground transport at the heart of the itinerary
+              </h2>
+              <div className="mt-6 space-y-4 text-sm leading-relaxed text-cream/58 sm:text-[0.9375rem]">
+                <p>
+                  Most trips don&apos;t start on a yacht — they start at the
+                  airport, the hotel, or a curb downtown.{" "}
+                  <span className="text-cream/78">
+                    Our chauffeur desk is where Blackline spends the most focused
+                    energy day to day:
+                  </span>{" "}
+                  pairing your group with the right vehicle class, driver, and
+                  timing so every leg feels effortless.
+                </p>
+                <p>
+                  From Mercedes-Maybach vans and executive SUVs to Rolls-Royce and
+                  curated sedans, each booking is matched to the occasion —
+                  airport transfers (MIA / FLL / OPF), multi-stop nights out,
+                  event arrivals, and dockside yacht pickups — always with the same
+                  discreet, professional standard.
+                </p>
+              </div>
+              <ul
+                className="mt-8 space-y-3 border-l border-gold/22 pl-6 text-sm leading-relaxed text-cream/62 sm:text-[0.9375rem]"
+                role="list"
+              >
+                <li className="relative">
+                  <span
+                    className="absolute -left-6 top-[0.45em] h-1 w-1 rounded-full bg-gold/45"
+                    aria-hidden
+                  />
+                  Scheduled pickups aligned with flights and reservation times —
+                  not generic “window” quotes that slip.
+                </li>
+                <li className="relative">
+                  <span
+                    className="absolute -left-6 top-[0.45em] h-1 w-1 rounded-full bg-gold/45"
+                    aria-hidden
+                  />
+                  Fleet breadth for solo travelers through large VIP groups — one
+                  team coordinating vehicles across your whole stay.
+                </li>
+                <li className="relative">
+                  <span
+                    className="absolute -left-6 top-[0.45em] h-1 w-1 rounded-full bg-gold/45"
+                    aria-hidden
+                  />
+                  Natural handoff to yachts, villas, and nightlife when you want the
+                  full Miami arc — same concierge thread start to finish.
+                </li>
+              </ul>
+              <div className="mt-10 flex flex-wrap gap-4">
+                <Link href="/services/chauffeur-services" className={btnPrimary}>
+                  Chauffeur fleet &amp; rates
+                </Link>
+                <Link href={CONTACT_TRIP_BUILDER_HREF} className={btnGhost}>
+                  Book chauffeur
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -133,8 +243,9 @@ export default function AboutPage() {
             Services under one roof
           </h2>
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-cream/52 sm:text-[0.9375rem]">
-            Explore each offering in detail — or tell us your occasion and
-            we&apos;ll propose the right mix.
+            Chauffeur ground transport ties everything together — start there or
+            browse each offering in detail. Tell us your occasion and we&apos;ll
+            propose the right mix.
           </p>
 
           <ul
@@ -236,7 +347,7 @@ export default function AboutPage() {
             with next steps and a tailored outline.
           </p>
           <div className="mt-10 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-            <Link href="/contact" className={cn(btnPrimary, "sm:min-w-[220px]")}>
+            <Link href={CONTACT_TRIP_BUILDER_HREF} className={cn(btnPrimary, "sm:min-w-[220px]")}>
               Contact us
             </Link>
             <Link href="/experiences" className={btnGhost}>

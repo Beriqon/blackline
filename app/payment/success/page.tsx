@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { finalizeStripeSession } from "@/lib/bookings-store";
+import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import { getStripe } from "@/lib/stripe-client";
 import { cn } from "@/lib/utils";
 
@@ -68,7 +69,7 @@ export default async function PaymentSuccessPage({ searchParams }: Props) {
         <p className="mt-8 text-[0.72rem] text-cream/38">
           Questions?{" "}
           <Link
-            href="/contact"
+            href={CONTACT_TRIP_BUILDER_HREF}
             className="text-gold-secondary underline-offset-4 hover:underline"
           >
             Contact

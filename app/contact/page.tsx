@@ -1,19 +1,24 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 
+import { ContactTripBuilderScroll } from "@/components/contact-trip-builder-scroll";
+import { CustomPackageWhatsApp } from "@/components/custom-package-whatsapp";
 import { SectionReveal } from "@/components/section-reveal";
+import { CONTACT_TRIP_BUILDER_SECTION_ID } from "@/lib/contact-hrefs";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Reach Blackline Miami by WhatsApp or phone — fast replies for urgent exotic car rentals, yachts, and concierge requests.",
+    "Reach Blackline Miami by WhatsApp, phone, or Instagram DM — fast replies for exotic car rentals, yachts, and concierge requests.",
 };
 
 const PHONE_E164 = "17866840345";
 const PHONE_DISPLAY = "+1 (786) 684-0345";
 const TEL_HREF = `tel:+${PHONE_E164}`;
 const WHATSAPP_HREF = `https://wa.me/${PHONE_E164}`;
+/** Opens Instagram DM when logged in; profile fallback for web. */
+const INSTAGRAM_DM_HREF = "https://ig.me/m/blackline_concierge";
 
 const btnPrimary =
   "inline-flex min-h-12 items-center justify-center gap-2.5 border border-gold/40 bg-gold px-8 py-3.5 text-center text-xs font-semibold uppercase tracking-[0.18em] text-[#0b0b0b] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold-secondary hover:bg-gold-secondary hover:shadow-[0_0_0_1px_rgba(224,195,138,0.4),0_14px_48px_rgba(198,164,108,0.2)] active:translate-y-0";
@@ -51,9 +56,23 @@ function PhoneIcon({ className }: { className?: string }) {
   );
 }
 
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+    >
+      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+    </svg>
+  );
+}
+
 export default function ContactPage() {
   return (
     <>
+      <ContactTripBuilderScroll />
       <section className="relative min-h-[min(58vh,640px)] overflow-hidden border-b border-gold/10 bg-background">
         <div className="absolute inset-0 overflow-hidden">
           <div className="hero-bg-drift relative h-full w-full">
@@ -120,16 +139,17 @@ export default function ContactPage() {
             </p>
             <div className="mx-auto mt-4 h-px w-14 bg-gold/30 lg:mx-0" aria-hidden />
             <h2 className="mt-5 font-serif text-2xl tracking-tight text-cream sm:text-3xl md:text-[2.1rem]">
-              WhatsApp or phone — your choice
+              WhatsApp, phone, or Instagram
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-cream/60 sm:text-[0.9375rem]">
-              Pick the channel that fits: quick WhatsApp for details and photos,
-              or call to talk everything through live.
+              Pick the channel that fits: WhatsApp for threads and photos, a
+              call for live detail — or Instagram DM if that&apos;s where you
+              already spend time.
             </p>
           </div>
 
-          <div className="mt-12 grid gap-6 sm:mt-14 lg:grid-cols-2 lg:gap-8">
-            <article className="group relative flex flex-col border border-gold/12 bg-[#0a0a0a]/90 p-8 shadow-[inset_0_1px_0_0_rgba(198,164,108,0.06),0_24px_64px_-24px_rgba(0,0,0,0.65)] transition-[border-color] duration-500 ease-out hover:border-gold/22 sm:p-10">
+          <div className="mt-12 grid grid-cols-1 items-stretch gap-6 sm:mt-14 lg:grid-cols-3 lg:gap-8">
+            <article className="group relative flex h-full flex-col border border-gold/12 bg-[#0a0a0a]/90 p-8 shadow-[inset_0_1px_0_0_rgba(198,164,108,0.06),0_24px_64px_-24px_rgba(0,0,0,0.65)] transition-[border-color] duration-500 ease-out hover:border-gold/22 sm:p-10">
               <div
                 className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-gold/35 to-transparent sm:inset-x-8"
                 aria-hidden
@@ -144,7 +164,7 @@ export default function ContactPage() {
                 Share pickup time, vehicle type, and location in one thread —
                 easy for photos, flight updates, and quick confirmations.
               </p>
-              <div className="mt-8 border-t border-gold/10 pt-8">
+              <div className="mt-auto border-t border-gold/10 pt-8">
                 <a
                   href={WHATSAPP_HREF}
                   target="_blank"
@@ -157,7 +177,7 @@ export default function ContactPage() {
               </div>
             </article>
 
-            <article className="group relative flex flex-col border border-gold/12 bg-[#0a0a0a]/90 p-8 shadow-[inset_0_1px_0_0_rgba(198,164,108,0.06),0_24px_64px_-24px_rgba(0,0,0,0.65)] transition-[border-color] duration-500 ease-out hover:border-gold/22 sm:p-10">
+            <article className="group relative flex h-full flex-col border border-gold/12 bg-[#0a0a0a]/90 p-8 shadow-[inset_0_1px_0_0_rgba(198,164,108,0.06),0_24px_64px_-24px_rgba(0,0,0,0.65)] transition-[border-color] duration-500 ease-out hover:border-gold/22 sm:p-10">
               <div
                 className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-gold/35 to-transparent sm:inset-x-8"
                 aria-hidden
@@ -172,13 +192,75 @@ export default function ContactPage() {
                 Need to lock something in on the spot or walk through options?
                 Call us — we&apos;re used to tight turnarounds.
               </p>
-              <div className="mt-8 border-t border-gold/10 pt-8">
+              <div className="mt-auto border-t border-gold/10 pt-8">
                 <a href={TEL_HREF} className={cn(btnOutlineStrong, "w-full sm:w-auto")}>
                   <PhoneIcon className="size-[1.15rem] shrink-0" />
                   {PHONE_DISPLAY}
                 </a>
               </div>
             </article>
+
+            <article className="group relative flex h-full flex-col border border-gold/12 bg-[#0a0a0a]/90 p-8 shadow-[inset_0_1px_0_0_rgba(198,164,108,0.06),0_24px_64px_-24px_rgba(0,0,0,0.65)] transition-[border-color] duration-500 ease-out hover:border-gold/22 sm:p-10">
+              <div
+                className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-gold/35 to-transparent sm:inset-x-8"
+                aria-hidden
+              />
+              <p className="text-[0.62rem] font-medium uppercase tracking-[0.38em] text-gold/75">
+                Social &amp; casual
+              </p>
+              <h3 className="mt-4 font-serif text-xl tracking-tight text-cream sm:text-[1.35rem]">
+                Instagram
+              </h3>
+              <p className="mt-4 text-[0.9375rem] leading-relaxed text-cream/58">
+                Prefer DMs? Send us a message on Instagram — share moodboards,
+                itinerary screenshots, or quick questions and we&apos;ll reply
+                when you&apos;re on the app.
+              </p>
+              <div className="mt-auto border-t border-gold/10 pt-8">
+                <a
+                  href={INSTAGRAM_DM_HREF}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(btnOutlineStrong, "w-full sm:w-auto")}
+                >
+                  <InstagramIcon className="size-[1.15rem] shrink-0" />
+                  Message on Instagram
+                </a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </SectionReveal>
+
+      <div className="section-gradient-divider" aria-hidden />
+
+      <SectionReveal
+        id={CONTACT_TRIP_BUILDER_SECTION_ID}
+        className="scroll-mt-[5.5rem] border-b border-gold/10 bg-charcoal py-16 sm:scroll-mt-24 sm:py-20 lg:py-24"
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+          <div className="mx-auto max-w-2xl text-center lg:mx-auto lg:max-w-3xl">
+            <p className="text-[0.65rem] font-medium uppercase tracking-[0.5em] text-gold/90">
+              Trip builder
+            </p>
+            <div className="mx-auto mt-4 h-px w-14 bg-gold/30" aria-hidden />
+            <h2 className="mt-5 font-serif text-2xl tracking-tight text-cream sm:text-3xl md:text-[2.1rem]">
+              Custom package — WhatsApp ready
+            </h2>
+            <p className="mt-4 text-sm leading-relaxed text-cream/60 sm:text-[0.9375rem]">
+              Choose cars, yachts, villas, jets, jet skis, banana boats, hosts,
+              security, and more. Open WhatsApp with the generated message to
+              forward in one tap.
+            </p>
+          </div>
+
+          <div className="mx-auto mt-12 max-w-4xl rounded-sm border border-gold/12 bg-[#070707]/90 p-6 shadow-[inset_0_1px_0_0_rgba(198,164,108,0.06),0_24px_64px_-24px_rgba(0,0,0,0.65)] sm:p-8 lg:p-10">
+            <CustomPackageWhatsApp
+              idSuffix="contact"
+              buildHeading="Build your package"
+              buildDescription="Select what you want — the message appears below. Tap the button to open WhatsApp with this text."
+              whatsAppIntroLine="Hi Blackline — I'd like a custom Miami concierge package (via contact page builder)."
+            />
           </div>
         </div>
       </SectionReveal>
@@ -193,28 +275,10 @@ export default function ContactPage() {
               Ready when you are
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-[0.95rem] leading-relaxed text-cream/72 sm:text-lg">
-              Tap WhatsApp or call — we&apos;ll pick up from there.
+              Share your dates, party size, and how quickly you need an answer —
+              we&apos;ll match your pace and build options around what matters to
+              you.
             </p>
-            <div className="mt-10 flex flex-col items-stretch gap-3 sm:mt-12 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-4">
-              <a
-                href={WHATSAPP_HREF}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={cn(
-                  "inline-flex min-h-12 items-center justify-center gap-2.5 border border-gold bg-gold px-9 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#0b0b0b] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold-secondary hover:bg-gold-secondary hover:shadow-[0_0_0_1px_rgba(224,195,138,0.4),0_14px_48px_rgba(198,164,108,0.2)] active:translate-y-0 sm:min-w-[240px]",
-                )}
-              >
-                <WhatsAppIcon className="size-5 shrink-0 text-[#0b0b0b]" />
-                WhatsApp
-              </a>
-              <a
-                href={TEL_HREF}
-                className="inline-flex min-h-12 items-center justify-center gap-2.5 border-2 border-gold/50 bg-transparent px-9 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-gold transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold hover:bg-gold/10 hover:text-gold-secondary hover:shadow-[0_0_40px_rgba(198,164,108,0.14)] active:translate-y-0 sm:min-w-[240px]"
-              >
-                <PhoneIcon className="size-[1.15rem] shrink-0" />
-                Call now
-              </a>
-            </div>
           </div>
         </div>
       </SectionReveal>

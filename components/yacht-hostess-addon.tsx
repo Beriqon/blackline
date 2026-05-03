@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { SectionReveal } from "@/components/section-reveal";
+import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import { YACHT_HOSTESS_ADDON } from "@/lib/yacht-hostess-addon";
 import { cn } from "@/lib/utils";
 
@@ -42,7 +43,7 @@ export function YachtHostessAddon({ className }: YachtHostessAddonProps) {
           </p>
           <p className="mt-4">
             <Link
-              href="/contact#whatsapp-trip-builder"
+              href={CONTACT_TRIP_BUILDER_HREF}
               className={linkSubtle}
             >
               Add this in the custom package builder

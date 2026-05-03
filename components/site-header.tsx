@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { ChevronDown, Phone } from "lucide-react";
+import { Phone } from "lucide-react";
 import { CartHeaderButton } from "@/components/cart-header-button";
-import { cn } from "@/lib/utils";
 import { MobileNav } from "@/components/mobile-nav";
-import { SERVICE_LINKS } from "@/lib/nav";
+import { ServicesNavDropdown } from "@/components/services-nav-dropdown";
 
 const navAfterServices = [
   { href: "/packages", label: "Packages" },
@@ -36,42 +35,7 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex" aria-label="Main">
-          <div className="group relative">
-            <Link
-              href="/services"
-              className={cn(
-                "inline-flex items-center gap-1 rounded-sm",
-                linkClass,
-              )}
-            >
-              Services
-              <ChevronDown
-                className="size-3.5 opacity-55 transition-transform duration-200 group-hover:rotate-180"
-                aria-hidden
-              />
-            </Link>
-            <div
-              className="absolute left-0 top-full z-50 pt-1 opacity-0 invisible transition-[opacity,visibility] duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100"
-              role="presentation"
-            >
-              <div
-                className="min-w-[13.5rem] rounded-sm border border-gold/15 bg-[#141414] py-2 shadow-lg shadow-black/40"
-                role="menu"
-                aria-label="Services"
-              >
-                {SERVICE_LINKS.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    role="menuitem"
-                    className="block px-4 py-2.5 text-sm text-cream/85 transition-colors hover:bg-gold/5 hover:text-gold-secondary"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
+          <ServicesNavDropdown />
 
           {navAfterServices.map((item) => (
             <Link key={item.href} href={item.href} className={linkClass}>

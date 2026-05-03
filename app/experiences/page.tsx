@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { ExperiencesPhotoHighlights } from "@/components/experiences-photo-highlights";
 import { ScrollRevealItem } from "@/components/scroll-reveal-item";
+import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -142,7 +143,7 @@ export default function ExperiencesPage() {
             </p>
 
             <div className="hero-cta-in mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row">
-              <Link href="/contact" className={btnSolid}>
+              <Link href={CONTACT_TRIP_BUILDER_HREF} className={btnSolid}>
                 Build my itinerary
               </Link>
               <Link href="/services" className={btnGhost}>
@@ -262,7 +263,7 @@ export default function ExperiencesPage() {
               access so your trip flows exactly as it should.
             </p>
             <Link
-              href="/contact"
+              href={CONTACT_TRIP_BUILDER_HREF}
               className={cn(btnSolid, "mt-8 inline-flex sm:mt-9")}
             >
               Start planning

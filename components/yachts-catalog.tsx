@@ -16,6 +16,7 @@ import {
   Suspense,
 } from "react";
 
+import { ChauffeurServiceCrosslink } from "@/components/chauffeur-service-crosslink";
 import { ScrollRevealItem } from "@/components/scroll-reveal-item";
 import { SectionReveal } from "@/components/section-reveal";
 import { ServicePhotographyAddon } from "@/components/service-photography-addon";
@@ -37,6 +38,7 @@ import {
   type YachtSizeBand,
 } from "@/lib/yachts-data";
 import { getFleetGalleryPaths } from "@/lib/yacht-fleet-gallery";
+import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import { cn } from "@/lib/utils";
 
 const CATALOG_PAGE_SIZE = 9;
@@ -540,7 +542,7 @@ function YachtDetailDialog({
               ) : null}
 
               <div className="mt-10 flex flex-col gap-3 border-t border-gold/10 pt-8 sm:flex-row sm:flex-wrap">
-                <Link href="/contact" className={cn(btnPrimary, "w-full sm:w-auto")}>
+                <Link href={CONTACT_TRIP_BUILDER_HREF} className={cn(btnPrimary, "w-full sm:w-auto")}>
                   Request this charter
                 </Link>
                 <p className="mt-4 text-[0.7rem] leading-relaxed text-cream/38">
@@ -921,6 +923,7 @@ function YachtsCatalogInner() {
             duration-based rates, inclusions, and departure notes so you can plan
             with confidence before you inquire.
           </p>
+          <ChauffeurServiceCrosslink variant="yacht" />
         </div>
       </SectionReveal>
 

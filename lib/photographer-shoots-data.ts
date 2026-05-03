@@ -62,6 +62,22 @@ export const PHOTOGRAPHER_SHOOT_SLIDES: readonly ClientMomentSlide[] = [
     alt: "Luxury vehicle — lifestyle frame",
   },
   {
+    src: "/photography/carphotos/carphoto23.jpg",
+    alt: "Exotic car — Miami shoot still",
+  },
+  {
+    src: "/photography/carphotos/carphoto25.jpg",
+    alt: "Luxury car — editorial exterior",
+  },
+  {
+    src: "/photography/carphotos/carphoto27.jpg",
+    alt: "Performance car — lifestyle frame",
+  },
+  {
+    src: "/photography/carphotos/carphoto30.jpg",
+    alt: "Supercar — street photography still",
+  },
+  {
     src: "/photography/carphotos/carphoto8.jpg",
     alt: "Exotic car — dynamic composition",
   },

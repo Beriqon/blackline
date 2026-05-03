@@ -5,7 +5,7 @@ import { ExoticCarsCatalog } from "@/components/exotic-cars-catalog";
 export const metadata: Metadata = {
   title: "Exotic car rentals",
   description:
-    "Hourly chauffeur fleet and daily self-drive exotics in Miami — inquire for current lineup and rates.",
+    "Daily self-drive exotic and luxury car rentals in Miami — inquire for current lineup, rates, and chauffeur options where offered.",
 };
 
 export default function ExoticCarsPage() {

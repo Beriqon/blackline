@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { ClientMomentsCarousel } from "@/components/client-moments-carousel";
 import { SectionReveal } from "@/components/section-reveal";
+import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import { cn } from "@/lib/utils";
 import { PHOTOGRAPHER_SHOOT_SLIDES } from "@/lib/photographer-shoots-data";
 
@@ -31,9 +32,38 @@ type ServiceItem = {
   image: string;
   imageAlt: string;
   collageImages?: { src: string; alt: string }[];
+  /** Small highlight label on the card (e.g. social proof). */
+  badge?: string;
 };
 
 const services: ServiceItem[] = [
+  {
+    title: "Chauffeur services",
+    badge: "Most booked",
+    description:
+      "Mercedes-Maybach vans, executive SUVs, and VIP sprinters — professional drivers for airports, nights out, and multi-stop Miami days.",
+    href: "/services/chauffeur-services",
+    image: "/exoticcar/chauffeur/royalblue/ROYAL.jpg",
+    imageAlt: "Mercedes-Maybach chauffeur van in royal blue finish",
+    collageImages: [
+      {
+        src: "/exoticcar/chauffeur/royalblue/ROYAL.jpg",
+        alt: "Maybach van — Royal Blue",
+      },
+      {
+        src: "/exoticcar/chauffeur/tiffanyblue/5STAR.jpg",
+        alt: "Maybach van — Tiffany Blue",
+      },
+      {
+        src: "/sitephotos/chauffeurhome.png",
+        alt: "Blackline chauffeur services overview",
+      },
+      {
+        src: "/exoticcar/chauffeur/royalblue/ROYAL-2.jpg",
+        alt: "Maybach van — Royal Blue alternate angle",
+      },
+    ],
+  },
   {
     title: "Exotic Car Rentals",
     description:
@@ -85,20 +115,20 @@ const services: ServiceItem[] = [
     imageAlt: "Luxury private jet cabin with leather seating",
   },
   {
+    title: "On the water",
+    description:
+      "Jet skis, jetcars, parasailing, kayaks, and fishing — coordinated in one thread, timed with your stay.",
+    href: "/services/jetskis-jetcars",
+    image: "/sitephotos/jetski3.jpg",
+    imageAlt: "Jet ski on turquoise water at speed",
+  },
+  {
     title: "VIP Nightlife",
     description:
       "Table reservations and priority access at Miami’s most sought-after venues.",
     href: "/services/vip-nightlife",
     image: "/vipvenues/cocomiami2.webp",
     imageAlt: "Dimly lit premium bar with bottles and neon accent lighting",
-  },
-  {
-    title: "Jet Skis & Jetcars",
-    description:
-      "Miami Beach and Fort Lauderdale — jet skis from $150+/hr, jetcars from $250+/hr, routed and timed with your stay.",
-    href: "/services/jetskis-jetcars",
-    image: "/sitephotos/jetski3.jpg",
-    imageAlt: "Jet ski on turquoise water at speed",
   },
   {
     title: "Photo & video shoots",
@@ -189,6 +219,13 @@ function ServiceEditorialCard({
           className="service-card-glow pointer-events-none absolute inset-0"
           aria-hidden
         />
+        {s.badge ? (
+          <span
+            className="pointer-events-none absolute left-3 top-3 z-[2] inline-flex max-w-[calc(100%-1.5rem)] border border-gold/40 bg-[#0b0b0b]/80 px-2.5 py-1 text-[0.58rem] font-semibold uppercase leading-tight tracking-[0.18em] text-gold/95 shadow-sm backdrop-blur-sm sm:left-4 sm:top-4 sm:px-3 sm:text-[0.6rem] sm:tracking-[0.2em]"
+          >
+            {s.badge}
+          </span>
+        ) : null}
       </div>
       <div
         className={cn(
@@ -222,6 +259,7 @@ function ServiceEditorialCard({
 }
 
 const featuredExperienceItems = [
+  "Chauffeur & Maybach vans",
   "Airport pickup",
   "Luxury villa stay",
   "Exotic car",
@@ -322,12 +360,13 @@ export default function HomePage() {
               One call. Every detail.
             </h1>
             <p className="mt-3 max-w-2xl text-[0.95rem] leading-[1.65] text-cream/72 sm:text-base">
-              Exotic cars, villas, yachts, jet skis, private aviation, VIP
+              Chauffeur-driven Maybach vans and executive ground transport,
+              plus exotic cars, villas, yachts, jet skis, private aviation, VIP
               nightlife, and professional security — coordinated through one
               trusted Miami concierge team.
             </p>
             <div className="hero-cta-in mt-9 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
-              <Link href="/contact" className={cn(btnPrimary, "sm:min-w-[220px]")}>
+              <Link href={CONTACT_TRIP_BUILDER_HREF} className={cn(btnPrimary, "sm:min-w-[220px]")}>
                 Book Your Experience
               </Link>
               <Link href="/services" className={btnGhost}>
@@ -408,9 +447,10 @@ export default function HomePage() {
               One concierge. Every detail.
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-cream/60 sm:text-[0.9375rem]">
-              Plan ground transport, your stay, days on the water, nights out,
-              and security when you want coverage — without juggling multiple
-              vendors. Tell us your dates and we build the itinerary around you.
+              Start with chauffeur ground transport or self-drive exotics — then
+              layer your stay, days on the water, nights out, and security when
+              you want coverage — without juggling multiple vendors. Tell us
+              your dates and we build the itinerary around you.
             </p>
           </div>
 
@@ -459,7 +499,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-2 lg:gap-x-6 lg:gap-y-5">
+            <div className="grid gap-6 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-5">
               <div className="min-h-0">
                 <ServiceEditorialCard
                   s={services[6]}
@@ -469,6 +509,12 @@ export default function HomePage() {
               <div className="min-h-0">
                 <ServiceEditorialCard
                   s={services[7]}
+                  variant="compact"
+                />
+              </div>
+              <div className="min-h-0">
+                <ServiceEditorialCard
+                  s={services[8]}
                   variant="compact"
                 />
               </div>
@@ -529,7 +575,7 @@ export default function HomePage() {
               </ul>
               <div className="mt-10 sm:mt-11">
                 <Link
-                  href="/contact"
+                  href={CONTACT_TRIP_BUILDER_HREF}
                   className={cn(btnPrimary, "px-9 tracking-[0.2em]")}
                 >
                   Plan This Experience
@@ -665,6 +711,14 @@ export default function HomePage() {
                 className={btnOutlineStrong}
               >
                 WhatsApp
+              </a>
+              <a
+                href="https://www.instagram.com/blackline_concierge/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={btnOutlineStrong}
+              >
+                Instagram
               </a>
             </div>
           </div>

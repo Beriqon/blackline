@@ -13,9 +13,10 @@ import {
   useState,
 } from "react";
 
-import { AddToCartButton } from "@/components/add-to-cart-button";
+import { ChauffeurServiceCrosslink } from "@/components/chauffeur-service-crosslink";
 import { ScrollRevealItem } from "@/components/scroll-reveal-item";
 import { SectionReveal } from "@/components/section-reveal";
+import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import {
   PRIVATE_JET_CATEGORY_FILTERS,
   PRIVATE_JETS,
@@ -355,24 +356,14 @@ function JetDetailDialog({
               </ul>
 
               <div className="mt-10 flex flex-col gap-3 border-t border-gold/10 pt-8 sm:flex-row sm:flex-wrap">
-                <AddToCartButton
-                  item={{
-                    category: "private-jet",
-                    id: jet.id,
-                    title: jet.name,
-                    subtitle: jet.categoryLabel,
-                    href: "/services/private-jets",
-                  }}
-                  className="w-full sm:w-auto"
-                />
-                <Link href="/contact" className={btnPrimary}>
+                <Link href={CONTACT_TRIP_BUILDER_HREF} className={cn(btnPrimary, "w-full sm:w-auto")}>
                   Request this aircraft
                 </Link>
                 <a
                   href={wa}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex min-h-11 items-center justify-center border border-gold/30 bg-transparent px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-gold transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold/55 hover:text-gold-secondary"
+                  className="inline-flex min-h-11 w-full items-center justify-center border border-gold/30 bg-transparent px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-gold transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold/55 hover:text-gold-secondary sm:w-auto"
                 >
                   WhatsApp
                 </a>
@@ -414,6 +405,7 @@ export function PrivateJetsCatalog() {
             specifications, amenities, and to request availability for your
             route.
           </p>
+          <ChauffeurServiceCrosslink variant="jet" />
         </div>
       </SectionReveal>
 
