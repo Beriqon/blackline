@@ -101,15 +101,15 @@ export const vipFeaturedVenues: readonly FeaturedVenue[] = [
     ],
   },
   {
-    name: "Rockwell Miami",
+    name: "Vendome",
     subtitle: "VIP access",
     imageSrc: "/vipvenues/rockwell1.jpg",
-    imageAlt: "Rockwell Miami",
+    imageAlt: "Vendome",
     about:
       "Miami Beach nightclub with bottle-forward tables and a dressed-up room. Ask us about table placement for visibility vs. intimacy — we match the section to your group.",
     gallery: [
-      { src: "/vipvenues/rockwell3.jpg", alt: "Rockwell Miami — additional photo 1" },
-      { src: "/vipvenues/rockwell4.jpg", alt: "Rockwell Miami — additional photo 2" },
+      { src: "/vipvenues/rockwell3.jpg", alt: "Vendome — additional photo 1" },
+      { src: "/vipvenues/rockwell4.jpg", alt: "Vendome — additional photo 2" },
     ],
   },
   {
@@ -146,6 +146,175 @@ export const vipFeaturedVenues: readonly FeaturedVenue[] = [
     gallery: [
       { src: "/vipvenues/joiabeach2.webp", alt: "Joia Beach — additional photo 1" },
       { src: "/vipvenues/joiabeach3.jpg", alt: "Joia Beach — additional photo 2" },
+    ],
+  },
+  // New venues (photos coming soon)
+  {
+    name: "Mona",
+    subtitle: "VIP access",
+    imageSrc: "/vipvenues/mona1.jpg",
+    imageAlt: "Mona Miami",
+    about:
+      "Intimate, late-night room with a dressed-up crowd and bottle-forward tables. Tell us your group size and preferred time; we’ll coordinate entry and table placement with clear minimums.",
+    gallery: [
+      { src: "/vipvenues/mona2.jpg", alt: "Mona — additional photo 1" },
+      { src: "/vipvenues/mona3.jpg", alt: "Mona — additional photo 2" },
+    ],
+  },
+  {
+    name: "Madclub",
+    subtitle: "VIP access",
+    imageSrc: "/vipvenues/madclub1.jpg",
+    imageAlt: "Madclub Miami",
+    about:
+      "High-energy nightclub setup with VIP sections and bottle service. We align arrival time, table placement, and transport so the night runs smoothly for your group.",
+    gallery: [
+      { src: "/vipvenues/madclub2.jpg", alt: "Madclub — additional photo 1" },
+      { src: "/vipvenues/madclub3.jpg", alt: "Madclub — additional photo 2" },
+    ],
+  },
+  {
+    name: "Palm Tree Club",
+    subtitle: "Beach club",
+    imageSrc: "/vipvenues/palmtreeclub1.png",
+    imageAlt: "Palm Tree Club Miami",
+    about:
+      "Day-club energy with cabanas, tables, and bottle service — ideal for daytime celebrations that roll into sunset. We coordinate entry and table placement around your itinerary.",
+    gallery: [
+      { src: "/vipvenues/palmtreeclub2.jpg", alt: "Palm Tree Club — additional photo 1" },
+      { src: "/vipvenues/palmtreeclub3.webp", alt: "Palm Tree Club — additional photo 2" },
+    ],
+  },
+  {
+    name: "Strawberry Moon",
+    subtitle: "Beach club",
+    imageSrc: "/vipvenues/strawberrymoon1.jpg",
+    imageAlt: "Strawberry Moon Miami",
+    about:
+      "Pool-deck, day-to-night vibe with cabanas and table service — great for birthdays and group days. We confirm entry, minimums, and the right placement for your headcount.",
+    gallery: [
+      { src: "/vipvenues/strawberrymoon2.webp", alt: "Strawberry Moon — additional photo 1" },
+      { src: "/vipvenues/strawberrymoon3.jpeg", alt: "Strawberry Moon — additional photo 2" },
+    ],
+  },
+  {
+    name: "Booby Trap on the River",
+    subtitle: "VIP access",
+    imageSrc: "/vipvenues/boobytrap1.jpg",
+    imageAlt: "Booby Trap on the River",
+    about:
+      "Late-night riverfront spot with VIP seating options and bottle service. Share your group size and preferred time; we’ll coordinate entry and table setup.",
+    gallery: [
+      { src: "/vipvenues/boobytrap2.jpg", alt: "Booby Trap on the River — additional photo 1" },
+      { src: "/vipvenues/boobytrap3.jpg", alt: "Booby Trap on the River — additional photo 2" },
+    ],
+  },
+  {
+    name: "Tootsies",
+    subtitle: "VIP access",
+    imageSrc: "/vipvenues/tootsies1.jpg",
+    imageAlt: "Tootsies Miami",
+    about:
+      "Classic late-night destination — VIP seating and bottle service arranged on inquiry. We coordinate entry, seating, and timing around your night’s route and pickups.",
+    gallery: [
+      { src: "/vipvenues/tootsies2.jpg", alt: "Tootsies — additional photo 1" },
+      { src: "/vipvenues/tootsies3.jpg", alt: "Tootsies — additional photo 2" },
+    ],
+  },
+  {
+    name: "Sexy Fish",
+    subtitle: "VIP dining",
+    imageSrc: "/vipvenues/sexyfish1.webp",
+    imageAlt: "Sexy Fish Miami",
+    about:
+      "High-demand dinner room with strong nightlife crossover — perfect to anchor the evening before clubs. We coordinate reservations and VIP table requests around your timing.",
+    gallery: [
+      { src: "/vipvenues/sexyfish2.webp", alt: "Sexy Fish — additional photo 1" },
+      { src: "/vipvenues/sexyfish3.webp", alt: "Sexy Fish — additional photo 2" },
+    ],
+  },
+  {
+    name: "Komodo",
+    subtitle: "VIP dining",
+    imageSrc: "/vipvenues/komodo1.jpg",
+    imageAlt: "Komodo Miami",
+    about:
+      "Brickell staple for dinner-to-night flow — strong vibe, busy peak hours, and VIP table requests. We align reservation timing with transport and after-dinner plans.",
+    gallery: [
+      { src: "/vipvenues/komodo2.jpg", alt: "Komodo — additional photo 1" },
+      { src: "/vipvenues/komodo3.avif", alt: "Komodo — additional photo 2" },
+    ],
+  },
+  {
+    name: "Gekko",
+    subtitle: "VIP dining",
+    imageSrc: "/vipvenues/gekko1.webp",
+    imageAlt: "Gekko Miami",
+    about:
+      "Upscale dining with a nightlife-ready atmosphere. Tell us your date, headcount, and timing; we’ll coordinate reservations and VIP table requests when available.",
+    gallery: [
+      { src: "/vipvenues/gekko2.webp", alt: "Gekko — additional photo 1" },
+      { src: "/vipvenues/gekko3.jpg", alt: "Gekko — additional photo 2" },
+    ],
+  },
+  {
+    name: "Bagatelle",
+    subtitle: "VIP access",
+    imageSrc: "/vipvenues/bagatelle1.avif",
+    imageAlt: "Bagatelle Miami",
+    about:
+      "High-energy venue where dinner can turn into a party — VIP tables and entry coordinated on inquiry. We confirm minimums and the best placement for your group size.",
+    gallery: [
+      { src: "/vipvenues/bagatelle2.jpg", alt: "Bagatelle — additional photo 1" },
+      { src: "/vipvenues/bagatelle3.jpg", alt: "Bagatelle — additional photo 2" },
+    ],
+  },
+  {
+    name: "Kiki on the River",
+    subtitle: "VIP access",
+    imageSrc: "/vipvenues/kikiontheriver1.jpg",
+    imageAlt: "Kiki on the River Miami",
+    about:
+      "Riverfront favorite with a lively, nightlife-leaning atmosphere. VIP reservations arranged on inquiry — we coordinate timing, entry, and transport pickups.",
+    gallery: [
+      { src: "/vipvenues/kikiontheriver2.jpg", alt: "Kiki on the River — additional photo 1" },
+      { src: "/vipvenues/kikiontheriver3.jpg", alt: "Kiki on the River — additional photo 2" },
+    ],
+  },
+  {
+    name: "Habibi",
+    subtitle: "VIP access",
+    imageSrc: "/vipvenues/habibi1.jpg",
+    imageAlt: "Habibi Miami",
+    about:
+      "Late-night venue with VIP seating and bottle service options. Share group size and the kind of section you want; we’ll coordinate entry and table setup on inquiry.",
+    gallery: [
+      { src: "/vipvenues/habibi2.jpg", alt: "Habibi — additional photo 1" },
+      { src: "/vipvenues/habibi3.webp", alt: "Habibi — additional photo 2" },
+    ],
+  },
+  {
+    name: "Sea Spice",
+    subtitle: "VIP dining",
+    imageSrc: "/vipvenues/seaspice1.jpg",
+    imageAlt: "Sea Spice Miami",
+    about:
+      "Waterfront dining that pairs well with a full nightlife itinerary — great for early-to-mid evening plans. We coordinate reservations and timing around your transfers.",
+    gallery: [
+      { src: "/vipvenues/seaspice2.jpg", alt: "Sea Spice — additional photo 1" },
+      { src: "/vipvenues/seaspice3.webp", alt: "Sea Spice — additional photo 2" },
+    ],
+  },
+  {
+    name: "Casa Neos",
+    subtitle: "VIP access",
+    imageSrc: "/vipvenues/casaneos1.webp",
+    imageAlt: "Casa Neos Miami",
+    about:
+      "Nightlife venue with VIP table options and a dressed-up crowd. We confirm entry, minimums, and table placement on inquiry based on your headcount and timing.",
+    gallery: [
+      { src: "/vipvenues/casaneos2.webp", alt: "Casa Neos — additional photo 1" },
+      { src: "/vipvenues/casaneos3.webp", alt: "Casa Neos — additional photo 2" },
     ],
   },
 ];

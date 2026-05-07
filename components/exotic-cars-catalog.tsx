@@ -32,7 +32,7 @@ import {
   type ExoticSortMode,
 } from "@/lib/exotic-catalog-utils";
 import { EXOTIC_PHOTOGRAPHY_ADDON_IMAGES } from "@/lib/exotic-car-photos";
-import { cn, shuffleImmutable } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 const btnPrimary =
   "inline-flex min-h-11 items-center justify-center border border-gold/40 bg-gold px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-[#0b0b0b] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold-secondary hover:bg-gold-secondary hover:shadow-[0_0_0_1px_rgba(224,195,138,0.4),0_14px_48px_rgba(198,164,108,0.2)] active:translate-y-0";
@@ -609,11 +609,6 @@ function ExoticCarsCatalogInner() {
   const [brandFilter, setBrandFilter] = useState<string>("all");
   const [sortMode, setSortMode] = useState<ExoticSortMode>("featured-first");
 
-  const shuffledPhotoAddonImages = useMemo(
-    () => shuffleImmutable(EXOTIC_PHOTOGRAPHY_ADDON_IMAGES),
-    [],
-  );
-
   const fleetBrandOptions = useMemo(() => {
     const set = new Set<string>();
     for (const car of EXOTIC_CARS_DAILY) {
@@ -883,7 +878,7 @@ function ExoticCarsCatalogInner() {
         className="bg-[#0b0b0b]"
         headline="Add photo or video shoots"
         description="Book a photo shoot, a video shoot, or both alongside your exotic — same coordination, briefing, and edited stills and/or motion after your drive."
-        images={shuffledPhotoAddonImages}
+        images={EXOTIC_PHOTOGRAPHY_ADDON_IMAGES}
         marqueeDurationSec={175}
       />
 

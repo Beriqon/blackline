@@ -757,13 +757,13 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     dualRentalOnCard: true,
     group: "Mercedes",
     priceLine: "$899 / day",
-    chauffeurPriceLine: "$175 / hr",
+    chauffeurPriceLine: "$225 / hr",
     pricing: "daily",
     description:
       "A Maybach GLS 600 offers lounge-like comfort in an SUV form. The ride is serene, the cabin hushed, and the materials are first-class. Rear seating prioritizes relaxation with generous space and refined amenities. Despite its size, the GLS 600 moves smoothly through city traffic and glides on the highway. The exterior communicates quiet status—ideal for elegant hotel and restaurant arrivals. Choose the Maybach GLS for uncompromising comfort and VIP practicality. It elevates every transfer to a five-star experience.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "$175 / hr" },
+      { label: "Chauffeur", value: "$225 / hr" },
       { label: "Seats", value: "5+" },
       { label: "Style", value: "SUV" },
       { label: "Color", value: "Black" },
@@ -976,13 +976,13 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     dualRentalOnCard: true,
     group: "Mercedes",
     priceLine: "$1099 / day",
-    chauffeurPriceLine: "$175 / hr",
+    chauffeurPriceLine: "$225 / hr",
     pricing: "daily",
     description:
       "The Mercedes-Benz Maybach GLS 600 is the epitome of luxury in the SUV segment. This opulent vehicle combines the commanding presence of an SUV with the unparalleled elegance and craftsmanship of the Maybach brand. Under the hood, it boasts a powerful 4.0-liter V8 biturbo engine with EQ Boost, delivering smooth and effortless performance. The interior is meticulously appointed with the finest materials, including sumptuous leather, wood trim, and state-of-the-art technology. Rear-seat passengers enjoy first-class treatment with features like reclining seats, advanced climate control, and entertainment systems. The Maybach GLS 600 offers an unrivaled blend of luxury, technology, and performance, making it a top choice for those who demand the utmost in automotive excellence.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "$175 / hr" },
+      { label: "Chauffeur", value: "$225 / hr" },
       { label: "Terms", value: "100 free miles/day | $4/extra mile" },
       { label: "Security deposit", value: "$500–$1000" },
       {
@@ -1802,13 +1802,13 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     dualRentalOnCard: true,
     group: "Mercedes",
     priceLine: "$800 / day",
-    chauffeurPriceLine: "$175 / hr",
+    chauffeurPriceLine: "$225 / hr",
     pricing: "daily",
     description:
       "Experience luxury with this Mercedes-Maybach GLS 600 in Miami—Unit C delivers first-class rear accommodation, refined road presence, and meticulous cabin finish. Perfect for an unforgettable stay, it pairs world-class amenities with attention to detail. Blackline coordinates your booking end to end—self-drive rental (license and insurance required) or optional chauffeur service—timed with the rest of your itinerary.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "$175 / hr" },
+      { label: "Chauffeur", value: "$225 / hr" },
       { label: "Seats", value: "5" },
       { label: "Style", value: "SUV" },
       { label: "Segment", value: "Luxury" },

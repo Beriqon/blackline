@@ -5,7 +5,7 @@ import { useEffect, useId, useMemo, useState } from "react";
 
 import { ServicePhotographyAddon } from "@/components/service-photography-addon";
 import { EXOTIC_PHOTOGRAPHY_ADDON_IMAGES } from "@/lib/exotic-car-photos";
-import { cn, shuffleImmutable } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import type { ExoticCar } from "@/lib/exotic-cars-data";
 import {
   CHAUFFEUR_FLEET_SORTED,
@@ -377,11 +377,6 @@ export function ChauffeurServicesCatalog() {
 
 /** Same add-on strip as exotic cars — shuffled car photo marquee. */
 export function ChauffeurPhotographyAddonBlock() {
-  const shuffledPhotoAddonImages = useMemo(
-    () => shuffleImmutable(EXOTIC_PHOTOGRAPHY_ADDON_IMAGES),
-    [],
-  );
-
   return (
     <>
       <div className="section-gradient-divider" aria-hidden />
@@ -389,7 +384,7 @@ export function ChauffeurPhotographyAddonBlock() {
         className="bg-[#0b0b0b]"
         headline="Add photo or video shoots"
         description="Book a photo shoot, a video shoot, or both alongside your exotic — same coordination, briefing, and edited stills and/or motion after your drive."
-        images={shuffledPhotoAddonImages}
+        images={EXOTIC_PHOTOGRAPHY_ADDON_IMAGES}
         marqueeDurationSec={175}
       />
     </>

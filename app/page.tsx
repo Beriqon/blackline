@@ -16,9 +16,6 @@ const btnPrimaryLg =
 const btnGhost =
   "inline-flex min-h-11 items-center justify-center border border-gold/25 bg-transparent px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-cream transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold/55 hover:text-gold-secondary hover:shadow-[0_0_36px_rgba(198,164,108,0.12)] active:translate-y-0 sm:min-w-[220px]";
 
-const btnGhostGold =
-  "inline-flex min-h-11 items-center justify-center border border-gold/30 bg-transparent px-8 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-gold transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold/55 hover:text-gold-secondary hover:shadow-[0_0_32px_rgba(198,164,108,0.14)] active:translate-y-0";
-
 const btnOutlineStrong =
   "inline-flex min-h-12 items-center justify-center border-2 border-gold/50 bg-transparent px-8 py-3.5 text-center text-xs font-semibold uppercase tracking-[0.2em] text-gold transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold hover:bg-gold/10 hover:text-gold-secondary hover:shadow-[0_0_40px_rgba(198,164,108,0.14)] active:translate-y-0";
 
@@ -121,6 +118,15 @@ const services: ServiceItem[] = [
     href: "/services/jetskis-jetcars",
     image: "/sitephotos/jetski3.jpg",
     imageAlt: "Jet ski on turquoise water at speed",
+  },
+  {
+    title: "ATV",
+    badge: "Details soon",
+    description:
+      "Off-road ATV rides are available to book and ride now—message us to reserve and pair with your Miami itinerary. Full write-up, pricing, and route info on this site are still on the way.",
+    href: "/services/atv",
+    image: "/atv/atv1.webp",
+    imageAlt: "ATV off-road ride",
   },
   {
     title: "VIP Nightlife",
@@ -499,7 +505,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-5">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-6 lg:gap-y-5">
               <div className="min-h-0">
                 <ServiceEditorialCard
                   s={services[6]}
@@ -515,6 +521,12 @@ export default function HomePage() {
               <div className="min-h-0">
                 <ServiceEditorialCard
                   s={services[8]}
+                  variant="compact"
+                />
+              </div>
+              <div className="min-h-0">
+                <ServiceEditorialCard
+                  s={services[9]}
                   variant="compact"
                 />
               </div>

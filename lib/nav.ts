@@ -3,6 +3,7 @@ export const SERVICE_LINKS = [
   { href: "/services/exotic-cars", label: "Exotic cars" },
   { href: "/services/yachts", label: "Yachts" },
   { href: "/services/jetskis-jetcars", label: "On the water" },
+  { href: "/services/atv", label: "ATV" },
   { href: "/services/private-jets", label: "Private jets" },
   { href: "/services/villas", label: "Villas" },
   { href: "/services/vip-nightlife", label: "VIP nightlife" },
