@@ -25,6 +25,18 @@ export type ExoticCar = {
   coverImage?: string;
   /** Full photo set — first image is used on cards and as gallery slot 1. */
   galleryImages?: readonly string[];
+  /**
+   * Focal point for `object-fit: cover` on cards & gallery previews (CSS
+   * `object-position`). Use for tall/off-center photos — e.g. `"center 35%"`,
+   * `"center bottom"`.
+   */
+  galleryObjectPosition?: string;
+  /**
+   * Per gallery index (0-based, same order as `galleryImages`). Overrides
+   * `galleryObjectPosition` for that slide only — use when one shot is framed
+   * differently (e.g. portrait exterior vs. centered interior).
+   */
+  galleryImageObjectPositionByIndex?: Readonly<Record<number, string>>;
   specs?: readonly ExoticCarSpec[];
   requirements?: readonly string[];
   /** When set, image placeholders say “Photos coming soon” instead of generic copy. */
@@ -1051,13 +1063,13 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     dualRentalOnCard: true,
     group: "Rolls-Royce",
     priceLine: "$1399 / day",
-    chauffeurPriceLine: "$250-$300 / hr",
+    chauffeurPriceLine: "$350 / hr",
     pricing: "daily",
     description:
       "The white Cullinan emphasizes purity and elegance. It photographs beautifully day or night and suits luxury events, weddings, and premium itineraries. The ride remains tranquil, and the interior is thoughtfully finished. Rear seating accommodates guests with generous space and refined amenities. It's a statement vehicle that maintains calm in every situation. Rent the white Cullinan to pair iconic luxury with a clean, modern look. It turns any Miami plan into a first-class experience.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "$250-$300 / hr" },
+      { label: "Chauffeur", value: "$350 / hr" },
       { label: "Seats", value: "5+" },
       { label: "Style", value: "SUV" },
       { label: "Color", value: "White" },
@@ -1082,13 +1094,13 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     dualRentalOnCard: true,
     group: "Rolls-Royce",
     priceLine: "$1299 / day",
-    chauffeurPriceLine: "$250-$300 / hr",
+    chauffeurPriceLine: "$350 / hr",
     pricing: "daily",
     description:
       "A Rolls-Royce Cullinan rental elevates your Miami experience with unmatched serenity. The black finish projects authority while the cabin isolates road noise for a calm, unhurried ride. Doors open wide to a spacious, handcrafted interior. Passengers enjoy plush seating, premium audio, and an effortless glide over city streets. Every touchpoint communicates craftsmanship and care. Choose the black Cullinan for VIP transport and standout entrances. It signals sophistication while delivering supreme comfort.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "$250-$300 / hr" },
+      { label: "Chauffeur", value: "$350 / hr" },
       { label: "Seats", value: "5+" },
       { label: "Style", value: "SUV" },
       { label: "Color", value: "Black" },
@@ -1113,13 +1125,13 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     dualRentalOnCard: true,
     group: "Rolls-Royce",
     priceLine: "$1299 / day",
-    chauffeurPriceLine: "$250-$300 / hr",
+    chauffeurPriceLine: "$350 / hr",
     pricing: "daily",
     description:
       "The Rolls-Royce Cullinan is the brand's first luxury SUV, embodying the pinnacle of opulence and performance. Named after the largest diamond ever discovered, the Cullinan offers a commanding presence with its bold and elegant design. It features a powerful 6.75-liter V12 engine, providing a silky-smooth, effortless drive. Its lavish interior is adorned with the finest materials, including hand-stitched leather, exquisite wood veneers, and bespoke options. Advanced technology, spacious seating, and state-of-the-art safety features ensure that the Cullinan delivers an unrivaled combination of luxury, comfort, and versatility for both urban and off-road adventures.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "$250-$300 / hr" },
+      { label: "Chauffeur", value: "$350 / hr" },
       { label: "Terms", value: "100 free miles/day | $4/extra mile" },
       { label: "Security deposit", value: "$500–$1000" },
       {
@@ -1155,13 +1167,13 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     dualRentalOnCard: true,
     group: "Rolls-Royce",
     priceLine: "$1299 / day",
-    chauffeurPriceLine: "$250-$300 / hr",
+    chauffeurPriceLine: "$350 / hr",
     pricing: "daily",
     description:
       "The Rolls-Royce Cullinan is the brand's first luxury SUV, embodying the pinnacle of opulence and performance. Named after the largest diamond ever discovered, the Cullinan offers a commanding presence with its bold and elegant design. It features a powerful 6.75-liter V12 engine, providing a silky-smooth, effortless drive. Its lavish interior is adorned with the finest materials, including hand-stitched leather, exquisite wood veneers, and bespoke options. Advanced technology, spacious seating, and state-of-the-art safety features ensure that the Cullinan delivers an unrivaled combination of luxury, comfort, and versatility for both urban and off-road adventures.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "$250-$300 / hr" },
+      { label: "Chauffeur", value: "$350 / hr" },
       { label: "Terms", value: "100 free miles/day | $4/extra mile" },
       { label: "Security deposit", value: "$500–$1000" },
       {
@@ -1189,6 +1201,48 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
       "/exoticcar/rollsroyce/rrcullinanblack-b/rrcullinanblack-b-8.jpg",
       "/exoticcar/rollsroyce/rrcullinanblack-b/rrcullinanblack-b-9.jpg",
       "/exoticcar/rollsroyce/rrcullinanblack-b/rrcullinanblack-b-10.jpg",
+    ],
+  },
+  {
+    id: "rolls-royce-cullinan-black-unit-c",
+    name: "Rolls-Royce Cullinan (Black, Unit C)",
+    section: "daily",
+    dualRentalOnCard: true,
+    group: "Rolls-Royce",
+    priceLine: "$1200 / day",
+    chauffeurPriceLine: "$350 / hr",
+    pricing: "daily",
+    galleryImageObjectPositionByIndex: {
+      0: "center bottom",
+      2: "center bottom",
+    },
+    description:
+      "A Rolls-Royce Cullinan rental elevates your Miami experience with unmatched serenity. The black finish projects authority while the cabin isolates road noise for a calm, unhurried ride. The Cullinan is the brand's first luxury SUV—the name honors the largest diamond ever discovered—with a commanding presence and bold, elegant lines. Under the hood, a potent 6.75-liter V12 delivers a silky-smooth, effortless drive. Doors open wide to a handcrafted interior adorned with premium materials: hand-stitched leather, exquisite wood veneers, and bespoke touches throughout. Advanced technology, spacious seating, and refined safety features pair with plush comfort and premium audio for an unrivaled blend of luxury and versatility, whether you're crossing the city or planning a longer escape. Choose this black Cullinan for VIP transport and standout entrances; it signals sophistication while delivering supreme comfort.",
+    specs: [
+      { label: "Self-drive", value: "License & insurance required" },
+      { label: "Chauffeur", value: "$350 / hr" },
+      { label: "Terms", value: "100 free miles/day | $4/extra mile" },
+      { label: "Security deposit", value: "$500–$1000" },
+      {
+        label: "Minimum days",
+        value: "Weekend (F–S): 2 days · Weekdays (M–T): 1 day",
+      },
+      { label: "Engine", value: "563 hp" },
+      { label: "Seats", value: "5" },
+      { label: "0–60 mph", value: "4.5 sec" },
+      { label: "MSRP", value: "$429k" },
+    ],
+    requirements: [
+      "Valid Drivers License (We Accept Foreigners)",
+      "Debit or Credit Card",
+      "$1000 Deposit",
+    ],
+    galleryImages: [
+      "/exoticcar/rollsroyce/rrcullinanblack-c/rrcullinanblack-c-1.jpg",
+      "/exoticcar/rollsroyce/rrcullinanblack-c/rrcullinanblack-c-2.jpg",
+      "/exoticcar/rollsroyce/rrcullinanblack-c/rrcullinanblack-c-3.jpg",
+      "/exoticcar/rollsroyce/rrcullinanblack-c/rrcullinanblack-c-4.jpg",
+      "/exoticcar/rollsroyce/rrcullinanblack-c/rrcullinanblack-c-5.jpg",
     ],
   },
 

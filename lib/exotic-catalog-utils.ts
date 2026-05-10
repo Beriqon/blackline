@@ -1,5 +1,17 @@
 import type { ExoticCar } from "./exotic-cars-data";
 
+/** Inline `object-position` for catalog cards & crop previews when photos are tall/off-center. */
+export function exoticGalleryCoverStyle(
+  car: ExoticCar,
+  imageIndex: number,
+): { objectPosition: string } | undefined {
+  const byIdx = car.galleryImageObjectPositionByIndex?.[imageIndex]?.trim();
+  if (byIdx) return { objectPosition: byIdx };
+  const global = car.galleryObjectPosition?.trim();
+  if (global) return { objectPosition: global };
+  return undefined;
+}
+
 export type ExoticSortMode =
   | "featured-first"
   | "price-asc"

@@ -28,6 +28,7 @@ import { ServicePhotographyAddon } from "@/components/service-photography-addon"
 import { EXOTIC_CARS_DAILY, type ExoticCar } from "@/lib/exotic-cars-data";
 import { paginateSlice } from "@/lib/pagination";
 import {
+  exoticGalleryCoverStyle,
   sortExoticCars,
   type ExoticSortMode,
 } from "@/lib/exotic-catalog-utils";
@@ -134,7 +135,8 @@ function CarCard({
             <img
               src={carCardImageSrc(car)}
               alt=""
-              className="h-full w-full object-cover object-center transition duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.07]"
+              style={exoticGalleryCoverStyle(car, 0)}
+              className="block h-full w-full object-cover object-center transition duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.07]"
             />
           ) : (
             <ImagePlaceholder
@@ -170,7 +172,7 @@ function CarCard({
           </p>
           <div className="mt-4 flex flex-wrap items-end justify-between gap-3 border-t border-gold/[0.08] pt-4">
             <div className="min-w-0 flex-1">
-              <p className="font-serif text-base tabular-nums tracking-tight text-gold-secondary sm:text-lg">
+              <p className="font-serif text-base tabular-nums tracking-normal text-gold-secondary sm:text-lg">
                 {car.priceLine}
                 {car.pricing === "hourly_range" ? "*" : ""}
               </p>
@@ -277,6 +279,7 @@ function CarDetailDialog({
                   <img
                     src={getGallerySrc(car, activeIndex)}
                     alt=""
+                    style={exoticGalleryCoverStyle(car, activeIndex)}
                     className="absolute inset-0 h-full w-full object-cover object-center"
                   />
                 ) : (
@@ -346,7 +349,8 @@ function CarDetailDialog({
                         <img
                           src={getGallerySrc(car, i)}
                           alt=""
-                          className="h-full w-full object-cover object-center"
+                          style={exoticGalleryCoverStyle(car, i)}
+                          className="block h-full w-full object-cover object-center"
                         />
                       ) : (
                         <ImagePlaceholder
@@ -362,11 +366,11 @@ function CarDetailDialog({
               ) : null}
             </div>
 
-            <div className="min-w-0 flex flex-col p-5 sm:p-7 lg:max-h-[min(70vh,640px)] lg:overflow-y-auto">
+            <div className="min-w-0 flex flex-col p-5 pb-8 sm:p-7 sm:pb-10">
               <p className="text-[0.62rem] font-semibold uppercase tracking-[0.42em] text-gold/90">
                 {car.section === "daily" ? "Daily rate" : "Hourly rate"}
               </p>
-              <p className="mt-3 font-serif text-2xl tabular-nums tracking-tight text-gold-secondary sm:text-[1.65rem]">
+              <p className="mt-3 font-serif text-2xl tabular-nums tracking-normal text-gold-secondary sm:text-[1.65rem]">
                 {car.priceLine}
                 {car.pricing === "hourly_range" ? "*" : ""}
               </p>

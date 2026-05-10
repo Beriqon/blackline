@@ -7,6 +7,7 @@ import { ServicePhotographyAddon } from "@/components/service-photography-addon"
 import { EXOTIC_PHOTOGRAPHY_ADDON_IMAGES } from "@/lib/exotic-car-photos";
 import { cn } from "@/lib/utils";
 import type { ExoticCar } from "@/lib/exotic-cars-data";
+import { exoticGalleryCoverStyle } from "@/lib/exotic-catalog-utils";
 import {
   CHAUFFEUR_FLEET_SORTED,
   chauffeurQuoteRateLine,
@@ -117,6 +118,7 @@ function ChauffeurDetailDialog({
                   <img
                     src={getGallerySrc(car, activeIndex)}
                     alt=""
+                    style={exoticGalleryCoverStyle(car, activeIndex)}
                     className="absolute inset-0 h-full w-full object-cover object-center"
                   />
                 ) : (
@@ -181,7 +183,8 @@ function ChauffeurDetailDialog({
                         <img
                           src={getGallerySrc(car, i)}
                           alt=""
-                          className="h-full w-full object-cover object-center"
+                          style={exoticGalleryCoverStyle(car, i)}
+                          className="block h-full w-full object-cover object-center"
                         />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center bg-[#050505] text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-cream/32">
@@ -338,7 +341,8 @@ export function ChauffeurServicesCatalog() {
                   <img
                     src={image}
                     alt={car.name}
-                    className="h-full w-full object-cover object-center transition duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06]"
+                    style={exoticGalleryCoverStyle(car, 0)}
+                    className="block h-full w-full object-cover object-center transition duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06]"
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center text-[0.72rem] uppercase tracking-[0.2em] text-cream/35">
