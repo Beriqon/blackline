@@ -1,0 +1,52 @@
+{
+  "jetContent": {
+    "gulfstream-giv-sp": {
+      "overview": "El Gulfstream GIV-SP es un jet pesado contrastado con alcance intercontinental y una cabina espaciosa para 12 pasajeros con comodidad. Con capacidad para dormir cinco, es ideal para vuelos transcontinentales y transatlánticos nocturnos."
+    },
+    "gulfstream-g280": {
+      "overview": "El Gulfstream G280 ofrece rendimiento super mediano con cabina amplia de piso plano y un impresionante alcance de 3.600 millas. Es el avión perfecto para vuelos de costa a costa con hasta 9 pasajeros en confort refinado."
+    },
+    "falcon-900ex-easy": {
+      "overview": "El Falcon 900EX EASy es un jet trireactores de ultra largo alcance con seguridad, rendimiento y versatilidad excepcionales. Con asientos para 14 y capacidad para dormir 5, cubre misiones intercontinentales con facilidad y accede a pistas más cortas que otros jets de cabina grande."
+    },
+    "global-express": {
+      "overview": "El Bombardier Global Express es un jet insignia de ultra largo alcance con cabina tipo wide-body de más de 8 pies de ancho. Con capacidad para volar 6.226 millas sin escalas, conecta continentes con un confort inigualable para hasta 12 pasajeros."
+    },
+    "challenger-605": {
+      "overview": "El Challenger 605 cuenta con una de las cabinas más anchas de su clase, 8,2 pies, y un alcance de 4.000 millas. Con asientos para 12 y camas para 4, ofrece lujo y versatilidad de jet pesado para viajes transcontinentales."
+    },
+    "global-express-xrs": {
+      "overview": "El Global Express XRS amplía la legendaria plataforma Global Express con un alcance mejorado de 6.390 millas y una cabina refinada para hasta 15 pasajeros. Está diseñado para misiones intercontinentales sin escalas con confort de primer nivel."
+    },
+    "gulfstream-g400": {
+      "overview": "El Gulfstream G400 aporta confort y alcance de jet pesado en un paquete refinado, con asientos para 13 pasajeros y capacidad para dormir 5. Es una excelente opción para vuelos transcontinentales y al Caribe."
+    },
+    "learjet-60": {
+      "overview": "El Learjet 60 es un referente mediano conocido por su velocidad y eficiencia. Con asientos para 7 pasajeros y un alcance de 2.400 millas, es ideal para viajes de negocios regionales y trayectos domésticos rápidos."
+    },
+    "embraer-legacy-600": {
+      "overview": "El Embraer Legacy 600 ofrece una cabina excepcionalmente espaciosa con el compartimento de equipaje más grande de su clase: 286 pies cúbicos. Con asientos para 13 y camas para 5, es perfecto para quienes viajan con mucho equipaje."
+    },
+    "challenger-350": {
+      "overview": "El Challenger 350 es un jet super mediano líder en su clase, con cabina amplia, vuelo suave y alcance de 3.300 millas. Con asientos para 9, es la opción preferida para viajes de negocios de costa a costa."
+    },
+    "gulfstream-g550": {
+      "overview": "El Gulfstream G550 es un jet legendario de ultra largo alcance con 6.750 millas de alcance y asientos para hasta 16 pasajeros. Con 6 literas para dormir y cabina espaciosa, marca el estándar del viaje privado intercontinental."
+    },
+    "gulfstream-g450": {
+      "overview": "El Gulfstream G450 combina espacio de cabina de jet pesado con un alcance de 4.200 millas, con comodidad para 13 pasajeros y camas para 5. Ofrece la experiencia Gulfstream por excelencia en vuelos transcontinentales e internacionales."
+    },
+    "gulfstream-giv": {
+      "overview": "El Gulfstream GIV es un jet pesado contrastado con asientos para hasta 16 pasajeros y un alcance probado de 4.200 millas. Ofrece cabina generosa y capacidad para dormir en misiones de costa a costa y transatlánticas."
+    },
+    "challenger-300": {
+      "overview": "El Challenger 300 es un jet super mediano con cabina amplia de piso plano e impresionante alcance de 3.300 millas. Con asientos para 8 pasajeros en confort, destaca en rutas de costa a costa y al Caribe."
+    },
+    "falcon-2000": {
+      "overview": "El Dassault Falcon 2000 es un jet pesado wide-body con cabina espaciosa de 7,7 pies de ancho y alcance de 3.200 millas. Con asientos para 10 y camas para 4, ofrece lujo de ingeniería francesa en viajes domésticos y al Caribe."
+    },
+    "embraer-legacy-650": {
+      "overview": "El Embraer Legacy 650 evoluciona el Legacy 600 con un alcance ampliado de 3.900 millas y los mismos 286 pies cúbicos de equipaje, los mejores de su clase. Con asientos para 13 y 5 camas, es ideal para viajes largos con mucho equipaje."
+    }
+  }
+}

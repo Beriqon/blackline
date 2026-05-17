@@ -3,15 +3,18 @@
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { SERVICE_LINKS } from "@/lib/nav";
+import { useTranslations } from "@/components/locale-provider";
+import { getServiceLinks } from "@/lib/i18n/nav";
 import { cn } from "@/lib/utils";
 
 const linkClass =
   "text-sm font-medium text-cream/85 transition-colors hover:text-gold-secondary";
 
 export function ServicesNavDropdown() {
+  const t = useTranslations();
+  const serviceLinks = useMemo(() => getServiceLinks(t), [t]);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -51,7 +54,7 @@ export function ServicesNavDropdown() {
         aria-haspopup="menu"
         aria-expanded={open}
       >
-        Services
+        {t("common.services")}
         <ChevronDown
           className={cn(
             "size-3.5 opacity-55 transition-transform duration-200",
@@ -72,9 +75,9 @@ export function ServicesNavDropdown() {
         <div
           className="min-w-[13.5rem] rounded-sm border border-gold/15 bg-[#141414] py-2 shadow-lg shadow-black/40"
           role="menu"
-          aria-label="Services"
+          aria-label={t("common.services")}
         >
-          {SERVICE_LINKS.map((item) => (
+          {serviceLinks.map((item) => (
             <Link
               key={item.href}
               href={item.href}

@@ -5,15 +5,22 @@ import Link from "next/link";
 import { ClientMomentsCarousel } from "@/components/client-moments-carousel";
 import { SectionReveal } from "@/components/section-reveal";
 import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
-import { PHOTOGRAPHER_SHOOT_SLIDES } from "@/lib/photographer-shoots-data";
-import { SERVICE_LINKS } from "@/lib/nav";
+import { getServiceLinks } from "@/lib/i18n/nav";
+import {
+  getPhotoShootBullets,
+  getPhotographerShootSlides,
+  getVideoShootBullets,
+} from "@/lib/i18n/photographer-page";
+import { getI18n } from "@/lib/i18n/server";
 import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = {
-  title: "Photo & video shoots",
-  description:
-    "Book a photo shoot, a video shoot, or both with our camera crew on any Blackline booking — yachts, jet skis, exotic cars, villas, jets, and more. Edited stills and motion on your timeline.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return {
+    title: t("nav.photographer"),
+    description: t("photographerPage.metaDescription"),
+  };
+}
 
 const btnPrimary =
   "inline-flex min-h-11 items-center justify-center border border-gold/40 bg-gold px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-[#0b0b0b] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold-secondary hover:bg-gold-secondary hover:shadow-[0_0_0_1px_rgba(224,195,138,0.4),0_14px_48px_rgba(198,164,108,0.2)] active:translate-y-0";
@@ -21,26 +28,18 @@ const btnPrimary =
 const btnOutlineStrong =
   "inline-flex min-h-12 items-center justify-center border-2 border-gold/50 bg-transparent px-8 py-3.5 text-center text-xs font-semibold uppercase tracking-[0.2em] text-gold transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold hover:bg-gold/10 hover:text-gold-secondary hover:shadow-[0_0_40px_rgba(198,164,108,0.14)] active:translate-y-0";
 
-const pairWithServices = SERVICE_LINKS.filter(
-  (s) => s.href !== "/services/photographer",
-);
-
 const cardClass =
   "group relative flex flex-col border border-gold/12 bg-[#0a0a0a]/90 p-8 shadow-[inset_0_1px_0_0_rgba(198,164,108,0.06),0_24px_64px_-24px_rgba(0,0,0,0.65)] transition-[border-color] duration-500 ease-out hover:border-gold/22 sm:p-10";
 
-const photoShootBullets = [
-  "Editorial and lifestyle stills — coverage during your charter, drive, stay, or night out",
-  "Edited high-resolution photos delivered on an agreed timeline after the day",
-  "Our photographer works in the same thread as your concierge so timing and access stay clean",
-] as const;
+export default async function PhotographerPage() {
+  const { t } = await getI18n();
+  const pairWithServices = getServiceLinks(t).filter(
+    (s) => s.href !== "/services/photographer",
+  );
+  const photoShootBullets = getPhotoShootBullets(t);
+  const videoShootBullets = getVideoShootBullets(t);
+  const shootSlides = getPhotographerShootSlides(t);
 
-const videoShootBullets = [
-  "Cinematic motion — handheld, gimbal, or tripod coverage matched to your booking",
-  "Edited deliverables: short-form reels, longer cuts, or both — scoped with you up front",
-  "Same coordination model as photo: one crew, one itinerary, discreet on site",
-] as const;
-
-export default function PhotographerPage() {
   return (
     <>
       <section className="relative min-h-[min(58vh,640px)] overflow-hidden border-b border-gold/10 bg-background">
@@ -63,25 +62,21 @@ export default function PhotographerPage() {
         <div className="relative z-10 mx-auto flex min-h-[min(58vh,640px)] max-w-7xl items-end px-4 pb-14 pt-28 sm:px-6 sm:pb-16 sm:pt-32 lg:px-10 lg:pb-20">
           <div className="max-w-2xl">
             <p className="text-[0.65rem] font-semibold uppercase tracking-[0.42em] text-gold">
-              Add-on service
+              {t("photographerPage.eyebrow")}
             </p>
             <div className="mt-5 h-px w-14 bg-gold/35" aria-hidden />
             <h1 className="mt-6 font-serif text-[2.25rem] leading-[1.1] tracking-tight text-cream sm:text-4xl md:text-[2.85rem] lg:text-[3.15rem]">
-              Photo &amp; video shoots
+              {t("nav.photographer")}
             </h1>
             <p className="mt-4 max-w-xl text-[0.95rem] leading-[1.65] text-cream/72 sm:text-base">
-              Photo shoots and video shoots are booked separately — choose a
-              stills-only day, a motion-only day, or both with the same crew.
-              We layer into anything you reserve with us: yachts, jet skis,
-              exotic cars, villas, jets, and nights out, with one coordinated
-              schedule so you stay in the moment.
+              {t("photographerPage.heroBody")}
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
               <Link href={CONTACT_TRIP_BUILDER_HREF} className={cn(btnPrimary, "sm:min-w-[200px]")}>
-                Add to my booking
+                {t("photographerPage.addToBooking")}
               </Link>
               <a href="#past-shoots-heading" className={btnOutlineStrong}>
-                See past work
+                {t("photographerPage.seePastWork")}
               </a>
             </div>
             <p className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-[0.7rem] font-medium uppercase tracking-[0.22em] text-cream/40">
@@ -89,7 +84,7 @@ export default function PhotographerPage() {
                 href="#photo-shoots"
                 className="text-gold-secondary/90 underline-offset-8 transition-colors hover:text-gold hover:underline"
               >
-                Photo shoot info
+                {t("photographerPage.photoShootInfo")}
               </a>
               <span className="text-cream/25" aria-hidden>
                 ·
@@ -98,7 +93,7 @@ export default function PhotographerPage() {
                 href="#video-shoots"
                 className="text-gold-secondary/90 underline-offset-8 transition-colors hover:text-gold hover:underline"
               >
-                Video shoot info
+                {t("photographerPage.videoShootInfo")}
               </a>
             </p>
           </div>
@@ -111,7 +106,7 @@ export default function PhotographerPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
           <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:max-w-3xl lg:text-left">
             <p className="text-[0.65rem] font-medium uppercase tracking-[0.5em] text-gold/90">
-              What you can book
+              {t("photographerPage.bookEyebrow")}
             </p>
             <div
               className="mx-auto mt-4 h-px w-14 bg-gold/30 lg:mx-0"
@@ -138,18 +133,16 @@ export default function PhotographerPage() {
                 aria-hidden
               />
               <p className="text-[0.62rem] font-medium uppercase tracking-[0.38em] text-gold/75">
-                Stills
+                {t("photographerPage.photoEyebrow")}
               </p>
               <h3
                 id="photo-shoots-title"
                 className="mt-4 font-serif text-xl tracking-tight text-cream sm:text-[1.45rem]"
               >
-                Photo shoots
+                {t("photographerPage.photoTitle")}
               </h3>
               <p className="mt-4 text-[0.9375rem] leading-relaxed text-cream/58">
-                Professional photography with our crew — posed and candid
-                moments, golden-hour runs, and detail shots tied to whatever you
-                booked: yacht, exotic, villa, or table night.
+                {t("photographerPage.photoBody")}
               </p>
               <ul className="mt-8 space-y-4 border-t border-gold/10 pt-8" role="list">
                 {photoShootBullets.map((line) => (
@@ -216,7 +209,7 @@ export default function PhotographerPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
           <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:max-w-3xl lg:text-left">
             <p className="text-[0.65rem] font-medium uppercase tracking-[0.5em] text-gold/90">
-              Past shoots
+              {t("photographerPage.pastEyebrow")}
             </p>
             <div
               className="mx-auto mt-4 h-px w-14 bg-gold/30 lg:mx-0"
@@ -237,9 +230,9 @@ export default function PhotographerPage() {
 
         <div className="mt-12 w-full max-w-7xl px-4 sm:mt-14 sm:px-6 lg:mx-auto lg:px-10">
           <ClientMomentsCarousel
-            images={PHOTOGRAPHER_SHOOT_SLIDES}
+            images={shootSlides}
             intervalMs={4500}
-            ariaLabel="Past photo shoots gallery"
+            ariaLabel={t("photographerPage.galleryAria")}
           />
         </div>
       </SectionReveal>
@@ -250,20 +243,17 @@ export default function PhotographerPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
           <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:max-w-3xl lg:text-left">
             <p className="text-[0.65rem] font-medium uppercase tracking-[0.5em] text-gold/90">
-              How it works
+              {t("photographerPage.howEyebrow")}
             </p>
             <div
               className="mx-auto mt-4 h-px w-14 bg-gold/30 lg:mx-0"
               aria-hidden
             />
             <h2 className="mt-5 font-serif text-2xl tracking-tight text-cream sm:text-3xl md:text-[2.1rem]">
-              An add-on for every experience you book
+              {t("photographerPage.howHeadline")}
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-cream/60 sm:text-[0.9375rem]">
-              Already planning a yacht day, a jet ski run, a self-drive exotic,
-              or a villa stay? Add a photo shoot, a video shoot, or both as
-              separate line items — we slot our camera crew into the same
-              itinerary and comms thread so timing and access stay seamless.
+              {t("photographerPage.howBody")}
             </p>
           </div>
 
@@ -281,17 +271,15 @@ export default function PhotographerPage() {
                   className="flex shrink-0 flex-col items-end gap-0.5 text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-gold/80 transition group-hover:text-gold-secondary"
                   aria-hidden
                 >
-                  <span>+ Photo</span>
-                  <span>+ Video</span>
+                  <span>{t("photographerPage.pairPhoto")}</span>
+                  <span>{t("photographerPage.pairVideo")}</span>
                 </span>
               </Link>
             ))}
           </div>
 
           <p className="mx-auto mt-10 max-w-2xl text-center text-[0.8125rem] leading-relaxed text-cream/45 lg:text-left">
-            Mention a photo shoot, a video shoot, or both when you inquire —
-            we&apos;ll quote each line item together with your cars, watercraft,
-            stay, or nightlife plan.
+            {t("photographerPage.howFooter")}
           </p>
         </div>
       </SectionReveal>

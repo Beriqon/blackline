@@ -5,10 +5,13 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useMemo } from "react";
 
+import { useLocale } from "@/components/locale-provider";
+
 const defaultClassName =
   "inline-flex items-center gap-2 text-[0.7rem] font-medium uppercase tracking-[0.22em] text-gold/85 transition-colors hover:text-gold-secondary";
 
 function YachtChartersBackLinkInner({ className }: { className?: string }) {
+  const { t } = useLocale();
   const searchParams = useSearchParams();
   const href = useMemo(() => {
     const p = searchParams.get("page");
@@ -21,16 +24,17 @@ function YachtChartersBackLinkInner({ className }: { className?: string }) {
   return (
     <Link href={href} className={className ?? defaultClassName}>
       <ChevronLeft className="h-4 w-4" aria-hidden />
-      Yacht charters
+      {t("yachtsPage.backToCharters")}
     </Link>
   );
 }
 
 function YachtChartersBackLinkFallback({ className }: { className?: string }) {
+  const { t } = useLocale();
   return (
     <Link href="/services/yachts" className={className ?? defaultClassName}>
       <ChevronLeft className="h-4 w-4" aria-hidden />
-      Yacht charters
+      {t("yachtsPage.backToCharters")}
     </Link>
   );
 }

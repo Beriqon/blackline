@@ -4,13 +4,21 @@ import { useEffect, useMemo, useState } from "react";
 
 import { AvailabilityDatePicker } from "@/components/availability-date-picker";
 import { useCart } from "@/components/cart-context";
+import { useLocale } from "@/components/locale-provider";
 import {
   availableSlotsForDate,
   computeBookingQuote,
-  describeSelection,
   getYachtBookingConfig,
   type AvailabilityWindow,
 } from "@/lib/bookings";
+import {
+  describeYachtSelectionLocalized,
+  localizeYacht,
+  localizeYachtBookingQuoteLabel,
+  localizeYachtBookingUnavailableReason,
+  localizeYachtBreakdownLabel,
+} from "@/lib/i18n/yachts-page";
+import { durationOptionsFromYacht } from "@/lib/yacht-fleet-pricing";
 import { getYachtBySlug, type Yacht } from "@/lib/yachts-data";
 import { cn } from "@/lib/utils";
 
@@ -25,12 +33,16 @@ function todayPlus(days: number) {
   return next.toISOString().slice(0, 10);
 }
 
-function formatTimeAmPm(time24: string) {
+function formatTimeAmPm(time24: string, locale: "en" | "es") {
   const match = time24.match(/^(\d{2}):(\d{2})$/);
   if (!match) return time24;
   const hour24 = Number.parseInt(match[1]!, 10);
   const minute = match[2]!;
   const hour12 = hour24 % 12 || 12;
+  if (locale === "es") {
+    const ampm = hour24 >= 12 ? "p. m." : "a. m.";
+    return `${hour12}:${minute} ${ampm}`;
+  }
   const ampm = hour24 >= 12 ? "PM" : "AM";
   return `${hour12}:${minute} ${ampm}`;
 }
@@ -52,7 +64,12 @@ export function YachtBookingButton({
   defaultGratuityPct,
   layout = "full",
 }: Props) {
+  const { locale, t } = useLocale();
   const resolvedYacht = yacht ?? (yachtId ? getYachtBySlug(yachtId) : undefined);
+  const localizedYacht = useMemo(
+    () => (resolvedYacht ? localizeYacht(resolvedYacht, locale) : undefined),
+    [resolvedYacht, locale],
+  );
   const { addItem } = useCart();
   const config = resolvedYacht
     ? getYachtBookingConfig(resolvedYacht)
@@ -61,6 +78,15 @@ export function YachtBookingButton({
         startTimes: ["10:00"] as const,
         defaultGratuityPct: 18,
       };
+  const rawDurationOptions = useMemo(
+    () => (resolvedYacht ? durationOptionsFromYacht(resolvedYacht) : []),
+    [resolvedYacht],
+  );
+  const displayDurationOptions = useMemo(
+    () =>
+      localizedYacht ? durationOptionsFromYacht(localizedYacht) : rawDurationOptions,
+    [localizedYacht, rawDurationOptions],
+  );
   const [windows, setWindows] = useState<AvailabilityWindow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -93,7 +119,9 @@ export function YachtBookingButton({
           windows?: AvailabilityWindow[];
           error?: string;
         };
-        if (!res.ok) throw new Error(data.error || "Could not load availability.");
+        if (!res.ok) {
+          throw new Error(data.error || t("yachtsPage.booking.loadAvailabilityError"));
+        }
         if (!cancelled) {
           setWindows(data.windows ?? []);
           setError(null);
@@ -101,7 +129,11 @@ export function YachtBookingButton({
       })
       .catch((nextError) => {
         if (!cancelled) {
-          setError(nextError instanceof Error ? nextError.message : "Could not load availability.");
+          setError(
+            nextError instanceof Error
+              ? nextError.message
+              : t("yachtsPage.booking.loadAvailabilityError"),
+          );
         }
       })
       .finally(() => {
@@ -110,7 +142,7 @@ export function YachtBookingButton({
     return () => {
       cancelled = true;
     };
-  }, [resolvedYacht]);
+  }, [resolvedYacht, t]);
 
   const durationHours = useMemo(() => {
     const parsed = Number.parseInt(durationLabel, 10);
@@ -158,20 +190,31 @@ export function YachtBookingButton({
   if (!resolvedYacht) return null;
 
   const isInline = layout === "inline";
+  const timeLocale = locale === "es" ? "es" : "en";
+
+  const priceDisplay = quote?.payableOnline
+    ? localizeYachtBookingQuoteLabel(quote.priceLabel, locale)
+    : localizeYachtBookingUnavailableReason(quote?.reasonIfUnavailable, locale, t) ??
+      t("yachtsPage.booking.quoteRequired");
 
   return (
     <div className={cn("flex flex-col gap-4", className)}>
-      <div className={cn("rounded-sm border border-gold/15 bg-[#080808] p-4", isInline && "bg-transparent p-0 border-0")}>
+      <div
+        className={cn(
+          "rounded-sm border border-gold/15 bg-[#080808] p-4",
+          isInline && "border-0 bg-transparent p-0",
+        )}
+      >
         {isInline ? null : (
           <p className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-gold/75">
-            Live charter booking
+            {t("yachtsPage.booking.liveCharterBooking")}
           </p>
         )}
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
             <AvailabilityDatePicker
               id={`${resolvedYacht.id}-charter-date`}
-              label="Charter date"
+              label={t("yachtsPage.booking.charterDate")}
               value={charterDate}
               minDate={todayPlus(0)}
               isBlocked={isCharterDateBlocked}
@@ -186,7 +229,7 @@ export function YachtBookingButton({
               htmlFor={`${resolvedYacht.id}-start-time`}
               className="text-[0.6rem] font-medium uppercase tracking-[0.24em] text-gold/65"
             >
-              Departure time
+              {t("yachtsPage.booking.departureTime")}
             </label>
             <select
               id={`${resolvedYacht.id}-start-time`}
@@ -197,11 +240,11 @@ export function YachtBookingButton({
               {slotOptions.length > 0 ? (
                 slotOptions.map((slot) => (
                   <option key={slot} value={slot}>
-                    {formatTimeAmPm(slot)}
+                    {formatTimeAmPm(slot, timeLocale)}
                   </option>
                 ))
               ) : (
-                <option value="">No departures open</option>
+                <option value="">{t("yachtsPage.booking.noDeparturesOpen")}</option>
               )}
             </select>
           </div>
@@ -211,24 +254,27 @@ export function YachtBookingButton({
           <>
             <div className="mt-4">
               <p className="text-[0.6rem] font-medium uppercase tracking-[0.24em] text-gold/65">
-                Duration
+                {t("yachtsPage.booking.duration")}
               </p>
               <div className="mt-2 flex flex-wrap gap-2">
-                {config.durationOptions.map((option) => (
-                  <button
-                    key={option.id}
-                    type="button"
-                    onClick={() => setDurationLabel(option.label)}
-                    className={cn(
-                      pillClass,
-                      durationLabel === option.label
-                        ? "border-gold/45 bg-gold/12 text-cream"
-                        : "border-gold/15 text-cream/55 hover:border-gold/30",
-                    )}
-                  >
-                    {option.label}
-                  </button>
-                ))}
+                {displayDurationOptions.map((option, index) => {
+                  const canonicalLabel = rawDurationOptions[index]?.label ?? option.label;
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => setDurationLabel(canonicalLabel)}
+                      className={cn(
+                        pillClass,
+                        durationLabel === canonicalLabel
+                          ? "border-gold/45 bg-gold/12 text-cream"
+                          : "border-gold/15 text-cream/55 hover:border-gold/30",
+                      )}
+                    >
+                      {option.label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -237,7 +283,7 @@ export function YachtBookingButton({
                 htmlFor={`${resolvedYacht.id}-gratuity`}
                 className="text-[0.6rem] font-medium uppercase tracking-[0.24em] text-gold/65"
               >
-                Crew gratuity
+                {t("yachtsPage.booking.crewGratuity")}
               </label>
               <select
                 id={`${resolvedYacht.id}-gratuity`}
@@ -256,29 +302,39 @@ export function YachtBookingButton({
         )}
       </div>
 
-      <div className={cn("rounded-sm border border-gold/15 bg-[#080808] p-4", isInline && "mt-0")}>
+      <div
+        className={cn(
+          "rounded-sm border border-gold/15 bg-[#080808] p-4",
+          isInline && "mt-0 border-0 bg-transparent p-0",
+        )}
+      >
         {isInline ? null : (
           <p className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-gold/75">
-            Booking summary
+            {t("yachtsPage.booking.summaryTitle")}
           </p>
         )}
-        <p className="mt-2 text-sm text-cream/72">{describeSelection(selection)}</p>
-        <p className="mt-2 font-serif text-xl text-gold-secondary">
-          {quote?.payableOnline ? quote.priceLabel : quote?.reasonIfUnavailable ?? "Quote required"}
+        <p className="mt-2 text-sm text-cream/72">
+          {describeYachtSelectionLocalized(selection, locale, t)}
         </p>
+        <p className="mt-2 font-serif text-xl text-gold-secondary">{priceDisplay}</p>
         {quote?.payableOnline ? (
           <>
             {isInline ? null : (
               <ul className="mt-3 space-y-1 text-[0.78rem] text-cream/50">
                 {quote.breakdown.map((row) => (
                   <li key={row.label}>
-                    {row.label}: ${row.amountUsd.toLocaleString("en-US")}
+                    {localizeYachtBreakdownLabel(row.label, t)}: $
+                    {row.amountUsd.toLocaleString(locale === "es" ? "es-ES" : "en-US")}
                   </li>
                 ))}
               </ul>
             )}
             <p className="mt-3 text-[0.75rem] text-cream/48">
-              Deposit due today: ${quote.depositUsd.toLocaleString("en-US")}
+              {t("yachtsPage.booking.depositDue", {
+                amount: quote.depositUsd.toLocaleString(
+                  locale === "es" ? "es-ES" : "en-US",
+                ),
+              })}
             </p>
           </>
         ) : null}
@@ -287,10 +343,12 @@ export function YachtBookingButton({
       {isInline ? null : (
         <div className="rounded-sm border border-gold/15 bg-[#080808] p-4">
           <p className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-gold/75">
-            Availability
+            {t("yachtsPage.booking.availability")}
           </p>
           {loading ? (
-            <p className="mt-2 text-sm text-cream/48">Loading current charter holds...</p>
+            <p className="mt-2 text-sm text-cream/48">
+              {t("yachtsPage.booking.loadingHolds")}
+            </p>
           ) : error ? (
             <p className="mt-2 text-sm text-red-300/90">{error}</p>
           ) : windows.length > 0 ? (
@@ -300,7 +358,9 @@ export function YachtBookingButton({
               ))}
             </ul>
           ) : (
-            <p className="mt-2 text-sm text-cream/58">No charter windows are blocked yet.</p>
+            <p className="mt-2 text-sm text-cream/58">
+              {t("yachtsPage.booking.noBlockedWindows")}
+            </p>
           )}
         </div>
       )}
@@ -313,19 +373,19 @@ export function YachtBookingButton({
         type="button"
         onClick={() => {
           if (slotOptions.length === 0) {
-            setLocalError("No departure slots are available on that date.");
+            setLocalError(t("yachtsPage.booking.noSlotsError"));
             return;
           }
           if (!quote) {
-            setLocalError("Complete the booking details first.");
+            setLocalError(t("yachtsPage.booking.completeDetailsError"));
             return;
           }
           addItem({
             category: "yacht",
             id: resolvedYacht.id,
-            title: resolvedYacht.name,
-            subtitle: resolvedYacht.location ?? resolvedYacht.subtitle,
-            priceHint: quote.priceLabel,
+            title: localizedYacht?.name ?? resolvedYacht.name,
+            subtitle: localizedYacht?.location ?? resolvedYacht.subtitle,
+            priceHint: priceDisplay,
             href: `/services/yachts/${resolvedYacht.id}`,
             bookingSelection: selection,
             bookingQuote: quote,
@@ -334,7 +394,7 @@ export function YachtBookingButton({
         }}
         className="inline-flex min-h-11 items-center justify-center border border-gold/40 bg-gold px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-[#0b0b0b] transition-all hover:bg-gold-secondary"
       >
-        Add booking to checkout
+        {t("yachtsPage.booking.addToCheckout")}
       </button>
     </div>
   );

@@ -14,11 +14,15 @@ import {
 } from "react";
 
 import { ChauffeurServiceCrosslink } from "@/components/chauffeur-service-crosslink";
+import { useLocale } from "@/components/locale-provider";
 import { ScrollRevealItem } from "@/components/scroll-reveal-item";
 import { SectionReveal } from "@/components/section-reveal";
 import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
+import { localizeVilla } from "@/lib/i18n/villas-page";
+import type { Translator } from "@/lib/i18n/translate";
 import { paginateSlice } from "@/lib/pagination";
 import {
+  formatVillaUsd,
   VILLA_NEIGHBORHOODS,
   VILLAS,
   type Villa,
@@ -62,7 +66,7 @@ function ImagePlaceholder({
   );
 }
 
-function VillaCard({ villa }: { villa: Villa }) {
+function VillaCard({ villa, t }: { villa: Villa; t: Translator }) {
   const cover = villa.galleryImages[0];
   const isFeatured = FEATURED_VILLA_IDS.has(villa.id);
   return (
@@ -86,7 +90,7 @@ function VillaCard({ villa }: { villa: Villa }) {
             />
             <div className="absolute left-3 top-3 z-[3] sm:left-4 sm:top-4">
               <span className="inline-flex items-center justify-center rounded-sm border border-gold/55 bg-[#0b0b0b]/92 px-2.5 py-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-gold shadow-[0_4px_20px_rgba(0,0,0,0.5)] backdrop-blur-sm sm:px-3 sm:py-2 sm:text-[0.65rem]">
-                Featured
+                {t("villasPage.featured")}
               </span>
             </div>
           </>
@@ -94,7 +98,7 @@ function VillaCard({ villa }: { villa: Villa }) {
         {cover ? (
           <Image
             src={cover}
-            alt={`${villa.name} — exterior`}
+            alt={t("villasPage.exteriorAlt", { name: villa.name })}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition duration-500 group-hover:scale-[1.03]"
@@ -102,7 +106,11 @@ function VillaCard({ villa }: { villa: Villa }) {
         ) : (
           <ImagePlaceholder
             className="absolute inset-0 h-full w-full"
-            label="Photo placeholder"
+            label={
+              villa.photosComingSoon
+                ? t("villasPage.photosComingSoon")
+                : t("villasPage.photoPlaceholder")
+            }
           />
         )}
         <div
@@ -117,12 +125,19 @@ function VillaCard({ villa }: { villa: Villa }) {
             {villa.subtitle}
           </p>
           <p className="mt-2 font-serif text-[1.05rem] tabular-nums text-gold-secondary [text-shadow:0_1px_2px_rgba(0,0,0,1),0_2px_14px_rgba(0,0,0,0.92),0_0_18px_rgba(0,0,0,0.5)] sm:text-[1.125rem]">
-            {villa.cardTagline}
+            {villa.nightlyRates
+              ? `From ${formatVillaUsd(villa.nightlyRates.weekdayUsd)}/night`
+              : villa.cardTagline}
           </p>
+          {villa.nightlyRates ? (
+            <p className="mt-1 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-cream/72 [text-shadow:0_1px_2px_rgba(0,0,0,1),0_2px_12px_rgba(0,0,0,0.88)]">
+              {villa.cardTagline}
+            </p>
+          ) : null}
         </div>
       </div>
       <p className="mt-3 text-[0.7rem] font-medium uppercase tracking-[0.22em] text-cream/40">
-        Open full listing
+        {t("villasPage.openListing")}
       </p>
     </Link>
   );
@@ -136,12 +151,14 @@ function VillaCatalogPagination({
   total,
   pageSize,
   onPage,
+  t,
 }: {
   page: number;
   pageCount: number;
   total: number;
   pageSize: number;
   onPage: (p: number) => void;
+  t: Translator;
 }) {
   if (pageCount <= 1) return null;
 
@@ -151,14 +168,14 @@ function VillaCatalogPagination({
   return (
     <nav
       className="mt-12 flex flex-col items-center gap-5 border-t border-gold/10 pt-10 sm:flex-row sm:justify-between"
-      aria-label="Villa catalog pages"
+      aria-label={t("villasPage.paginationAria")}
     >
       <p className="text-[0.72rem] tabular-nums text-cream/42">
-        Showing{" "}
-        <span className="text-cream/55">
-          {from}–{to}
-        </span>{" "}
-        of <span className="text-cream/55">{total}</span> properties
+        {t("villasPage.showingRange", {
+          from: String(from),
+          to: String(to),
+          total: String(total),
+        })}
       </p>
       <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
         <button
@@ -172,7 +189,7 @@ function VillaCatalogPagination({
               : "border-gold/18 text-cream/65 hover:border-gold/32 hover:text-cream",
           )}
         >
-          Prev
+          {t("villasPage.prev")}
         </button>
         {Array.from({ length: pageCount }, (_, i) => i + 1).map((p) => (
           <button
@@ -201,7 +218,7 @@ function VillaCatalogPagination({
               : "border-gold/18 text-cream/65 hover:border-gold/32 hover:text-cream",
           )}
         >
-          Next
+          {t("villasPage.next")}
         </button>
       </div>
     </nav>
@@ -209,6 +226,7 @@ function VillaCatalogPagination({
 }
 
 function VillasCatalogInner() {
+  const { locale, t } = useLocale();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -239,6 +257,11 @@ function VillasCatalogInner() {
     () =>
       paginateSlice(visibleVillas, requestedPage, VILLAS_CATALOG_PAGE_SIZE),
     [visibleVillas, requestedPage],
+  );
+
+  const localizedSlice = useMemo(
+    () => slice.map((villa) => localizeVilla(villa, locale, t)),
+    [slice, locale, t],
   );
 
   const prevNeighborhood = useRef<NeighborhoodFilter | null>(null);
@@ -299,15 +322,14 @@ function VillasCatalogInner() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(198,164,108,0.06),transparent)]" />
         <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-10">
           <p className="text-[0.65rem] font-medium uppercase tracking-[0.48em] text-gold/90">
-            Residences
+            {t("villasPage.eyebrow")}
           </p>
           <div className="mt-4 h-px w-14 bg-gold/30" aria-hidden />
           <h1 className="mt-6 max-w-3xl font-serif text-[2.1rem] leading-[1.12] tracking-tight text-cream sm:text-4xl md:text-[2.65rem]">
-            Villas &amp; stays
+            {t("villasPage.headline")}
           </h1>
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-cream/58 sm:text-[0.9375rem]">
-            Curated Miami-area residences — scale, amenities, and policies
-            summarized per property so you can shortlist before you inquire.
+            {t("villasPage.heroBody")}
           </p>
           <ChauffeurServiceCrosslink variant="villa" />
         </div>
@@ -321,11 +343,10 @@ function VillasCatalogInner() {
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
           <h2 className="font-serif text-xl tracking-tight text-cream sm:text-2xl">
-            Properties
+            {t("villasPage.propertiesHeadline")}
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-cream/52">
-            Nightly rates and minimum stays are quoted to your dates — the
-            figures below describe layout and standout features only.
+            {t("villasPage.propertiesBody")}
           </p>
 
           {VILLAS.length > 0 ? (
@@ -335,14 +356,14 @@ function VillasCatalogInner() {
               aria-label="Filter properties by neighborhood"
             >
               <p className="text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-                Neighborhood
+                {t("villasPage.neighborhood")}
               </p>
               <div className="mt-3 sm:hidden">
                 <label
                   htmlFor="neighborhood-filter-mobile"
                   className="sr-only"
                 >
-                  Select neighborhood
+                  {t("villasPage.selectNeighborhood")}
                 </label>
                 <select
                   id="neighborhood-filter-mobile"
@@ -371,7 +392,7 @@ function VillasCatalogInner() {
                   className={filterChipClass(neighborhoodFilter === "all")}
                   aria-pressed={neighborhoodFilter === "all"}
                 >
-                  All areas
+                  {t("villasPage.allAreas")}
                   <span className="tabular-nums text-cream/35">
                     ({VILLAS.length})
                   </span>
@@ -402,28 +423,26 @@ function VillasCatalogInner() {
 
           {VILLAS.length === 0 ? (
             <p className="mt-10 max-w-xl text-sm leading-relaxed text-cream/48">
-              Our property directory is being updated with new residences, full
-              details, and photography. Check back soon — or reach out via{" "}
+              {t("villasPage.emptyDirectory").split("{contactLink}")[0]}
               <Link
                 href={CONTACT_TRIP_BUILDER_HREF}
                 className="font-medium text-gold-secondary/95 underline decoration-gold/25 underline-offset-4 transition-colors hover:text-gold hover:decoration-gold/45"
               >
-                Contact
-              </Link>{" "}
-              to discuss what you need in the meantime.
+                {t("villasPage.contact")}
+              </Link>
+              {t("villasPage.emptyDirectory").split("{contactLink}")[1] ?? ""}
             </p>
           ) : visibleVillas.length === 0 ? (
             <p className="mt-10 text-sm leading-relaxed text-cream/48">
-              No properties listed in this area yet. Choose another neighborhood
-              or view all areas.
+              {t("villasPage.emptyFilter")}
             </p>
           ) : (
             <>
               <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
-                {slice.map((villa, index) => (
+                {localizedSlice.map((villa, index) => (
                   <ScrollRevealItem key={villa.id} index={index}>
                     <div id={`villa-${villa.id}`}>
-                      <VillaCard villa={villa} />
+                      <VillaCard villa={villa} t={t} />
                     </div>
                   </ScrollRevealItem>
                 ))}
@@ -434,6 +453,7 @@ function VillasCatalogInner() {
                 total={total}
                 pageSize={VILLAS_CATALOG_PAGE_SIZE}
                 onPage={goToCatalogPage}
+                t={t}
               />
             </>
           )}

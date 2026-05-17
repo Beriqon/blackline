@@ -5,25 +5,25 @@ import Link from "next/link";
 import { ExperiencesPhotoHighlights } from "@/components/experiences-photo-highlights";
 import { ScrollRevealItem } from "@/components/scroll-reveal-item";
 import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
+import { getI18n } from "@/lib/i18n/server";
 import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = {
-  title: "Experiences",
-  description:
-    "Signature Blackline experiences with cinematic storytelling, curated highlights, and concierge-level planning.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return {
+    title: t("common.experiences"),
+    description: t("experiencesPage.metaDescription"),
+  };
+}
 
 const btnGhost =
   "inline-flex min-h-11 items-center justify-center border border-gold/25 bg-transparent px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-cream transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold/55 hover:text-gold-secondary hover:shadow-[0_0_36px_rgba(198,164,108,0.12)] active:translate-y-0 sm:min-w-[200px]";
 const btnSolid =
   "inline-flex min-h-11 items-center justify-center border border-gold/20 bg-gold/90 px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-[#14110b] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-gold-secondary hover:shadow-[0_0_34px_rgba(198,164,108,0.24)] active:translate-y-0 sm:min-w-[200px]";
 
-const signatureExperiences = [
+const SIGNATURE_PHOTOS = [
   {
     id: "yacht-day",
-    title: "Yacht Day Escape",
-    blurb: "Private crew, curated route, and a sunset return timed to perfection.",
-    highlights: ["4-8 hour private charter", "Captain, host, and premium setup"],
     photos: [
       { src: "/photography/yachtphotos/yachtphoto1.jpg", alt: "Yacht on open water" },
       { src: "/yachts/68azimuttheone/68azimuttheone3.jpg", alt: "Yacht deck and horizon" },
@@ -32,9 +32,6 @@ const signatureExperiences = [
   },
   {
     id: "night-vip",
-    title: "VIP Night Access",
-    blurb: "Skip the uncertainty with priority arrivals and table coordination.",
-    highlights: ["Priority club entry flow", "Dedicated host through the night"],
     photos: [
       { src: "/vipvenues/livmiami.jpg", alt: "LIV Miami venue exterior" },
       { src: "/vipvenues/e11even.jpg", alt: "E11EVEN nightlife venue" },
@@ -43,9 +40,6 @@ const signatureExperiences = [
   },
   {
     id: "exotic-drive",
-    title: "Exotic Drive Arrival",
-    blurb: "A statement pickup for daytime cruising, dining, or nightlife entries.",
-    highlights: ["Handpicked performance fleet", "Delivery, swap, and support"],
     photos: [
       { src: "/photography/carphotos/carphoto1.jpg", alt: "Exotic car lineup" },
       { src: "/photography/carphotos/carphoto5.jpg", alt: "Luxury car on location" },
@@ -54,9 +48,6 @@ const signatureExperiences = [
   },
   {
     id: "jet-entry",
-    title: "Private Jet Entry",
-    blurb: "Seamless arrival from runway to residence with Blackline coordination.",
-    highlights: ["Airport-to-villa transfer flow", "Ground logistics fully handled"],
     photos: [
       { src: "/privatejets/gulfstreamg550/gulfstreamg550.webp", alt: "Gulfstream private jet" },
       { src: "/privatejets/falcon2000/falcon2000.webp", alt: "Falcon 2000 aircraft" },
@@ -64,6 +55,60 @@ const signatureExperiences = [
     ],
   },
 ] as const;
+
+function getSignatureExperiences(t: (key: string) => string) {
+  const copy = {
+    "yacht-day": {
+      title: t("experiencesPage.expYachtTitle"),
+      blurb: t("experiencesPage.expYachtBlurb"),
+      highlights: [t("experiencesPage.expYachtH1"), t("experiencesPage.expYachtH2")],
+    },
+    "night-vip": {
+      title: t("experiencesPage.expVipTitle"),
+      blurb: t("experiencesPage.expVipBlurb"),
+      highlights: [t("experiencesPage.expVipH1"), t("experiencesPage.expVipH2")],
+    },
+    "exotic-drive": {
+      title: t("experiencesPage.expCarTitle"),
+      blurb: t("experiencesPage.expCarBlurb"),
+      highlights: [t("experiencesPage.expCarH1"), t("experiencesPage.expCarH2")],
+    },
+    "jet-entry": {
+      title: t("experiencesPage.expJetTitle"),
+      blurb: t("experiencesPage.expJetBlurb"),
+      highlights: [t("experiencesPage.expJetH1"), t("experiencesPage.expJetH2")],
+    },
+  } as const;
+
+  return SIGNATURE_PHOTOS.map((item) => ({
+    id: item.id,
+    ...copy[item.id],
+    photos: item.photos,
+  }));
+}
+
+function getItineraryMoments(t: (key: string) => string) {
+  return [
+    {
+      id: "morning",
+      label: t("experiencesPage.momentMorningLabel"),
+      title: t("experiencesPage.momentMorningTitle"),
+      copy: t("experiencesPage.momentMorningCopy"),
+    },
+    {
+      id: "sunset",
+      label: t("experiencesPage.momentSunsetLabel"),
+      title: t("experiencesPage.momentSunsetTitle"),
+      copy: t("experiencesPage.momentSunsetCopy"),
+    },
+    {
+      id: "night",
+      label: t("experiencesPage.momentNightLabel"),
+      title: t("experiencesPage.momentNightTitle"),
+      copy: t("experiencesPage.momentNightCopy"),
+    },
+  ];
+}
 
 const momentsGallery = [
   { src: "/sitephotos/miamibeach.jpg", alt: "Miami beach and skyline" },
@@ -98,28 +143,11 @@ const momentsGallery = [
   { src: "/exoticcar/chauffeur/tiffanyblue/5STAR.jpg", alt: "Premium chauffeur fleet vehicle" },
 ] as const;
 
-const itineraryMoments = [
-  {
-    id: "morning",
-    label: "Morning",
-    title: "Arrival with intent",
-    copy: "Airport pickup, villa check-in, and first reservation locked in before noon.",
-  },
-  {
-    id: "sunset",
-    label: "Sunset",
-    title: "Water to skyline",
-    copy: "From bay cruise to golden-hour dinner with transitions handled end-to-end.",
-  },
-  {
-    id: "night",
-    label: "Night",
-    title: "Doors already open",
-    copy: "Host-guided nightlife entry, table ready, and return logistics already set.",
-  },
-] as const;
+export default async function ExperiencesPage() {
+  const { t } = await getI18n();
+  const signatureExperiences = getSignatureExperiences(t);
+  const itineraryMoments = getItineraryMoments(t);
 
-export default function ExperiencesPage() {
   return (
     <>
       <section className="relative isolate overflow-hidden border-b border-gold/10 bg-background">
@@ -132,22 +160,21 @@ export default function ExperiencesPage() {
         <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
           <ScrollRevealItem index={0}>
             <p className="hero-cta-in text-[0.65rem] font-semibold uppercase tracking-[0.48em] text-gold/90">
-              Signature Experiences
+              {t("experiencesPage.eyebrow")}
             </p>
             <h1 className="hero-headline-in mt-6 max-w-4xl font-serif text-4xl leading-[1.02] tracking-tight text-cream sm:text-5xl md:text-[3.4rem]">
-              The Blackline Experience
+              {t("experiencesPage.headline")}
             </h1>
             <p className="hero-cta-in mt-5 max-w-2xl text-sm leading-relaxed text-cream/65 sm:text-[0.96rem]">
-              Four cinematic concepts with richer visuals that show the
-              Blackline lifestyle in one scroll.
+              {t("experiencesPage.intro")}
             </p>
 
             <div className="hero-cta-in mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row">
               <Link href={CONTACT_TRIP_BUILDER_HREF} className={btnSolid}>
-                Build my itinerary
+                {t("experiencesPage.buildItinerary")}
               </Link>
               <Link href="/services" className={btnGhost}>
-                Explore services
+                {t("experiencesPage.exploreServices")}
               </Link>
             </div>
           </ScrollRevealItem>
@@ -211,10 +238,10 @@ export default function ExperiencesPage() {
       <section className="border-b border-gold/10 bg-background py-14 sm:py-16">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <p className="text-[0.65rem] font-semibold uppercase tracking-[0.48em] text-gold/90">
-            One Day Flow
+            {t("experiencesPage.oneDayFlow")}
           </p>
           <h2 className="mt-5 max-w-2xl font-serif text-3xl leading-[1.08] tracking-tight text-cream sm:text-4xl">
-            Designed to feel effortless.
+            {t("experiencesPage.effortless")}
           </h2>
           <div className="mt-8 grid gap-4 sm:mt-10 sm:gap-5 md:grid-cols-3">
             {itineraryMoments.map((moment, index) => (
@@ -241,7 +268,7 @@ export default function ExperiencesPage() {
           <ScrollRevealItem index={0}>
             <div className="flex items-end justify-between gap-4">
               <p className="text-[0.65rem] font-semibold uppercase tracking-[0.46em] text-gold/90">
-                Photo Highlights
+                {t("experiencesPage.photoHighlights")}
               </p>
             </div>
           </ScrollRevealItem>
@@ -253,20 +280,19 @@ export default function ExperiencesPage() {
         <ScrollRevealItem index={0}>
           <div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
             <p className="text-[0.65rem] font-semibold uppercase tracking-[0.46em] text-gold/90">
-              Ready To Book
+              {t("experiencesPage.readyToBook")}
             </p>
             <h2 className="mx-auto mt-5 max-w-2xl font-serif text-3xl leading-[1.08] tracking-tight text-cream sm:text-4xl">
-              We turn this concept into your real itinerary.
+              {t("experiencesPage.readyHeadline")}
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-cream/58 sm:text-[0.95rem]">
-              Send your dates and group size. We&apos;ll map timing, logistics, and
-              access so your trip flows exactly as it should.
+              {t("experiencesPage.readyBody")}
             </p>
             <Link
               href={CONTACT_TRIP_BUILDER_HREF}
               className={cn(btnSolid, "mt-8 inline-flex sm:mt-9")}
             >
-              Start planning
+              {t("experiencesPage.startPlanning")}
             </Link>
           </div>
         </ScrollRevealItem>

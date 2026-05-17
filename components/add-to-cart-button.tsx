@@ -3,6 +3,7 @@
 import { ShoppingBag } from "lucide-react";
 
 import { useCart } from "@/components/cart-context";
+import { useTranslations } from "@/components/locale-provider";
 import type { CartLineInput } from "@/lib/cart-types";
 import { cn } from "@/lib/utils";
 
@@ -18,9 +19,11 @@ type Props = {
 export function AddToCartButton({
   item,
   className,
-  label = "Add to selection",
+  label,
 }: Props) {
   const { addItem } = useCart();
+  const t = useTranslations();
+  const buttonLabel = label ?? t("common.addToSelection");
 
   return (
     <button
@@ -29,7 +32,7 @@ export function AddToCartButton({
       className={cn(btnOutline, className)}
     >
       <ShoppingBag className="size-4 shrink-0" aria-hidden />
-      {label}
+      {buttonLabel}
     </button>
   );
 }

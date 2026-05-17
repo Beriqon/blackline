@@ -2,18 +2,16 @@
 
 import Link from "next/link";
 import { ChevronDown, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useTranslations } from "@/components/locale-provider";
+import { LanguageToggleMobile } from "@/components/language-toggle-mobile";
+import { getMainNavLinks, getServiceLinks } from "@/lib/i18n/nav";
 import { cn } from "@/lib/utils";
-import { SERVICE_LINKS } from "@/lib/nav";
-
-const mainLinks = [
-  { href: "/packages", label: "Packages" },
-  { href: "/experiences", label: "Experiences" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-] as const;
 
 export function MobileNav() {
+  const t = useTranslations();
+  const serviceLinks = useMemo(() => getServiceLinks(t), [t]);
+  const mainLinks = useMemo(() => getMainNavLinks(t), [t]);
   const [open, setOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
 
@@ -30,7 +28,7 @@ export function MobileNav() {
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-controls="mobile-nav-panel"
-        aria-label={open ? "Close menu" : "Open menu"}
+        aria-label={open ? t("common.closeMenu") : t("common.openMenu")}
       >
         {open ? <X className="size-6" /> : <Menu className="size-6" />}
       </button>
@@ -42,6 +40,7 @@ export function MobileNav() {
         )}
       >
         <nav className="flex flex-col gap-1 px-4 py-4" aria-label="Mobile">
+          <LanguageToggleMobile onSelect={close} />
           <div className="flex flex-col">
             <button
               type="button"
@@ -50,7 +49,7 @@ export function MobileNav() {
               aria-expanded={servicesOpen}
               aria-controls="mobile-services-subnav"
             >
-              Services
+              {t("common.services")}
               <ChevronDown
                 className={cn(
                   "size-4 shrink-0 opacity-70 transition-transform",
@@ -72,9 +71,9 @@ export function MobileNav() {
                 className="rounded-sm px-3 py-2 text-sm text-cream/75 hover:bg-gold/5 hover:text-gold-secondary"
                 onClick={close}
               >
-                All services
+                {t("common.allServices")}
               </Link>
-              {SERVICE_LINKS.map((item) => (
+              {serviceLinks.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -102,3 +101,5 @@ export function MobileNav() {
     </div>
   );
 }
+
+

@@ -2,28 +2,86 @@
 
 import { Building2, ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
 import Image from "next/image";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { ChauffeurServiceCrosslink } from "@/components/chauffeur-service-crosslink";
+import { useLocale } from "@/components/locale-provider";
 import { SectionReveal } from "@/components/section-reveal";
 import { VillaStaysBackLink } from "@/components/villa-stays-back-link";
-import type { Villa } from "@/lib/villas-data";
+import {
+  getVillaNightlyRateFacts,
+  localizeVilla,
+  villaMapLocationLabel,
+} from "@/lib/i18n/villas-page";
+import {
+  formatVillaUsd,
+  type Villa,
+  type VillaNightlyRates,
+} from "@/lib/villas-data";
 import { cn } from "@/lib/utils";
 import { whatsAppUrlWithText } from "@/lib/whatsapp";
 
 const btnPrimary =
   "inline-flex min-h-11 items-center justify-center border border-gold/40 bg-gold px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-[#0b0b0b] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold-secondary hover:bg-gold-secondary hover:shadow-[0_0_0_1px_rgba(224,195,138,0.4),0_14px_48px_rgba(198,164,108,0.2)] active:translate-y-0";
 
-function mapLocationLabel(villa: Villa): string {
-  return `${villa.neighborhood}, Miami, FL`;
-}
-
-function mapEmbedSrc(villa: Villa): string {
-  const query = encodeURIComponent(mapLocationLabel(villa));
+function mapEmbedSrc(locationLabel: string): string {
+  const query = encodeURIComponent(locationLabel);
   return `https://www.google.com/maps?q=${query}&output=embed`;
 }
 
-function PhotoPlaceholder({ className }: { className?: string }) {
+function VillaRatesPanel({
+  rates,
+  locale,
+  t,
+}: {
+  rates: VillaNightlyRates;
+  locale: ReturnType<typeof useLocale>["locale"];
+  t: ReturnType<typeof useLocale>["t"];
+}) {
+  const rows = getVillaNightlyRateFacts(rates, locale, t);
+  return (
+    <div className="border border-gold/15 bg-[#0d0d0d]/90 p-4 sm:p-5">
+      <p className="text-[0.62rem] font-semibold uppercase tracking-[0.38em] text-gold/90">
+        {t("villasPage.nightlyRates")}
+      </p>
+      <ul className="mt-4 space-y-0" role="list">
+        {rows.map((row) => (
+          <li
+            key={row.label}
+            className="border-t border-gold/[0.09] py-3.5 first:border-t-0 first:pt-0 first:pb-3.5"
+          >
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <span className="text-[0.75rem] font-medium uppercase tracking-[0.14em] text-cream/45">
+                {row.label}
+              </span>
+              <span className="text-right font-serif text-[1.05rem] tabular-nums text-gold-secondary">
+                {row.value}
+              </span>
+            </div>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-4 text-[0.7rem] leading-relaxed text-cream/38">
+        {t("villasPage.ratesDisclaimer")}
+      </p>
+    </div>
+  );
+}
+
+function PhotoPlaceholder({
+  className,
+  t,
+}: {
+  className?: string;
+  t: ReturnType<typeof useLocale>["t"];
+}) {
   return (
     <div
       className={cn(
@@ -33,13 +91,22 @@ function PhotoPlaceholder({ className }: { className?: string }) {
     >
       <Building2 className="h-10 w-10 text-gold/22 sm:h-12 sm:w-12" aria-hidden />
       <span className="max-w-xs text-[0.65rem] font-medium uppercase tracking-[0.2em] text-cream/35">
-        Photos coming soon
+        {t("villasPage.photosComingSoon")}
       </span>
     </div>
   );
 }
 
-export function VillaFleetProduct({ villa }: { villa: Villa }) {
+export function VillaFleetProduct({ villa: sourceVilla }: { villa: Villa }) {
+  const { locale, t } = useLocale();
+  const villa = useMemo(
+    () => localizeVilla(sourceVilla, locale, t),
+    [sourceVilla, locale, t],
+  );
+  const locationLabel = useMemo(
+    () => villaMapLocationLabel(villa, t),
+    [villa, t],
+  );
   const photos = villa.galleryImages;
   const hasPhotos = photos.length > 0;
   const galleryLen = photos.length;
@@ -89,6 +156,7 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
 
   const hasInclusions = villa.inclusions && villa.inclusions.length > 0;
   const hasPolicy = villa.policyNotes && villa.policyNotes.length > 0;
+  const nightlyRates = villa.nightlyRates;
 
   useEffect(() => {
     // Always open a villa listing at the top (title/intro visible).
@@ -106,14 +174,31 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
           />
           <div className="mt-8 h-px w-14 bg-gold/30" aria-hidden />
           <p className="mt-6 text-[0.65rem] font-medium uppercase tracking-[0.48em] text-gold/90">
-            Residences · {villa.name}
+            {t("villasPage.residencesName", { name: villa.name })}
           </p>
           <h1 className="mt-4 max-w-3xl font-serif text-[2.1rem] leading-[1.12] tracking-tight text-cream sm:text-4xl md:text-[2.65rem]">
             {villa.name}
           </h1>
-          <p className="mt-4 font-serif text-2xl tabular-nums text-gold-secondary sm:text-[1.75rem]">
-            {villa.cardTagline}
-          </p>
+          {nightlyRates ? (
+            <>
+              <p className="mt-4 font-serif text-2xl tabular-nums text-gold-secondary sm:text-[1.75rem]">
+                {t("villasPage.fromPerNight", {
+                  price: formatVillaUsd(nightlyRates.weekdayUsd),
+                })}
+              </p>
+              <p className="mt-2 text-[0.72rem] font-medium uppercase tracking-[0.2em] text-cream/50">
+                {t("villasPage.weekdayWeekendPerNight", {
+                  weekday: formatVillaUsd(nightlyRates.weekdayUsd),
+                  weekend: formatVillaUsd(nightlyRates.weekendUsd),
+                })}
+              </p>
+              <p className="mt-3 text-sm text-cream/55">{villa.cardTagline}</p>
+            </>
+          ) : (
+            <p className="mt-4 font-serif text-2xl tabular-nums text-gold-secondary sm:text-[1.75rem]">
+              {villa.cardTagline}
+            </p>
+          )}
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-cream/58 sm:text-[0.9375rem]">
             {villa.lede}
           </p>
@@ -133,7 +218,11 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
                   <div className="relative aspect-[4/3] overflow-hidden border border-gold/12 bg-[#0b0b0b] sm:aspect-[16/10]">
                     <Image
                       src={photos[photoIndex]!}
-                      alt={`${villa.name} — photo ${photoIndex + 1} of ${galleryLen}`}
+                      alt={t("villasPage.photoOf", {
+                        name: villa.name,
+                        index: String(photoIndex + 1),
+                        total: String(galleryLen),
+                      })}
                       fill
                       className="object-contain sm:object-cover"
                       sizes="(max-width: 1024px) 100vw, 50vw"
@@ -146,10 +235,10 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
                       type="button"
                       onClick={() => setLightboxOpen(true)}
                       className="absolute bottom-3 right-3 z-[2] inline-flex items-center gap-1.5 border border-gold/25 bg-[#0b0b0b]/75 px-2.5 py-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-cream/85 backdrop-blur-sm transition-colors hover:border-gold/45"
-                      aria-label="Enlarge photo"
+                      aria-label={t("villasPage.enlargePhoto")}
                     >
                       <Maximize2 className="h-3.5 w-3.5" aria-hidden />
-                      Enlarge
+                      {t("villasPage.enlarge")}
                     </button>
                     {galleryLen > 1 ? (
                       <>
@@ -157,7 +246,7 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
                           type="button"
                           onClick={goPhotoPrev}
                           className="absolute left-2 top-1/2 z-[1] flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gold/20 bg-[#0b0b0b]/80 text-cream/90 backdrop-blur-sm transition-colors hover:border-gold/40"
-                          aria-label="Previous photo"
+                          aria-label={t("villasPage.previousPhoto")}
                         >
                           <ChevronLeft className="h-5 w-5" />
                         </button>
@@ -165,7 +254,7 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
                           type="button"
                           onClick={goPhotoNext}
                           className="absolute right-2 top-1/2 z-[1] flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gold/20 bg-[#0b0b0b]/80 text-cream/90 backdrop-blur-sm transition-colors hover:border-gold/40"
-                          aria-label="Next photo"
+                          aria-label={t("villasPage.nextPhoto")}
                         >
                           <ChevronRight className="h-5 w-5" />
                         </button>
@@ -191,7 +280,9 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
                               ? "border-gold/45"
                               : "border-gold/12 hover:border-gold/25",
                           )}
-                          aria-label={`Show photo ${i + 1}`}
+                          aria-label={t("villasPage.showPhoto", {
+                            index: String(i + 1),
+                          })}
                           aria-current={i === photoIndex}
                         >
                           <Image src={src} alt="" fill className="object-cover" sizes="112px" />
@@ -201,12 +292,12 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
                   ) : null}
                 </>
               ) : (
-                <PhotoPlaceholder className="overflow-hidden" />
+                <PhotoPlaceholder className="overflow-hidden" t={t} />
               )}
 
               <div className="mt-8 border-t border-gold/10 pt-6">
                 <p className="text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-                  Description
+                  {t("villasPage.description")}
                 </p>
                 <p className="mt-4 text-[0.9375rem] leading-relaxed text-cream/68">
                   {villa.description}
@@ -215,8 +306,17 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
             </div>
 
             <div className="min-w-0">
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.38em] text-gold/90">
-                Stay details
+              {nightlyRates ? (
+                <VillaRatesPanel rates={nightlyRates} locale={locale} t={t} />
+              ) : null}
+
+              <p
+                className={cn(
+                  "text-[0.62rem] font-semibold uppercase tracking-[0.38em] text-gold/90",
+                  nightlyRates ? "mt-8" : undefined,
+                )}
+              >
+                {t("villasPage.stayDetails")}
               </p>
               <ul className="mt-4 space-y-0" role="list">
                 {villa.facts.map((fact) => (
@@ -239,7 +339,7 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
               {villa.vipNote ? (
                 <div className="mt-8 border border-gold/12 bg-[#0d0d0d]/90 p-4 sm:p-5">
                   <p className="text-[0.62rem] font-medium uppercase tracking-[0.28em] text-gold/75">
-                    Arrival &amp; transport
+                    {t("villasPage.arrivalTransport")}
                   </p>
                   <p className="mt-3 text-[0.875rem] leading-relaxed text-cream/62">
                     {villa.vipNote}
@@ -248,7 +348,7 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
               ) : null}
 
               <p className="mt-8 text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-                Highlights
+                {t("villasPage.highlights")}
               </p>
               <ul className="mt-4 space-y-3" role="list">
                 {villa.highlights.map((h) => (
@@ -268,7 +368,7 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
               {hasInclusions ? (
                 <div className="mt-8 border-t border-gold/10 pt-6">
                   <p className="text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-                    Amenities
+                    {t("villasPage.amenities")}
                   </p>
                   <ul className="mt-4 grid gap-x-8 gap-y-3 sm:grid-cols-2" role="list">
                     {villa.inclusions!.map((line) => (
@@ -313,11 +413,23 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
                     setQuoteRequestError(null);
                     setCreatingQuoteRequest(true);
                     const message = [
-                      "Hi Blackline - I'd like a quote for this stay:",
+                      t("villasPage.whatsappIntro"),
                       villa.name,
-                      `Location: ${mapLocationLabel(villa)}`,
+                      t("villasPage.whatsappLocation", {
+                        location: locationLabel,
+                      }),
+                      ...(nightlyRates
+                        ? [
+                            t("villasPage.whatsappRates", {
+                              weekday: `${formatVillaUsd(nightlyRates.weekdayUsd)}/night`,
+                              weekend: `${formatVillaUsd(nightlyRates.weekendUsd)}/night`,
+                            }),
+                          ]
+                        : []),
                       "",
-                      "Please confirm availability, rates, and next steps. Thanks!",
+                      nightlyRates
+                        ? t("villasPage.whatsappConfirmRates")
+                        : t("villasPage.whatsappConfirmAll"),
                     ].join("\n");
 
                     const href = whatsAppUrlWithText(message);
@@ -329,13 +441,13 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
                         body: JSON.stringify({
                           source: "whatsapp",
                           message,
-                          summary: `Stay: ${villa.name}`,
+                          summary: t("villasPage.quoteSummary", {
+                            name: villa.name,
+                          }),
                         }),
                       });
                     } catch {
-                      setQuoteRequestError(
-                        "Could not create quote request record. Opening WhatsApp anyway.",
-                      );
+                      setQuoteRequestError(t("villasPage.quoteError"));
                     } finally {
                       setCreatingQuoteRequest(false);
                       window.open(href, "_blank", "noopener,noreferrer");
@@ -349,11 +461,13 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
                   )}
                 >
                   {creatingQuoteRequest
-                    ? "Requesting quote..."
-                    : "Request this stay"}
+                    ? t("villasPage.requestingQuote")
+                    : t("villasPage.requestStay")}
                 </button>
                 <p className="mt-4 text-[0.7rem] leading-relaxed text-cream/38">
-                  Availability, rates, and house rules are confirmed when you inquire.
+                  {nightlyRates
+                    ? t("villasPage.inquireTaxesNote")
+                    : t("villasPage.inquireRatesNote")}
                 </p>
               </div>
             </div>
@@ -364,21 +478,20 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
       <SectionReveal className="border-b border-gold/10 bg-[#070707] pb-14 pt-12 sm:pb-16 sm:pt-14">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
           <p className="text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-            Neighborhood
+            {t("villasPage.neighborhoodSection")}
           </p>
           <h2 className="mt-4 font-serif text-[1.4rem] leading-snug tracking-tight text-cream sm:text-[1.7rem]">
-            {mapLocationLabel(villa)}
+            {locationLabel}
           </h2>
           <p className="mt-3 max-w-2xl text-[0.88rem] leading-relaxed text-cream/55">
-            View the area around this residence. Exact address is shared after booking
-            confirmation.
+            {t("villasPage.mapBody")}
           </p>
         </div>
         <div className="mt-8 w-full border-y border-gold/10">
           <div className="relative h-[20rem] w-full sm:h-[27rem]">
             <iframe
-              title={`${villa.name} neighborhood map`}
-              src={mapEmbedSrc(villa)}
+              title={t("villasPage.mapTitle", { name: villa.name })}
+              src={mapEmbedSrc(locationLabel)}
               className="h-full w-full"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
@@ -393,7 +506,7 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
           className="fixed inset-0 z-[70] flex flex-col bg-[#050505]/95 backdrop-blur-md"
           role="dialog"
           aria-modal="true"
-          aria-label={`${villa.name} photo gallery`}
+          aria-label={t("villasPage.galleryAria", { name: villa.name })}
         >
           <div className="flex items-center justify-between border-b border-gold/12 px-4 py-3 sm:px-6">
             <p className="text-[0.7rem] font-medium uppercase tracking-[0.22em] text-cream/55">
@@ -403,7 +516,7 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
               type="button"
               onClick={() => setLightboxOpen(false)}
               className="flex h-10 w-10 items-center justify-center border border-gold/15 text-cream/80 hover:border-gold/35 hover:text-gold-secondary"
-              aria-label="Close enlarged view"
+              aria-label={t("villasPage.closeEnlarged")}
             >
               <X className="h-5 w-5" />
             </button>
@@ -412,7 +525,11 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
             <div className="relative h-[min(78vh,820px)] w-full max-w-5xl">
               <Image
                 src={photos[photoIndex]!}
-                alt={`${villa.name} — enlarged ${photoIndex + 1} of ${galleryLen}`}
+                alt={t("villasPage.enlargedPhoto", {
+                  name: villa.name,
+                  index: String(photoIndex + 1),
+                  total: String(galleryLen),
+                })}
                 fill
                 className="object-contain"
                 sizes="(max-width: 1024px) 100vw, min(896px, 100vw)"
@@ -424,7 +541,7 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
                   type="button"
                   onClick={goPhotoPrev}
                   className="absolute left-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center border border-gold/25 bg-[#0b0b0b]/85 text-cream sm:left-6"
-                  aria-label="Previous photo"
+                  aria-label={t("villasPage.previousPhoto")}
                 >
                   <ChevronLeft className="h-6 w-6" />
                 </button>
@@ -432,7 +549,7 @@ export function VillaFleetProduct({ villa }: { villa: Villa }) {
                   type="button"
                   onClick={goPhotoNext}
                   className="absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center border border-gold/25 bg-[#0b0b0b]/85 text-cream sm:right-6"
-                  aria-label="Next photo"
+                  aria-label={t("villasPage.nextPhoto")}
                 >
                   <ChevronRight className="h-6 w-6" />
                 </button>

@@ -1,0 +1,75 @@
+{
+  "privateChefsPage": {
+    "metaDescription": "Chefs privados y chefs de viaje para villas, yates, fincas y eventos — menús a medida, necesidades dietéticas y desplazamientos internacionales coordinados por Blackline.",
+    "eyebrow": "Conserjería culinaria",
+    "headline": "Chefs privados",
+    "heroBody": "Chefs para cada escenario — casas privadas, yates, estancias en villa y celebraciones. Contrata tu chef en tu horario, donde estés. Los chefs de viaje pueden volar con tu grupo, incluidos destinos fuera de Estados Unidos.",
+    "requestChef": "Solicitar un chef",
+    "meetTheChefs": "Conoce a los chefs",
+    "yourPrivateChef": "Tu chef privado",
+    "travelChef": "Chef de viaje",
+    "bookEyebrow": "Qué puedes reservar",
+    "bookHeadline": "Chef privado o chef de viaje — según tu itinerario",
+    "bookBody": "Desde una cena hasta un charter completo o estancia en villa. Coordinamos menús, aprovisionamiento y horarios en el mismo hilo que tus yates, estancias y transporte.",
+    "rosterEyebrow": "El roster",
+    "rosterHeadline": "Conoce a los chefs",
+    "rosterBody": "Nuestro roster culinario crece. Hoy puedes reservar a Billy Crocker; más chefs privados se unen pronto — pide a tu conserjería que te avise cuando haya nuevo talento.",
+    "galleryEyebrow": "Comida y experiencias",
+    "galleryHeadline": "Desde la mesa",
+    "galleryBody": "Cenas servidas, charters en yate y celebraciones privadas — una muestra del estilo de servicio que nuestros chefs llevan al lugar. Desliza o pausa para explorar.",
+    "galleryAria": "Galería de comida y cenas con chef privado",
+    "pairEyebrow": "Combina con tu viaje",
+    "pairHeadline": "Añade un chef a lo que ya tienes reservado",
+    "pairBody": "¿Día en yate, semana en villa o una noche con chófer y mesa? Encajamos tu chef en el mismo itinerario y contacto.",
+    "pairChef": "+ Chef",
+    "pairFooter": "Menciona fechas, número de invitados y cocina o galley al consultar — cotizamos el chef junto con tu yate, villa o plan de evento.",
+    "comingSoon": {
+      "label": "Próximamente",
+      "title": "Más chefs se unen al roster",
+      "description": "Más chefs privados — más cocinas, idiomas y agendas de viaje — próximamente."
+    },
+    "venue": {
+      "0": "Casas privadas y fincas",
+      "1": "Charters en yate",
+      "2": "Estancias en villa",
+      "3": "Celebraciones y eventos corporativos"
+    },
+    "services": {
+      "privateChef": {
+        "eyebrow": "En tu horario",
+        "title": "Tu chef privado",
+        "description": "Contrata un chef dedicado para una cena, un fin de semana en la villa o la duración de tu charter — adaptado a tu grupo, necesidades dietéticas y estilo de servicio.",
+        "bullet1": "Cocinas en villa, en yate y en finca — cenas servidas, estilo familiar o menús degustación",
+        "bullet2": "Menús según tus preferencias, alergias y maridajes",
+        "bullet3": "Mismo hilo de conserjería que tus yates, estancias y transporte"
+      },
+      "travel-chef": {
+        "eyebrow": "Más allá de Miami",
+        "title": "Chef de viaje",
+        "description": "Cuando el itinerario se mueve, tu chef puede moverse contigo. Nuestro chef de viaje tiene pasaporte válido y puede volar con tu grupo en reservas nacionales e internacionales.",
+        "bullet1": "Desplazamientos para casas, yates y eventos en destino fuera de EE. UU.",
+        "bullet2": "Aprovisionamiento y recorrido de cocina coordinados antes de llegar",
+        "bullet3": "Servicio discreto y profesional de la preparación hasta la limpieza"
+      }
+    },
+    "chefs": {
+      "billyCrocker": {
+        "role": "Chef privado de celebridad",
+        "bio": "Billy Crocker lleva cocina de nivel restaurante a entornos privados — desde cenas íntimas en villa hasta charters completos en yate y eventos de gran formato. Los menús se adaptan a tus invitados, tu cocina y el ritmo de tu día en el agua o en casa.",
+        "imageAlt": "Billy Crocker — chef privado de celebridad",
+        "highlight1": "Fincas, yates y residencias privadas",
+        "highlight2": "Menús a medida — dietas y maridajes bienvenidos",
+        "highlight3": "Disponible en Miami y reservas de viaje"
+      }
+    },
+    "gallery": {
+      "0": "Cena con chef privado — plato servido",
+      "1": "Cena con chef privado — presentación en mesa",
+      "2": "Cena con chef privado — platos del chef",
+      "3": "Cena con chef privado — mesa de alta cocina",
+      "4": "Cena con chef privado — comida de celebración",
+      "5": "Cena con chef privado — servicio en yate o villa",
+      "6": "Cena con chef privado — menú curado"
+    }
+  }
+}

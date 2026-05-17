@@ -5,15 +5,18 @@ import Link from "next/link";
 import { SecurityAddToCartInline } from "@/components/security-add-to-cart-inline";
 import { SectionReveal } from "@/components/section-reveal";
 import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
-import { SECURITY_GUARD_RATE_CARDS } from "@/lib/security-guards-data";
-import { SERVICE_LINKS } from "@/lib/nav";
+import { getServiceLinks } from "@/lib/i18n/nav";
+import { getSecurityGuardRateCards } from "@/lib/i18n/security-guards-page";
+import { getI18n } from "@/lib/i18n/server";
 import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = {
-  title: "Security guards",
-  description:
-    "Licensed armed and unarmed bodyguards for Miami events, venues, and private travel — hourly rates with minimum booking through Blackline.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return {
+    title: t("nav.securityGuards"),
+    description: t("securityGuardsPage.metaDescription"),
+  };
+}
 
 const btnPrimary =
   "inline-flex min-h-11 items-center justify-center border border-gold/40 bg-gold px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-[#0b0b0b] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold-secondary hover:bg-gold-secondary hover:shadow-[0_0_0_1px_rgba(224,195,138,0.4),0_14px_48px_rgba(198,164,108,0.2)] active:translate-y-0";
@@ -24,11 +27,13 @@ const btnOutlineStrong =
 const cardClass =
   "group relative flex flex-col border border-gold/12 bg-[#0a0a0a]/90 p-8 shadow-[inset_0_1px_0_0_rgba(198,164,108,0.06),0_24px_64px_-24px_rgba(0,0,0,0.65)] transition-[border-color] duration-500 ease-out hover:border-gold/22 sm:p-10";
 
-const pairWithServices = SERVICE_LINKS.filter(
-  (s) => s.href !== "/services/security-guards",
-);
+export default async function SecurityGuardsPage() {
+  const { t } = await getI18n();
+  const rateCards = getSecurityGuardRateCards(t);
+  const pairWithServices = getServiceLinks(t).filter(
+    (s) => s.href !== "/services/security-guards",
+  );
 
-export default function SecurityGuardsPage() {
   return (
     <>
       <section className="relative min-h-[min(56vh,600px)] overflow-hidden border-b border-gold/10 bg-background">
@@ -53,24 +58,21 @@ export default function SecurityGuardsPage() {
         <div className="relative z-10 mx-auto flex min-h-[min(56vh,600px)] max-w-7xl items-end px-4 pb-14 pt-28 sm:px-6 sm:pb-16 sm:pt-32 lg:px-10 lg:pb-20">
           <div className="max-w-[min(40rem,100%)]">
             <p className="text-[0.65rem] font-semibold uppercase tracking-[0.42em] text-gold">
-              Personal protection
+              {t("securityGuardsPage.eyebrow")}
             </p>
             <div className="mt-5 h-px w-14 bg-gold/35" aria-hidden />
             <h1 className="hero-headline-in mt-6 font-serif text-[1.85rem] leading-[1.12] tracking-tight text-cream sm:text-4xl md:text-[2.65rem] lg:text-[2.95rem]">
-              Security guards
+              {t("nav.securityGuards")}
             </h1>
             <p className="mt-5 max-w-2xl text-[0.95rem] leading-[1.65] text-cream/75 sm:text-base">
-              Armed and unarmed bodyguards for Miami — nights out, private
-              events, estate stays, and high-traffic days when you want
-              professional coverage on your schedule. We book through the same
-              concierge team as your cars, yachts, and tables.
+              {t("securityGuardsPage.heroBody")}
             </p>
             <div className="hero-cta-in mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
               <Link href={CONTACT_TRIP_BUILDER_HREF} className={cn(btnPrimary, "sm:min-w-[200px]")}>
-                Request coverage
+                {t("securityGuardsPage.requestCoverage")}
               </Link>
               <a href="#rates" className={btnOutlineStrong}>
-                View rates
+                {t("securityGuardsPage.viewRates")}
               </a>
             </div>
           </div>
@@ -87,7 +89,7 @@ export default function SecurityGuardsPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
           <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:max-w-3xl lg:text-left">
             <p className="text-[0.65rem] font-medium uppercase tracking-[0.5em] text-gold/90">
-              Hourly rates
+              {t("securityGuardsPage.ratesEyebrow")}
             </p>
             <div
               className="mx-auto mt-4 h-px w-14 bg-gold/30 lg:mx-0"
@@ -97,16 +99,15 @@ export default function SecurityGuardsPage() {
               id="rates-heading"
               className="mt-5 font-serif text-2xl tracking-tight text-cream sm:text-3xl md:text-[2.1rem]"
             >
-              Unarmed and armed bodyguards
+              {t("securityGuardsPage.ratesHeadline")}
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-cream/60 sm:text-[0.9375rem]">
-              Choose the level of protection that fits your itinerary and venue
-              requirements. All bookings run a minimum of four hours per guard.
+              {t("securityGuardsPage.ratesBody")}
             </p>
           </div>
 
           <div className="mt-12 grid gap-6 lg:grid-cols-2 lg:gap-8">
-            {SECURITY_GUARD_RATE_CARDS.map((r) => (
+            {rateCards.map((r) => (
               <article
                 key={r.id}
                 className={cn(cardClass, "scroll-mt-[5.5rem]")}
@@ -152,7 +153,7 @@ export default function SecurityGuardsPage() {
                     id: r.id,
                     title: r.cartTitle,
                     subtitle: r.minimum,
-                    priceHint: `${r.price} (per guard)`,
+                    priceHint: r.priceHint,
                     href: "/services/security-guards#rates",
                   }}
                 />
@@ -168,18 +169,17 @@ export default function SecurityGuardsPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
           <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:max-w-3xl lg:text-left">
             <p className="text-[0.65rem] font-medium uppercase tracking-[0.5em] text-gold/90">
-              Pair with your trip
+              {t("securityGuardsPage.pairEyebrow")}
             </p>
             <div
               className="mx-auto mt-4 h-px w-14 bg-gold/30 lg:mx-0"
               aria-hidden
             />
             <h2 className="mt-5 font-serif text-2xl tracking-tight text-cream sm:text-3xl md:text-[2.1rem]">
-              Layer protection onto any Blackline booking
+              {t("securityGuardsPage.pairHeadline")}
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-cream/60 sm:text-[0.9375rem]">
-              Security is quoted alongside the experiences you already hold with
-              us — same thread, aligned timing.
+              {t("securityGuardsPage.pairBody")}
             </p>
           </div>
 

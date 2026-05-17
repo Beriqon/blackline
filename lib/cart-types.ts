@@ -12,6 +12,8 @@ export type CartCategory =
   | "parasailing"
   | "security-armed"
   | "security-unarmed"
+  | "atv"
+  | "utv"
   | "other";
 
 /** Optional add-ons for the whole request (any categories). */

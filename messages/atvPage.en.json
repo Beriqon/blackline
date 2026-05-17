@@ -1,0 +1,170 @@
+{
+  "atvPage": {
+    "metaDescription": "Guided ATV and UTV trail experiences in Miami — helmet and gear included, free action photos, solo to family-sized UTVs, plus Night Glow neon-lit rides until 1 AM. Book through Blackline.",
+    "bannerTagline": "Guided Miami trails · helmets, photos & gear on every ride",
+    "heroEyebrow": "Miami ATV & UTV · Blackline",
+    "heroLine1": "Terrain",
+    "heroLine2Prefix": "that hits",
+    "heroLine2Highlight": "different",
+    "heroBody": "Guided machines, real dirt under the tires, and concierge timing from day sessions through Night Glow after dark — one thread with the rest of your Blackline itinerary.",
+    "ctaBookTour": "Book your tour",
+    "ctaViewPricing": "View pricing",
+    "pickRideEyebrow": "Configure the vibe",
+    "pickRideHeadline": "How many riders?",
+    "pickRideBody": "Pick the machine footprint that matches your group — we confirm counts and mix of ATVs vs UTVs when you book.",
+    "riderCards": {
+      "atv": {
+        "eyebrow": "Solo / duo",
+        "title": "ATV",
+        "line": "1–2 riders per ATV",
+        "blurb": "Single machines with a guide on the trail — ideal when you want nimble, hands-on riding."
+      },
+      "utv2": {
+        "eyebrow": "Pair up",
+        "title": "2-seat UTV",
+        "line": "2 riders per UTV",
+        "blurb": "Side-by-side seating for couples or best pairs who want shared cockpit energy."
+      },
+      "utv4": {
+        "eyebrow": "Crew",
+        "title": "4-seat UTV",
+        "line": "3–4 riders per UTV",
+        "blurb": "Bring the family or small squad in one vehicle with the same guided format."
+      }
+    },
+    "pricingEyebrow": "ATV tours",
+    "pricingHeadline": "Pick your duration",
+    "pricingBody": "Rates are per ATV. Helmets, goggles, guide, on-site briefing, and free download photos are included on every tier.",
+    "utvEyebrow": "Bring the squad",
+    "utvHeadline": "UTV tours",
+    "utvBody": "Multi-passenger side-by-sides with the same guided safety cadence and complimentary photos — priced per vehicle, not per guest.",
+    "nightGlowEyebrow": "After dark",
+    "nightGlowHeadline": "Night Glow Tours",
+    "nightGlowBody": "Hit the trails after sunset on neon-lit ATVs, kitted out in glow gear, under a sky full of stars. It's the wildest after-dark ride in Miami — built for unforgettable memories and the kind of photos your feed deserves.",
+    "nightGlowBullets": {
+      "0": "Glow-in-the-dark gear included",
+      "1": "Neon-lit ATVs and UTVs",
+      "2": "Pro night photos included",
+      "3": "Tours run until 1 AM"
+    },
+    "nightGlowCta": "Book Night Tour",
+    "nightGlowItinerary": "Custom itinerary",
+    "galleryEyebrow": "On the trail",
+    "galleryHeadline": "Ride gallery",
+    "galleryBody": "A rotating look at ATV and UTV moments on the trail — swipe or pause to browse.",
+    "galleryAria": "ATV and UTV trail gallery",
+    "faqEyebrow": "Questions",
+    "faqHeadline": "FAQ",
+    "faq": {
+      "0": {
+        "q": "What's included with every tour?",
+        "a": "Every tour includes DOT-approved helmets, safety goggles, a trained guide, on-site safety training, and free action photos you can download after your ride."
+      },
+      "1": {
+        "q": "Do I need experience to ride?",
+        "a": "Nope. Riders of all experience levels are welcome. Your guide walks you through the controls, safety basics, and the trail before you set off."
+      },
+      "2": {
+        "q": "What should I wear?",
+        "a": "Closed-toe shoes are recommended for the best grip and protection, but sandals are allowed."
+      },
+      "3": {
+        "q": "What time should I arrive?",
+        "a": "Arrive 45 minutes before your tour start time. This gives us room for check-in, waivers, gear fitting, and a full safety briefing before you ride."
+      },
+      "4": {
+        "q": "What's your cancellation policy?",
+        "a": "Cancel 5+ days in advance for a full refund. Rescheduling is free up to 24 hours before your tour. Within 24 hours, deposits are non-refundable but we'll do our best to move your booking."
+      },
+      "5": {
+        "q": "Is there a weight limit?",
+        "a": "Our ATVs support up to 400 lbs per machine. Our UTVs support up to 2,000 lbs total across all seats. If you have questions about fit, give us a call before booking."
+      },
+      "6": {
+        "q": "Do you offer night tours?",
+        "a": "Yes. Our Night Glow Tours run after sunset with neon-lit ATVs, glow gear, and pro night photos. Tours run as late as 1 AM, 7 nights a week."
+      }
+    },
+    "bookingEyebrow": "Concierge booking",
+    "bookingHeadline": "Lock in your ride with Blackline",
+    "bookingBody": "Share your dates, group size, and whether you want day trails or a Night Glow slot — we confirm vehicles, timing, and how this fits chauffeur transfers, villas, yachts, or your night out.",
+    "bookingSteps": {
+      "0": "Message WhatsApp or Instagram with your window",
+      "1": "Tell us ATV vs UTV and 45m / 1h / 2h preferences",
+      "2": "We confirm guide, machines, and meet time",
+      "3": "Bundle with the rest of your Miami itinerary"
+    },
+    "directLine": "Direct line:",
+    "callUs": "Call us",
+    "whatsappAtv": "Hi Blackline — I'd like to book an ATV or UTV tour. Can you share availability and the best option for my group?",
+    "whatsappNight": "Hi Blackline — I'd like to book a Night Glow ATV/UTV tour. What dates and start times do you have?",
+    "tours": {
+      "45m": {
+        "duration": "45 min",
+        "note": "Monday–Thursday only",
+        "unit": "per ATV"
+      },
+      "1h": {
+        "duration": "1 hour",
+        "badge": "Most popular",
+        "unit": "per ATV"
+      },
+      "2h": {
+        "duration": "2 hours",
+        "note": "Extra trail time",
+        "unit": "per ATV"
+      }
+    },
+    "utvProducts": {
+      "utv-2": {
+        "title": "2-seat UTV",
+        "tagline": "Side-by-side for two",
+        "durations": {
+          "1h": "1 hour",
+          "2h": "2 hours"
+        }
+      },
+      "utv-4": {
+        "title": "4-seat UTV",
+        "tagline": "Great for families",
+        "badge": "Best for groups",
+        "durations": {
+          "1h": "1 hour",
+          "2h": "2 hours"
+        }
+      }
+    },
+    "pricingGrid": {
+      "tourSuffix": "tour",
+      "featureHelmet": "Helmet & gear",
+      "featureGuided": "Guided experience",
+      "featurePhotos": "Free photos",
+      "bookThisTour": "Book this tour",
+      "bookThisUtv": "Book this UTV",
+      "perUtv": "per UTV",
+      "seatsRiders": "Seats {seats} riders"
+    },
+    "dialog": {
+      "closeBooking": "Close booking",
+      "close": "Close",
+      "body": "Helmets, goggles, guide, briefing, and free photos included. Tell us your group size — we'll confirm machines and timing on checkout.",
+      "machinesLabel": "Number of {machines}",
+      "ridersLabel": "Number of riders",
+      "ridersHint": "Up to {perMachine} per {machineType} ({maxRiders} max with {count} {machineWord}).",
+      "machine": "machine",
+      "machines": "machines",
+      "atv": "ATV",
+      "atvs": "ATVs",
+      "utv": "UTV",
+      "utvs": "UTVs",
+      "estimatedTotal": "Estimated total",
+      "perUtvParen": "(per UTV)",
+      "tourTitle": "{duration} ATV tour",
+      "utvTourTitle": "{title} tour",
+      "cartSubtitleAtv": "{machines} {machineLabel} · {riders} {riderLabel}",
+      "cartSubtitleUtv": "{duration} · {machines} {machineLabel} · {riders} {riderLabel}",
+      "rider": "rider",
+      "riders": "riders"
+    }
+  }
+}

@@ -5,13 +5,16 @@ import { ContactTripBuilderScroll } from "@/components/contact-trip-builder-scro
 import { CustomPackageWhatsApp } from "@/components/custom-package-whatsapp";
 import { SectionReveal } from "@/components/section-reveal";
 import { CONTACT_TRIP_BUILDER_SECTION_ID } from "@/lib/contact-hrefs";
+import { getI18n } from "@/lib/i18n/server";
 import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = {
-  title: "Contact",
-  description:
-    "Reach Blackline Miami by WhatsApp, phone, or Instagram DM — fast replies for exotic car rentals, yachts, and concierge requests.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return {
+    title: t("common.contact"),
+    description: t("contactPage.metaDescription"),
+  };
+}
 
 const PHONE_E164 = "17866840345";
 const PHONE_DISPLAY = "+1 (786) 684-0345";
@@ -69,7 +72,9 @@ function InstagramIcon({ className }: { className?: string }) {
   );
 }
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const { t } = await getI18n();
+
   return (
     <>
       <ContactTripBuilderScroll />
@@ -96,16 +101,14 @@ export default function ContactPage() {
         <div className="relative z-10 mx-auto flex min-h-[min(58vh,640px)] max-w-7xl items-center px-4 py-16 sm:px-6 sm:py-20 lg:px-10">
           <div className="w-full max-w-[min(44rem,100%)] text-left">
             <p className="text-[0.65rem] font-semibold uppercase tracking-[0.42em] text-gold">
-              Contact
+              {t("contactPage.eyebrow")}
             </p>
             <div className="mt-5 h-px w-14 bg-gold/35" aria-hidden />
             <h1 className="hero-headline-in mt-6 font-serif text-[2.35rem] leading-[1.12] tracking-tight text-cream sm:text-5xl md:text-[3.1rem] lg:text-[3.45rem]">
-              Direct line. Fast replies.
+              {t("contactPage.headline")}
             </h1>
             <p className="mt-4 max-w-2xl text-[0.95rem] leading-[1.65] text-cream/72 sm:text-base">
-              Urgent exotic car or last-minute Miami plans? We don&apos;t route
-              you through email — message or call and we&apos;ll respond as
-              quickly as we can so you can confirm and move on.
+              {t("contactPage.heroBody")}
             </p>
             <div className="hero-cta-in mt-9 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
               <a
@@ -115,15 +118,15 @@ export default function ContactPage() {
                 className={cn(btnPrimary, "sm:min-w-[240px]")}
               >
                 <WhatsAppIcon className="size-5 shrink-0 text-[#0b0b0b]" />
-                WhatsApp
+                {t("common.whatsapp")}
               </a>
               <a href={TEL_HREF} className={btnOutlineStrong}>
                 <PhoneIcon className="size-[1.15rem] shrink-0" />
-                Call {PHONE_DISPLAY}
+                {t("common.call")} {PHONE_DISPLAY}
               </a>
             </div>
             <p className="mt-8 text-[0.7rem] font-medium uppercase tracking-[0.24em] text-cream/45 sm:mt-9">
-              Same-day &amp; short-notice requests welcome
+              {t("contactPage.sameDay")}
             </p>
           </div>
         </div>
@@ -135,16 +138,14 @@ export default function ContactPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
           <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:max-w-xl lg:text-left">
             <p className="text-[0.65rem] font-medium uppercase tracking-[0.5em] text-gold/90">
-              How to reach us
+              {t("contactPage.howToReach")}
             </p>
             <div className="mx-auto mt-4 h-px w-14 bg-gold/30 lg:mx-0" aria-hidden />
             <h2 className="mt-5 font-serif text-2xl tracking-tight text-cream sm:text-3xl md:text-[2.1rem]">
-              WhatsApp, phone, or Instagram
+              {t("contactPage.channelsTitle")}
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-cream/60 sm:text-[0.9375rem]">
-              Pick the channel that fits: WhatsApp for threads and photos, a
-              call for live detail — or Instagram DM if that&apos;s where you
-              already spend time.
+              {t("contactPage.channelsBody")}
             </p>
           </div>
 
@@ -155,14 +156,13 @@ export default function ContactPage() {
                 aria-hidden
               />
               <p className="text-[0.62rem] font-medium uppercase tracking-[0.38em] text-gold/75">
-                Recommended for speed
+                {t("contactPage.whatsappTitle")}
               </p>
               <h3 className="mt-4 font-serif text-xl tracking-tight text-cream sm:text-[1.35rem]">
-                WhatsApp
+                {t("common.whatsapp")}
               </h3>
               <p className="mt-4 text-[0.9375rem] leading-relaxed text-cream/58">
-                Share pickup time, vehicle type, and location in one thread —
-                easy for photos, flight updates, and quick confirmations.
+                {t("contactPage.whatsappBody")}
               </p>
               <div className="mt-auto border-t border-gold/10 pt-8">
                 <a
@@ -172,7 +172,7 @@ export default function ContactPage() {
                   className={cn(btnPrimary, "w-full sm:w-auto")}
                 >
                   <WhatsAppIcon className="size-5 shrink-0 text-[#0b0b0b]" />
-                  Open WhatsApp
+                  {t("contactPage.openWhatsapp")}
                 </a>
               </div>
             </article>
@@ -183,14 +183,13 @@ export default function ContactPage() {
                 aria-hidden
               />
               <p className="text-[0.62rem] font-medium uppercase tracking-[0.38em] text-gold/75">
-                Prefer voice
+                {t("contactPage.phoneTitle")}
               </p>
               <h3 className="mt-4 font-serif text-xl tracking-tight text-cream sm:text-[1.35rem]">
-                Call
+                {t("common.call")}
               </h3>
               <p className="mt-4 text-[0.9375rem] leading-relaxed text-cream/58">
-                Need to lock something in on the spot or walk through options?
-                Call us — we&apos;re used to tight turnarounds.
+                {t("contactPage.phoneBody")}
               </p>
               <div className="mt-auto border-t border-gold/10 pt-8">
                 <a href={TEL_HREF} className={cn(btnOutlineStrong, "w-full sm:w-auto")}>
@@ -206,15 +205,13 @@ export default function ContactPage() {
                 aria-hidden
               />
               <p className="text-[0.62rem] font-medium uppercase tracking-[0.38em] text-gold/75">
-                Social &amp; casual
+                {t("contactPage.instagramTitle")}
               </p>
               <h3 className="mt-4 font-serif text-xl tracking-tight text-cream sm:text-[1.35rem]">
-                Instagram
+                {t("common.instagram")}
               </h3>
               <p className="mt-4 text-[0.9375rem] leading-relaxed text-cream/58">
-                Prefer DMs? Send us a message on Instagram — share moodboards,
-                itinerary screenshots, or quick questions and we&apos;ll reply
-                when you&apos;re on the app.
+                {t("contactPage.instagramBody")}
               </p>
               <div className="mt-auto border-t border-gold/10 pt-8">
                 <a
@@ -224,7 +221,7 @@ export default function ContactPage() {
                   className={cn(btnOutlineStrong, "w-full sm:w-auto")}
                 >
                   <InstagramIcon className="size-[1.15rem] shrink-0" />
-                  Message on Instagram
+                  {t("contactPage.messageInstagram")}
                 </a>
               </div>
             </article>
@@ -241,25 +238,23 @@ export default function ContactPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
           <div className="mx-auto max-w-2xl text-center lg:mx-auto lg:max-w-3xl">
             <p className="text-[0.65rem] font-medium uppercase tracking-[0.5em] text-gold/90">
-              Trip builder
+              {t("contactPage.tripBuilder")}
             </p>
             <div className="mx-auto mt-4 h-px w-14 bg-gold/30" aria-hidden />
             <h2 className="mt-5 font-serif text-2xl tracking-tight text-cream sm:text-3xl md:text-[2.1rem]">
-              Custom package — WhatsApp ready
+              {t("contactPage.customPackage")}
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-cream/60 sm:text-[0.9375rem]">
-              Choose cars, yachts, villas, jets, jet skis, banana boats, hosts,
-              security, and more. Open WhatsApp with the generated message to
-              forward in one tap.
+              {t("contactPage.customPackageBody")}
             </p>
           </div>
 
           <div className="mx-auto mt-12 max-w-4xl rounded-sm border border-gold/12 bg-[#070707]/90 p-6 shadow-[inset_0_1px_0_0_rgba(198,164,108,0.06),0_24px_64px_-24px_rgba(0,0,0,0.65)] sm:p-8 lg:p-10">
             <CustomPackageWhatsApp
               idSuffix="contact"
-              buildHeading="Build your package"
-              buildDescription="Select what you want — the message appears below. Tap the button to open WhatsApp with this text."
-              whatsAppIntroLine="Hi Blackline — I'd like a custom Miami concierge package (via contact page builder)."
+              buildHeading={t("contactPage.buildHeading")}
+              buildDescription={t("contactPage.buildDescription")}
+              whatsAppIntroLine={t("contactPage.whatsAppIntroLine")}
             />
           </div>
         </div>
@@ -272,12 +267,10 @@ export default function ContactPage() {
           <div className="mx-auto max-w-3xl text-center">
             <div className="mx-auto h-px w-16 bg-gold/45" aria-hidden />
             <h2 className="mt-10 font-serif text-[1.65rem] leading-[1.12] tracking-tight text-cream sm:text-3xl md:text-[2.25rem]">
-              Ready when you are
+              {t("contactPage.readyTitle")}
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-[0.95rem] leading-relaxed text-cream/72 sm:text-lg">
-              Share your dates, party size, and how quickly you need an answer —
-              we&apos;ll match your pace and build options around what matters to
-              you.
+              {t("contactPage.readyBody")}
             </p>
           </div>
         </div>

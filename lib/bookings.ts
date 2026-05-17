@@ -161,11 +161,14 @@ export function getExoticCarBookingModes(car: ExoticCar): ExoticCarBookingMode[]
   return ["self-drive"];
 }
 
+export const CHAUFFEUR_DURATION_HOURS = [2, 4, 6, 8] as const;
+export const CHAUFFEUR_DEFAULT_DURATION_HOURS = 4;
+
 export function getExoticCarBookingConfig(car: ExoticCar) {
   return {
     rentalModes: getExoticCarBookingModes(car),
     chauffeurSlots: ["10:00", "13:00", "16:00", "19:00"] as const,
-    chauffeurDurationHours: [2, 4, 6, 8] as const,
+    chauffeurDurationHours: CHAUFFEUR_DURATION_HOURS,
     minimumSelfDriveDays: 1,
   };
 }

@@ -2,6 +2,17 @@
  * Optional gallery paths for fleet product pages (`public/` URLs).
  * Add folders as you upload photography — same pattern as existing yacht galleries.
  */
+import { AZIMUT_105_SV_GALLERY_PATHS } from "./azimut-105-sv-gallery";
+import { AZIMUT_116_GALLERY_PATHS } from "./azimut-116-gallery";
+import { AZIMUT_88_GALLERY_PATHS } from "./azimut-88-gallery";
+import { PERSHING_90_REFIT_GALLERY_PATHS } from "./pershing-90-refit-gallery";
+import { PERSHING_GTX_GALLERY_PATHS } from "./pershing-gtx-gallery";
+import { PRINCESS_88_PFO_GALLERY_PATHS } from "./princess-88-pfo-gallery";
+import { SAN_LORENZO_97_GALLERY_PATHS } from "./san-lorenzo-97-gallery";
+import { SIRENA_88_GALLERY_PATHS } from "./sirena-88-gallery";
+import { SUNSEEKER_76_GALLERY_PATHS } from "./sunseeker-76-gallery";
+import { SUNSEEKER_96_GALLERY_PATHS } from "./sunseeker-96-gallery";
+import { TRINITY_GALLERY_PATHS } from "./trinity-gallery";
 const PRESTIGE_75_OCEANA_GALLERY: readonly string[] = [
   "/yachts/75prestigeoceana/75prestigeoceana.jpg",
   ...([1, 2, 3, 4, 5, 6, 7, 8, 9] as const).map(
@@ -468,9 +479,27 @@ const AZIMUT_68_CERULEAN_GALLERY: readonly string[] = [
   "/yachts/68azimut/68azimut11.jpg",
 ];
 
+/** Flagship listings with dedicated gallery modules (catalog pages 1–2). */
+const CURATED_FLAGSHIP_GALLERY_PATHS: Readonly<
+  Record<string, readonly string[]>
+> = {
+  "166-trinity": TRINITY_GALLERY_PATHS,
+  "116-pershing-gtx": PERSHING_GTX_GALLERY_PATHS,
+  "116-azimut": AZIMUT_116_GALLERY_PATHS,
+  "88-azimut-2023": AZIMUT_88_GALLERY_PATHS,
+  "88-sirena": SIRENA_88_GALLERY_PATHS,
+  "105-azimut-sv": AZIMUT_105_SV_GALLERY_PATHS,
+  "96-sunseeker": SUNSEEKER_96_GALLERY_PATHS,
+  "97-san-lorenzo": SAN_LORENZO_97_GALLERY_PATHS,
+  "90-pershing-refit-2025": PERSHING_90_REFIT_GALLERY_PATHS,
+  "76-sunseeker": SUNSEEKER_76_GALLERY_PATHS,
+  "88-princess-pfo": PRINCESS_88_PFO_GALLERY_PATHS,
+};
+
 export const YACHT_FLEET_GALLERY_PATHS: Readonly<
   Record<string, readonly string[]>
 > = {
+  ...CURATED_FLAGSHIP_GALLERY_PATHS,
   "75-prestige-oceana": PRESTIGE_75_OCEANA_GALLERY,
   "74-sunseeker": SUNSEEKER_74_2023_GALLERY,
   "72-azimut-7s": AZIMUT_72_7S_GALLERY,
@@ -535,4 +564,15 @@ export const YACHT_FLEET_GALLERY_PATHS: Readonly<
 
 export function getFleetGalleryPaths(yachtId: string): readonly string[] {
   return YACHT_FLEET_GALLERY_PATHS[yachtId] ?? [];
+}
+
+/** Gallery for product pages and catalog modals — fleet paths, then optional cover. */
+export function resolveYachtGalleryPaths(yacht: {
+  id: string;
+  cardCoverSrc?: string;
+}): readonly string[] {
+  const paths = getFleetGalleryPaths(yacht.id);
+  if (paths.length > 0) return paths;
+  if (yacht.cardCoverSrc) return [yacht.cardCoverSrc];
+  return [];
 }

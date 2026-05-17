@@ -1,7 +1,11 @@
-import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { YachtFleetProduct } from "@/components/yacht-fleet-product";
+import { getI18n } from "@/lib/i18n/server";
+import {
+  getYachtProductMetadataDescription,
+  localizeYacht,
+} from "@/lib/i18n/yachts-page";
 import { getYachtBySlug, YACHTS } from "@/lib/yachts-data";
 
 /** These use dedicated `page.tsx` files under `services/yachts/<slug>/`. */
@@ -27,16 +31,17 @@ export async function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: Props) {
+  const { locale, t } = await getI18n();
   const { slug } = await params;
-  const y = getYachtBySlug(slug);
-  if (!y) return { title: "Yacht charter" };
+  const yacht = getYachtBySlug(slug);
+  if (!yacht) {
+    return { title: t("nav.yachts") };
+  }
+  const localized = localizeYacht(yacht, locale);
   return {
-    title: `${y.name} — Yacht charter`,
-    description:
-      y.description.length > 155
-        ? `${y.description.slice(0, 152)}…`
-        : y.description,
+    title: `${localized.name} — ${t("nav.yachts")}`,
+    description: getYachtProductMetadataDescription(yacht, locale),
   };
 }
 

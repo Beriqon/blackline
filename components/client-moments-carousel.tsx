@@ -6,6 +6,7 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -19,7 +20,11 @@ export type ClientMomentSlide = {
 
 type ClientMomentsCarouselProps = {
   images: readonly ClientMomentSlide[];
+  /** Step mode: pause between slides. Continuous: smooth endless scroll. */
+  autoScroll?: "step" | "continuous";
   intervalMs?: number;
+  /** Pixels per second when `autoScroll` is `continuous`. */
+  scrollSpeed?: number;
   /** Accessible name for the carousel region (e.g. "Past shoots gallery"). */
   ariaLabel?: string;
 };
@@ -34,11 +39,18 @@ function getStep(scroller: HTMLDivElement): number {
 
 export function ClientMomentsCarousel({
   images,
+  autoScroll = "step",
   intervalMs = 4000,
+  scrollSpeed = 36,
   ariaLabel = "Client moments gallery",
 }: ClientMomentsCarouselProps) {
   const n = images.length;
+  const loopSlides = useMemo(
+    () => (autoScroll === "continuous" && n > 1 ? [...images, ...images] : images),
+    [autoScroll, images, n],
+  );
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const activeRef = useRef(0);
   const [paused, setPaused] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [active, setActive] = useState(0);
@@ -55,13 +67,26 @@ export function ClientMomentsCarousel({
     if (!el) return;
     const step = getStep(el);
     if (step <= 0) return;
+
+    if (autoScroll === "continuous" && n > 1) {
+      const loopWidth = el.scrollWidth / 2;
+      const offset =
+        loopWidth > 0 ? ((el.scrollLeft % loopWidth) + loopWidth) % loopWidth : 0;
+      const i = Math.round(offset / step) % n;
+      activeRef.current = i;
+      setActive(i);
+      return;
+    }
+
     const i = Math.round(el.scrollLeft / step);
-    setActive(Math.min(Math.max(0, i), n - 1));
-  }, [n]);
+    const next = Math.min(Math.max(0, i), n - 1);
+    activeRef.current = next;
+    setActive(next);
+  }, [autoScroll, n]);
 
   useLayoutEffect(() => {
     syncActiveFromScroll();
-  }, [syncActiveFromScroll, n]);
+  }, [syncActiveFromScroll, n, loopSlides.length]);
 
   const scrollByStep = useCallback(
     (dir: 1 | -1) => {
@@ -71,6 +96,15 @@ export function ClientMomentsCarousel({
       const maxScroll = el.scrollWidth - el.clientWidth;
       if (maxScroll <= 0) return;
       const behavior = reduceMotion ? ("auto" as const) : ("smooth" as const);
+
+      if (autoScroll === "continuous" && n > 1) {
+        const loopWidth = el.scrollWidth / 2;
+        if (dir === 1 && el.scrollLeft + step >= loopWidth - 2) {
+          el.scrollLeft -= loopWidth;
+        } else if (dir === -1 && el.scrollLeft <= 2) {
+          el.scrollLeft += loopWidth;
+        }
+      }
 
       if (dir === 1) {
         if (el.scrollLeft + step >= maxScroll - 2) {
@@ -86,14 +120,51 @@ export function ClientMomentsCarousel({
         }
       }
     },
-    [reduceMotion],
+    [autoScroll, n, reduceMotion],
   );
 
   useEffect(() => {
-    if (paused || reduceMotion || n < 2) return;
+    if (paused || reduceMotion || n < 2 || autoScroll !== "step") return;
     const id = window.setInterval(() => scrollByStep(1), intervalMs);
     return () => window.clearInterval(id);
-  }, [paused, reduceMotion, n, intervalMs, scrollByStep]);
+  }, [paused, reduceMotion, n, intervalMs, scrollByStep, autoScroll]);
+
+  useEffect(() => {
+    if (paused || reduceMotion || n < 2 || autoScroll !== "continuous") return;
+
+    const el = scrollerRef.current;
+    if (!el) return;
+
+    let raf = 0;
+    let last = performance.now();
+
+    const tick = (now: number) => {
+      const dt = Math.min((now - last) / 1000, 0.05);
+      last = now;
+
+      el.scrollLeft += scrollSpeed * dt;
+
+      const loopWidth = el.scrollWidth / 2;
+      if (loopWidth > 0 && el.scrollLeft >= loopWidth) {
+        el.scrollLeft -= loopWidth;
+      }
+
+      const step = getStep(el);
+      if (step > 0 && loopWidth > 0) {
+        const offset = ((el.scrollLeft % loopWidth) + loopWidth) % loopWidth;
+        const i = Math.round(offset / step) % n;
+        if (i !== activeRef.current) {
+          activeRef.current = i;
+          setActive(i);
+        }
+      }
+
+      raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [paused, reduceMotion, n, autoScroll, scrollSpeed, loopSlides.length]);
 
   const goToIndex = useCallback(
     (i: number) => {
@@ -142,15 +213,19 @@ export function ClientMomentsCarousel({
         ref={scrollerRef}
         onScroll={syncActiveFromScroll}
         className={cn(
-          "flex snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden pb-2 pl-11 pr-11 sm:gap-3 sm:pl-12 sm:pr-12",
+          "flex gap-3 overflow-x-auto overflow-y-hidden pb-2 pl-11 pr-11 sm:gap-3 sm:pl-12 sm:pr-12",
           "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+          autoScroll === "continuous" ? "snap-none" : "snap-x snap-mandatory",
         )}
       >
-        {images.map((img, i) => (
+        {loopSlides.map((img, i) => (
           <div
             key={`${img.src}-${i}`}
             data-carousel-card
-            className="group relative aspect-[4/5] w-[38vw] max-w-[220px] shrink-0 snap-start overflow-hidden border border-gold/10 bg-[#0b0b0b] transition-[border-color,box-shadow] duration-500 ease-out hover:border-gold/22 hover:shadow-[0_0_0_1px_rgba(198,164,108,0.06)] sm:w-[min(28vw,220px)] md:aspect-[3/4] md:h-auto md:w-[220px] md:max-w-[220px]"
+            className={cn(
+              "group relative aspect-[4/5] w-[38vw] max-w-[220px] shrink-0 overflow-hidden border border-gold/10 bg-[#0b0b0b] transition-[border-color,box-shadow] duration-500 ease-out hover:border-gold/22 hover:shadow-[0_0_0_1px_rgba(198,164,108,0.06)] sm:w-[min(28vw,220px)] md:aspect-[3/4] md:h-auto md:w-[220px] md:max-w-[220px]",
+              autoScroll === "continuous" ? "" : "snap-start",
+            )}
           >
             <Image
               src={img.src}

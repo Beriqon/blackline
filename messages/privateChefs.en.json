@@ -1,0 +1,75 @@
+{
+  "privateChefsPage": {
+    "metaDescription": "Private and travel chefs for villas, yachts, estates, and events — custom menus, dietary needs, and international fly-outs coordinated by Blackline.",
+    "eyebrow": "Culinary concierge",
+    "headline": "Private chefs",
+    "heroBody": "Chefs for every setting — private homes, yachts, villa stays, and celebrations. Hire your own chef on your schedule, anywhere you are. Travel chefs can fly with your group, including destinations outside the United States.",
+    "requestChef": "Request a chef",
+    "meetTheChefs": "Meet the chefs",
+    "yourPrivateChef": "Your private chef",
+    "travelChef": "Travel chef",
+    "bookEyebrow": "What you can book",
+    "bookHeadline": "Private chef or travel chef — built around your itinerary",
+    "bookBody": "From a single dinner to a full charter or villa stay. We coordinate menus, provisioning, and timing in the same thread as your yachts, stays, and transport.",
+    "rosterEyebrow": "The roster",
+    "rosterHeadline": "Meet the chefs",
+    "rosterBody": "Our culinary roster is growing. Today you can book Billy Crocker; additional private chefs are joining soon — ask your concierge to be notified when new talent goes live.",
+    "galleryEyebrow": "Food & experiences",
+    "galleryHeadline": "From the table",
+    "galleryBody": "Plated dinners, yacht charters, and private celebrations — a look at the style of service our chefs bring on site. Swipe or pause to browse.",
+    "galleryAria": "Private chef food and dining gallery",
+    "pairEyebrow": "Pair with your trip",
+    "pairHeadline": "Add a chef to what you already have booked",
+    "pairBody": "Yacht day, villa week, or a night that needs a driver and a table? We slot your chef into the same itinerary and comms thread.",
+    "pairChef": "+ Chef",
+    "pairFooter": "Mention your dates, guest count, and kitchen or galley setup when you inquire — we'll quote the chef together with your yacht, villa, or event plan.",
+    "comingSoon": {
+      "label": "Coming soon",
+      "title": "More chefs joining the roster",
+      "description": "Additional private chefs — more cuisines, languages, and travel schedules — coming soon."
+    },
+    "venue": {
+      "0": "Private homes & estates",
+      "1": "Yacht charters",
+      "2": "Villa stays",
+      "3": "Celebrations & corporate events"
+    },
+    "services": {
+      "privateChef": {
+        "eyebrow": "On your schedule",
+        "title": "Your private chef",
+        "description": "Hire a dedicated chef for a single dinner, a full weekend at the villa, or the length of your charter — timed to your party, dietary needs, and service style.",
+        "bullet1": "In-villa, on-yacht, and estate kitchens — plated dinners, family-style, or tasting menus",
+        "bullet2": "Menus built around your preferences, allergies, and wine pairings",
+        "bullet3": "Same concierge thread as your yachts, stays, and transport"
+      },
+      "travelChef": {
+        "eyebrow": "Beyond Miami",
+        "title": "Travel chef",
+        "description": "When the itinerary moves, your chef can move with you. Our travel chef holds a valid passport and can fly with your group for domestic and international bookings.",
+        "bullet1": "Fly-outs for houses, yachts, and destination events outside the U.S.",
+        "bullet2": "Provisioning and kitchen walk-throughs coordinated before arrival",
+        "bullet3": "Discreet, professional service from prep through cleanup"
+      }
+    },
+    "chefs": {
+      "billyCrocker": {
+        "role": "Celebrity private chef",
+        "bio": "Billy Crocker brings restaurant-level cooking to private settings — from intimate villa dinners to full-service yacht charters and large-format events. Menus are tailored to your guests, your kitchen, and the rhythm of your day on the water or at home.",
+        "imageAlt": "Billy Crocker — celebrity private chef",
+        "highlight1": "Estates, yachts, and private residences",
+        "highlight2": "Custom menus — dietary needs and wine pairings welcome",
+        "highlight3": "Available for Miami and travel bookings"
+      }
+    },
+    "gallery": {
+      "0": "Private chef dining — plated course",
+      "1": "Private chef dining — table presentation",
+      "2": "Private chef dining — chef-prepared dishes",
+      "3": "Private chef dining — fine dining spread",
+      "4": "Private chef dining — celebration meal",
+      "5": "Private chef dining — yacht or villa service",
+      "6": "Private chef dining — curated menu"
+    }
+  }
+}

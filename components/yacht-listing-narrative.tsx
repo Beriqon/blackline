@@ -1,3 +1,6 @@
+"use client";
+
+import { useLocale } from "@/components/locale-provider";
 import { cn } from "@/lib/utils";
 
 const labelClass =
@@ -17,6 +20,8 @@ export function YachtListingAbout({
   departure,
   className,
 }: YachtListingAboutProps & { className?: string }) {
+  const { t } = useLocale();
+
   return (
     <div
       className={cn(
@@ -24,7 +29,7 @@ export function YachtListingAbout({
         className,
       )}
     >
-      <p className={labelClass}>About this yacht</p>
+      <p className={labelClass}>{t("yachtsPage.listing.aboutThisYacht")}</p>
       <h2 className="mt-3 font-serif text-xl leading-snug text-cream/95 sm:text-2xl">
         {tagline}
       </h2>
@@ -40,7 +45,9 @@ export function YachtListingAbout({
       </div>
       {departure ? (
         <p className="mt-5 border border-gold/[0.09] bg-[#0c0c0c] px-4 py-3 text-[0.8125rem] leading-relaxed text-cream/70">
-          <span className="font-medium text-cream/85">Departure:</span>{" "}
+          <span className="font-medium text-cream/85">
+            {t("yachtsPage.listing.departure")}
+          </span>{" "}
           {departure}
         </p>
       ) : null}
@@ -55,7 +62,7 @@ export type YachtListingIncludedProps = {
 
 export type YachtListingSpecsRow = { k: string; v: string };
 
-/** Specifications + what’s included side by side so both read as primary, not footer content. */
+/** Specifications + what's included side by side so both read as primary, not footer content. */
 export function YachtListingSpecsAndIncluded({
   specRows,
   included,
@@ -64,6 +71,8 @@ export function YachtListingSpecsAndIncluded({
 }: {
   specRows: readonly YachtListingSpecsRow[];
 } & YachtListingIncludedProps & { className?: string }) {
+  const { t } = useLocale();
+
   return (
     <div
       className={cn(
@@ -73,59 +82,56 @@ export function YachtListingSpecsAndIncluded({
     >
       <div className="grid gap-10 sm:grid-cols-2 sm:gap-8 lg:gap-14">
         <div>
-          <p className={labelClass}>Specifications</p>
+          <p className={labelClass}>{t("yachtsPage.listing.specifications")}</p>
           <dl className="mt-5 grid gap-4 sm:grid-cols-2">
             {specRows.map((row) => (
               <div
                 key={row.k}
-                className="border border-gold/[0.09] bg-[#0c0c0c] px-4 py-3.5"
+                className="border border-gold/[0.08] bg-[#0c0c0c] px-4 py-3"
               >
-                <dt className="text-[0.58rem] font-medium uppercase tracking-[0.24em] text-cream/40">
+                <dt className="text-[0.58rem] font-medium uppercase tracking-[0.28em] text-gold/65">
                   {row.k}
                 </dt>
-                <dd className="mt-1.5 font-serif text-lg text-cream/92">{row.v}</dd>
+                <dd className="mt-1.5 text-[0.9375rem] text-cream/88">{row.v}</dd>
               </div>
             ))}
           </dl>
         </div>
-        <YachtListingIncluded included={included} addOnNotes={addOnNotes} />
+        <div>
+          <p className={labelClass}>{t("yachtsPage.listing.whatsIncluded")}</p>
+          <ul className="mt-5 space-y-3" role="list">
+            {included.map((item) => (
+              <li
+                key={item}
+                className="flex gap-3 text-[0.9375rem] leading-snug text-cream/78"
+              >
+                <span
+                  className="mt-[0.4em] h-1 w-1 shrink-0 rounded-full bg-gold/45"
+                  aria-hidden
+                />
+                {item}
+              </li>
+            ))}
+          </ul>
+          {addOnNotes && addOnNotes.length > 0 ? (
+            <>
+              <p className="mt-8 text-[0.58rem] font-medium uppercase tracking-[0.28em] text-gold/65">
+                {t("yachtsPage.listing.addOnNotes")}
+              </p>
+              <ul className="mt-4 space-y-3" role="list">
+                {addOnNotes.map((note) => (
+                  <li
+                    key={note}
+                    className="text-[0.8125rem] leading-relaxed text-cream/55"
+                  >
+                    {note}
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
+        </div>
       </div>
-    </div>
-  );
-}
-
-export function YachtListingIncluded({
-  included,
-  addOnNotes,
-  className,
-}: YachtListingIncludedProps & { className?: string }) {
-  return (
-    <div className={className}>
-      <p className={labelClass}>What&apos;s included</p>
-      <ul
-        className="mt-4 space-y-2.5 text-[0.8125rem] leading-relaxed text-cream/58"
-        role="list"
-      >
-        {included.map((item) => (
-          <li key={item} className="flex gap-2">
-            <span
-              className="mt-2 h-1 w-1 shrink-0 rounded-full bg-gold/40"
-              aria-hidden
-            />
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
-      {addOnNotes?.length ? (
-        <ul
-          className="mt-4 space-y-2 border-t border-gold/10 pt-4 text-[0.75rem] leading-relaxed text-cream/45"
-          role="list"
-        >
-          {addOnNotes.map((note) => (
-            <li key={note}>{note}</li>
-          ))}
-        </ul>
-      ) : null}
     </div>
   );
 }

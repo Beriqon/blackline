@@ -22,9 +22,44 @@ export const VILLA_NEIGHBORHOODS = [
   "Aventura",
   "Hallandale Beach",
   "Fort Lauderdale",
+  "Downtown Miami",
+  "Tamiami",
+  "Coral Way",
 ] as const;
 
 export type VillaNeighborhood = (typeof VILLA_NEIGHBORHOODS)[number];
+
+export type VillaNightlyRates = {
+  readonly weekdayUsd: number;
+  readonly weekendUsd: number;
+};
+
+export function formatVillaUsd(amount: number): string {
+  return `$${amount.toLocaleString("en-US")}`;
+}
+
+export function villaNightlyRateFacts(
+  rates: VillaNightlyRates,
+): readonly VillaFact[] {
+  return [
+    {
+      label: "Weekday",
+      value: `${formatVillaUsd(rates.weekdayUsd)} / night`,
+    },
+    {
+      label: "Weekend",
+      value: `${formatVillaUsd(rates.weekendUsd)} / night`,
+    },
+  ];
+}
+
+const VILLA_RATES_1BR: VillaNightlyRates = { weekdayUsd: 370, weekendUsd: 405 };
+const VILLA_RATES_2BR: VillaNightlyRates = { weekdayUsd: 420, weekendUsd: 470 };
+const VILLA_RATES_3BR: VillaNightlyRates = { weekdayUsd: 545, weekendUsd: 605 };
+const VILLA_RATES_PORT_OF_MIAMI: VillaNightlyRates = {
+  weekdayUsd: 285,
+  weekendUsd: 305,
+};
 
 export type Villa = {
   id: string;
@@ -46,7 +81,44 @@ export type Villa = {
   policyNotes?: readonly string[];
   /** Gallery image URLs — local `/…` paths or absolute URLs. */
   galleryImages: readonly string[];
+  /** Empty gallery — cards and product page show a photos-coming-soon placeholder. */
+  photosComingSoon?: boolean;
+  /** Published weekday / weekend nightly rates (USD). */
+  nightlyRates?: VillaNightlyRates;
 };
+
+/** Name-first listing — copy and photography added later. */
+function villaPreviewEntry(
+  id: string,
+  name: string,
+  neighborhood: VillaNeighborhood,
+  subtitle: string,
+  cardTagline: string,
+): Villa {
+  return {
+    id,
+    name,
+    subtitle,
+    neighborhood,
+    cardTagline,
+    photosComingSoon: true,
+    lede: `${name} — photography and full stay details will be added to this listing soon. Request availability through Blackline.`,
+    description: `Detailed description, amenities, and gallery for ${name} are being prepared. Inquire for current availability, house rules, and pricing.`,
+    facts: [
+      { label: "Location", value: neighborhood },
+      { label: "Listing status", value: "Details coming soon" },
+      {
+        label: "Check-in & check-out",
+        value: "Confirmed when you book",
+      },
+    ],
+    highlights: [
+      "Photography and full property specifications coming soon",
+      "Availability and pricing confirmed on inquiry through Blackline",
+    ],
+    galleryImages: [],
+  };
+}
 
 /**
  * Miami-area villa stays. Add entries here as you receive names, copy, and photos.
@@ -3584,6 +3656,635 @@ export const VILLAS: readonly Villa[] = [
       "/stays/zuma/zuma24.jpg",
       "/stays/zuma/zuma25.jpg",
       "/stays/zuma/zuma26.jpg",
+    ],
+  },
+  {
+    id: "1br-brickell",
+    name: "1BR Brickell",
+    subtitle: "Brickell · high-rise",
+    neighborhood: "Brickell",
+    cardTagline: "1 bed · 1 bath · city views",
+    nightlyRates: VILLA_RATES_1BR,
+    lede:
+      "Sleek one-bedroom Brickell condo with floor-to-ceiling windows, open living, and a private balcony overlooking the Miami skyline. Weekday from $370/night; weekend from $405/night.",
+    description:
+      "Wake up above Brickell in a bright, contemporary one-bedroom with an open kitchen, living, and dining flow built for city living. Polished tile floors, a signature mirrored accent wall, and floor-to-ceiling glass bring in light all day and frame the high-rise views. The chef-ready kitchen features dark wood cabinetry, black stone counters, and a full stainless appliance suite. Relax on the white sofa with navy accents, dine at the round glass table, and step out to the balcony when you want fresh air above the neighborhood. The bedroom is calm and hotel-clean with crisp linens, a wall-mounted TV, and the same skyline outlook. Walk to Brickell’s restaurants, cafes, and nightlife — or connect quickly to Downtown and the beaches through Blackline.",
+    facts: [
+      { label: "Location", value: "Brickell, Miami" },
+      { label: "Bedrooms", value: "1" },
+      { label: "Bathrooms", value: "1" },
+      { label: "Max guests", value: "4" },
+      { label: "Check-in", value: "Confirmed when you book" },
+      { label: "Check-out", value: "Confirmed when you book" },
+    ],
+    highlights: [
+      "Open-plan living with floor-to-ceiling windows and private balcony",
+      "Gourmet kitchen — dark wood cabinets, stone counters, stainless appliances",
+      "Mirrored accent wall and designer furnishings in a light, modern palette",
+      "Steps from Brickell dining, bars, and Downtown access",
+    ],
+    inclusions: [
+      "Wifi",
+      "Air conditioning",
+      "Full kitchen",
+      "Washer and dryer in unit",
+      "Dedicated workspace",
+      "Balcony",
+      "HDTV",
+    ],
+    policyNotes: [
+      "Rates shown are per night; taxes and fees are confirmed at booking.",
+      "House rules and cancellation terms are confirmed when you inquire.",
+    ],
+    galleryImages: [
+      "/stays/1brbrickel/1brbrickel1.jpg",
+      "/stays/1brbrickel/1brbrickel2.jpg",
+      "/stays/1brbrickel/1brbrickel3.jpg",
+      "/stays/1brbrickel/1brbrickel4.jpg",
+    ],
+  },
+  {
+    id: "1br-fm",
+    name: "1BR FM",
+    subtitle: "Brickell · high-rise",
+    neighborhood: "Brickell",
+    cardTagline: "1 bed · 1 bath · skyline views",
+    nightlyRates: VILLA_RATES_1BR,
+    lede:
+      "Minimalist one-bedroom in Brickell with a waterfall kitchen island, city views, and move-in-ready finishes. Weekday from $370/night; weekend from $405/night.",
+    description:
+      "1BR FM is a crisp, contemporary one-bedroom designed for guests who want a polished urban base in Brickell. The open kitchen anchors the home with a white waterfall island, two-tone cabinetry, glossy subway tile, and a full stainless appliance package — plus bar seating for morning coffee or a casual dinner in. Light wood-look flooring and clean white walls keep the space bright, while the bedroom offers a low-profile king setup, blackout-friendly windows, and views of neighboring towers through roller shades. A wall-mounted TV and streamlined nightstands round out a room that feels calm after a night out. Ideal for couples or solo travelers who want walkable Brickell energy with an easy path to Downtown, Wynwood, and the beaches.",
+    facts: [
+      { label: "Location", value: "Brickell, Miami" },
+      { label: "Bedrooms", value: "1" },
+      { label: "Bathrooms", value: "1" },
+      { label: "Max guests", value: "4" },
+      { label: "Check-in", value: "Confirmed when you book" },
+      { label: "Check-out", value: "Confirmed when you book" },
+    ],
+    highlights: [
+      "Waterfall kitchen island with bar seating and premium appliances",
+      "Minimalist bedroom with city views and wall-mounted TV",
+      "Light wood-look floors and open, airy layout",
+      "Brickell location — dining and nightlife within minutes",
+    ],
+    inclusions: [
+      "Wifi",
+      "Air conditioning",
+      "Full kitchen",
+      "Coffee maker",
+      "Dedicated workspace",
+      "HDTV",
+    ],
+    policyNotes: [
+      "Rates shown are per night; taxes and fees are confirmed at booking.",
+      "House rules and cancellation terms are confirmed when you inquire.",
+    ],
+    galleryImages: [
+      "/stays/1brfm/1brfm1.JPG",
+      "/stays/1brfm/1brfm2.JPG",
+      "/stays/1brfm/1brfm3.JPG",
+      "/stays/1brfm/1brfm4.JPG",
+      "/stays/1brfm/1brfm5.JPG",
+      "/stays/1brfm/1brfm6.JPG",
+      "/stays/1brfm/1brfm7.JPG",
+      "/stays/1brfm/1brfm8.JPG",
+      "/stays/1brfm/1brfm9.JPG",
+      "/stays/1brfm/1brfm10.JPG",
+      "/stays/1brfm/1brfm11.JPG",
+      "/stays/1brfm/1brfm12.JPG",
+      "/stays/1brfm/1brfm13.JPG",
+      "/stays/1brfm/1brfm14.JPG",
+    ],
+  },
+  {
+    id: "2br-brickell",
+    name: "2BR Brickell",
+    subtitle: "Brickell · bay & skyline views",
+    neighborhood: "Brickell",
+    cardTagline: "2 bed · 2 bath · bay views",
+    nightlyRates: VILLA_RATES_2BR,
+    lede:
+      "Designer two-bedroom Brickell condo with Biscayne Bay and skyline views, resort-style building pool, and bold modern interiors. Weekday from $420/night; weekend from $470/night.",
+    description:
+      "This two-bedroom Brickell residence is built for guests who want views and atmosphere. Floor-to-ceiling glass wraps the living room, framing Biscayne Bay, the city skyline, and sunset color over the water. Inside, a deep navy leather sectional, live-edge coffee table, and glass dining set create a lounge-worthy main space that flows into a sleek kitchen with dark cabinetry and stainless appliances. Two distinct bedrooms give groups privacy — one with mirrored dresser seating and bay outlook, the other with statement trunk-style storage and bridge-and-water views. The bath makes an impression with gold mosaic tile and a sculptural mirror. Building amenities include a pool deck visible from the tower — the full Brickell experience without sacrificing residential comfort.",
+    facts: [
+      { label: "Location", value: "Brickell, Miami" },
+      { label: "Bedrooms", value: "2" },
+      { label: "Bathrooms", value: "2" },
+      { label: "Max guests", value: "6" },
+      { label: "Check-in", value: "Confirmed when you book" },
+      { label: "Check-out", value: "Confirmed when you book" },
+    ],
+    highlights: [
+      "Panoramic bay and skyline views from floor-to-ceiling windows",
+      "Designer living room — navy leather sectional, live-edge table, open kitchen",
+      "Two styled bedrooms plus gold-accent spa bathroom",
+      "High-rise Brickell address near top restaurants and nightlife",
+    ],
+    inclusions: [
+      "Wifi",
+      "Air conditioning",
+      "Full kitchen",
+      "Pool (building)",
+      "Washer and dryer in unit",
+      "HDTV in living room and bedrooms",
+      "Balcony",
+    ],
+    policyNotes: [
+      "Rates shown are per night; taxes and fees are confirmed at booking.",
+      "Building amenities and access details confirmed at booking.",
+      "House rules and cancellation terms are confirmed when you inquire.",
+    ],
+    galleryImages: [
+      "/stays/2brbrickell/2brbrickell1.jpg",
+      "/stays/2brbrickell/2brbrickell2.jpg",
+      "/stays/2brbrickell/2brbrickell3.jpg",
+      "/stays/2brbrickell/2brbrickell4.jpg",
+      "/stays/2brbrickell/2brbrickell5.jpg",
+      "/stays/2brbrickell/2brbrickell6.jpg",
+    ],
+  },
+  {
+    id: "2br-downtown-miami",
+    name: "2BR Downtown Miami",
+    subtitle: "Downtown · rooftop pool",
+    neighborhood: "Downtown Miami",
+    cardTagline: "2 bed · 2 bath · rooftop pool",
+    nightlyRates: VILLA_RATES_2BR,
+    lede:
+      "Two-bedroom Downtown Miami condo with resort-style rooftop pool, skyline views, and a bright open living layout. Weekday from $420/night; weekend from $470/night.",
+    description:
+      "Stay in the center of the action with a two-bedroom Downtown Miami residence that pairs city energy with resort amenities. The building’s rooftop pool deck — with lounge chairs, turf, and dramatic skyline backdrops day and night — is a headline feature for sun sessions and evening photos. Inside, an open living and dining area flows around a grey sectional, marble-topped coffee tables, and a modern kitchen with warm wood cabinetry and stainless appliances. Two bedrooms give families and friend groups room to spread out, while floor-to-ceiling glass keeps the unit bright. You are minutes from Kaseya Center, Bayside, museums, and the connector to Brickell and the beaches — a strong pick for concerts, cruises, and weekend city breaks.",
+    facts: [
+      { label: "Location", value: "Downtown Miami" },
+      { label: "Bedrooms", value: "2" },
+      { label: "Bathrooms", value: "2" },
+      { label: "Max guests", value: "6" },
+      { label: "Check-in", value: "Confirmed when you book" },
+      { label: "Check-out", value: "Confirmed when you book" },
+    ],
+    highlights: [
+      "Rooftop pool with skyline views — day and night",
+      "Open living room with designer furnishings and full kitchen",
+      "Downtown address near Bayside, arenas, and cruise terminals",
+      "Building lounge and social spaces for guests",
+    ],
+    inclusions: [
+      "Wifi",
+      "Air conditioning",
+      "Full kitchen",
+      "Rooftop pool (building)",
+      "Washer and dryer in unit",
+      "HDTV",
+      "Dedicated workspace",
+    ],
+    policyNotes: [
+      "Rates shown are per night; taxes and fees are confirmed at booking.",
+      "Building amenities and access details confirmed at booking.",
+      "House rules and cancellation terms are confirmed when you inquire.",
+    ],
+    galleryImages: [
+      "/stays/2brdwntnmiami/2brdwntnmiami1.jpg",
+      "/stays/2brdwntnmiami/2brdwntnmiami2.jpg",
+      "/stays/2brdwntnmiami/2brdwntnmiami3.jpg",
+      "/stays/2brdwntnmiami/2brdwntnmiami4.jpg",
+      "/stays/2brdwntnmiami/2brdwntnmiami5.jpg",
+      "/stays/2brdwntnmiami/2brdwntnmiami6.jpg",
+      "/stays/2brdwntnmiami/2brdwntnmiami7.jpg",
+      "/stays/2brdwntnmiami/2brdwntnmiami8.jpg",
+      "/stays/2brdwntnmiami/2brdwntnmiami9.jpg",
+      "/stays/2brdwntnmiami/2brdwntnmiami10.jpg",
+      "/stays/2brdwntnmiami/2brdwntnmiami11.jpg",
+      "/stays/2brdwntnmiami/2brdwntnmiami12.jpg",
+      "/stays/2brdwntnmiami/2brdwntnmiami13.jpg",
+    ],
+  },
+  {
+    id: "2br-mondrian",
+    name: "2BR Mondrian",
+    subtitle: "South Beach · Mondrian South Beach",
+    neighborhood: "Miami Beach",
+    cardTagline: "2 bed · 2 bath · pool deck",
+    nightlyRates: VILLA_RATES_2BR,
+    lede:
+      "Two-bedroom stay steps from Mondrian South Beach — iconic pool, sun decks, and colorful modern interiors. Weekday from $420/night; weekend from $470/night.",
+    description:
+      "Live the South Beach scene from a two-bedroom residence tied to the Mondrian’s signature curved tower and glowing pool deck. Evenings bring turquoise water, striped umbrellas, and cabana loungers under the building’s white architecture — the postcard Miami Beach moment. Inside, bright rooms mix clean white walls with playful color: an orange glass dining table, crystal chandelier, and eclectic furnishings that feel curated, not generic. Two bedrooms and two baths give couples and small groups comfort after beach days or nights on the strip. You are close to Ocean Drive, Lincoln Road, and the Atlantic — with Blackline coordinating the stay details so you can focus on the pool, the music, and the neighborhood.",
+    facts: [
+      { label: "Location", value: "South Beach · Mondrian area" },
+      { label: "Bedrooms", value: "2" },
+      { label: "Bathrooms", value: "2" },
+      { label: "Max guests", value: "6" },
+      { label: "Check-in", value: "Confirmed when you book" },
+      { label: "Check-out", value: "Confirmed when you book" },
+    ],
+    highlights: [
+      "Mondrian South Beach pool deck — cabanas, loungers, evening lighting",
+      "Stylish interiors with designer dining and eclectic decor",
+      "Walkable to Ocean Drive, beaches, and nightlife",
+      "Two bedrooms for groups who want South Beach energy with space",
+    ],
+    inclusions: [
+      "Wifi",
+      "Air conditioning",
+      "Full kitchen",
+      "Pool (building)",
+      "HDTV",
+      "Washer and dryer in unit",
+    ],
+    policyNotes: [
+      "Rates shown are per night; taxes and fees are confirmed at booking.",
+      "Building pool hours and amenity access confirmed at booking.",
+      "House rules and cancellation terms are confirmed when you inquire.",
+    ],
+    galleryImages: [
+      "/stays/2brmondrian/2brmondrian1.jpg",
+      "/stays/2brmondrian/2brmondrian2.jpg",
+      "/stays/2brmondrian/2brmondrian3.jpg",
+      "/stays/2brmondrian/2brmondrian4.jpg",
+      "/stays/2brmondrian/2brmondrian5.jpg",
+      "/stays/2brmondrian/2brmondrian6.jpg",
+      "/stays/2brmondrian/2brmondrian7.jpg",
+      "/stays/2brmondrian/2brmondrian8.jpg",
+      "/stays/2brmondrian/2brmondrian9.jpg",
+      "/stays/2brmondrian/2brmondrian10.jpg",
+      "/stays/2brmondrian/2brmondrian11.jpg",
+      "/stays/2brmondrian/2brmondrian12.jpg",
+    ],
+  },
+  {
+    id: "3br-downtown",
+    name: "3BR Downtown",
+    subtitle: "Downtown · skyline & pool",
+    neighborhood: "Downtown Miami",
+    cardTagline: "3 bed · 2 bath · rooftop pool",
+    nightlyRates: VILLA_RATES_3BR,
+    lede:
+      "Spacious three-bedroom Downtown condo with wraparound city views, rooftop pool, and an open designer living area. Weekday from $545/night; weekend from $605/night.",
+    description:
+      "This three-bedroom Downtown residence is sized for groups who want space, views, and a pool without leaving the urban core. The living room wraps in natural light through floor-to-ceiling windows, with a generous grey sectional, nested marble coffee tables, and a six-seat dining area positioned for skyline meals. The kitchen keeps a minimalist look with wood-tone cabinetry and stainless appliances. Three bedrooms sleep families, friends, or small corporate retreats comfortably, while the building’s rooftop pool — bright blue water, lounge chairs, and towers all around — delivers a resort moment above the street. Downtown puts you near Bayside, museums, arenas, and quick connections to Brickell, Wynwood, and Miami Beach.",
+    facts: [
+      { label: "Location", value: "Downtown Miami" },
+      { label: "Bedrooms", value: "3" },
+      { label: "Bathrooms", value: "2" },
+      { label: "Max guests", value: "8" },
+      { label: "Check-in", value: "Confirmed when you book" },
+      { label: "Check-out", value: "Confirmed when you book" },
+    ],
+    highlights: [
+      "Three bedrooms for families and groups",
+      "Wraparound windows and open living with skyline views",
+      "Rooftop pool deck with lounge seating",
+      "Central Downtown — events, dining, and cruise port access",
+    ],
+    inclusions: [
+      "Wifi",
+      "Air conditioning",
+      "Full kitchen",
+      "Rooftop pool (building)",
+      "Washer and dryer in unit",
+      "HDTV",
+      "Dedicated workspace",
+    ],
+    policyNotes: [
+      "Rates shown are per night; taxes and fees are confirmed at booking.",
+      "Building amenities and access details confirmed at booking.",
+      "House rules and cancellation terms are confirmed when you inquire.",
+    ],
+    galleryImages: [
+      "/stays/3brdowntown/3brdowntown1.jpg",
+      "/stays/3brdowntown/3brdowntown2.jpg",
+      "/stays/3brdowntown/3brdowntown3.jpg",
+      "/stays/3brdowntown/3brdowntown4.jpg",
+      "/stays/3brdowntown/3brdowntown5.jpg",
+      "/stays/3brdowntown/3brdowntown6.jpg",
+      "/stays/3brdowntown/3brdowntown7.jpg",
+      "/stays/3brdowntown/3brdowntown8.jpg",
+      "/stays/3brdowntown/3brdowntown9.jpg",
+      "/stays/3brdowntown/3brdowntown10.jpg",
+    ],
+  },
+  {
+    id: "3br-brickell",
+    name: "3BR Brickell",
+    subtitle: "Brickell · ocean & city views",
+    neighborhood: "Brickell",
+    cardTagline: "3 bed · 2 bath · balcony",
+    nightlyRates: VILLA_RATES_3BR,
+    lede:
+      "Three-bedroom Brickell condo with turquoise water views, private balcony, and coastal-modern interiors. Weekday from $545/night; weekend from $605/night.",
+    description:
+      "Spread out in Brickell with a three-bedroom residence designed around the view. Floor-to-ceiling sliders open to a balcony above the water, with turquoise ocean, cruise channels, and the downtown forest of towers in frame. Inside, a white-and-blue palette keeps the home fresh: white leather seating, glass dining for four, abstract art, and wood-look floors throughout. Three bedrooms give families and friend groups privacy after days in the neighborhood, while the open living area handles dinners and late-night hangouts. Brickell’s walkable restaurant row, rooftop bars, and quick Metromover access make this a strong base for both business stays and Miami weekends.",
+    facts: [
+      { label: "Location", value: "Brickell, Miami" },
+      { label: "Bedrooms", value: "3" },
+      { label: "Bathrooms", value: "2" },
+      { label: "Max guests", value: "8" },
+      { label: "Check-in", value: "Confirmed when you book" },
+      { label: "Check-out", value: "Confirmed when you book" },
+    ],
+    highlights: [
+      "Private balcony with ocean and city views",
+      "Three bedrooms in a coastal-modern high-rise layout",
+      "Open living and dining with glass table and designer seating",
+      "Heart of Brickell — walk to dining, nightlife, and bayfront",
+    ],
+    inclusions: [
+      "Wifi",
+      "Air conditioning",
+      "Full kitchen",
+      "Balcony",
+      "Washer and dryer in unit",
+      "HDTV",
+      "Dedicated workspace",
+    ],
+    policyNotes: [
+      "Rates shown are per night; taxes and fees are confirmed at booking.",
+      "House rules and cancellation terms are confirmed when you inquire.",
+    ],
+    galleryImages: [
+      "/stays/3brbrickell/3brbrickell1.jpg",
+      "/stays/3brbrickell/3brbrickell2.jpg",
+      "/stays/3brbrickell/3brbrickell3.jpg",
+      "/stays/3brbrickell/3brbrickell4.jpg",
+      "/stays/3brbrickell/3brbrickell5.jpg",
+      "/stays/3brbrickell/3brbrickell6.jpg",
+      "/stays/3brbrickell/3brbrickell7.jpg",
+    ],
+  },
+  {
+    id: "tamiami",
+    name: "Tamiami",
+    subtitle: "Tamiami · private pool home",
+    neighborhood: "Tamiami",
+    cardTagline: "Pool · turf backyard · 4+ guests",
+    lede:
+      "Modern Tamiami pool home with baja shelf loungers, artificial turf backyard, outdoor dining, and keyless entry — a private suburban oasis minutes from the city.",
+    description:
+      "Trade high-rise living for a private Tamiami retreat built around the backyard. This contemporary single-story home opens through glass sliders to a sun-soaked pool with in-water loungers on the baja shelf, string-lit evenings, and lush turf that stays green year-round. Grill on the patio, dine at the outdoor table, and park easily on the curved driveway — ideal for families and groups who want space and a pool without resort crowds. Inside, an open living and dining area pairs a dark leather sectional with a marble island kitchen, stainless appliances, and polished tile floors that reflect the light. A clean white exterior, tropical landscaping, and keypad entry complete a home that feels move-in ready for long weekends, celebrations, and relaxed Miami stays west of the core.",
+    facts: [
+      { label: "Location", value: "Tamiami, Miami-Dade" },
+      { label: "Property type", value: "Single-family pool home" },
+      { label: "Max guests", value: "10" },
+      { label: "Check-in", value: "Confirmed when you book" },
+      { label: "Check-out", value: "Confirmed when you book" },
+    ],
+    highlights: [
+      "Private pool with baja shelf in-water loungers",
+      "Artificial turf backyard with outdoor dining and grill",
+      "Open living, marble kitchen island, and indoor-outdoor flow",
+      "Off-street parking and keyless entry",
+    ],
+    inclusions: [
+      "Wifi",
+      "Air conditioning",
+      "Full kitchen",
+      "Private pool",
+      "Outdoor grill",
+      "Free parking on premises",
+      "Washer and dryer",
+      "HDTV",
+    ],
+    policyNotes: [
+      "Rates and minimum nights are confirmed when you inquire.",
+      "Pool use and quiet hours are confirmed at booking.",
+      "House rules and cancellation terms are confirmed when you inquire.",
+    ],
+    galleryImages: [
+      "/stays/tamiami/tamiami1.jpg",
+      "/stays/tamiami/tamiami2.jpg",
+      "/stays/tamiami/tamiami3.jpg",
+      "/stays/tamiami/tamiami4.jpg",
+      "/stays/tamiami/tamiami5.jpg",
+      "/stays/tamiami/tamiami6.jpg",
+      "/stays/tamiami/tamiami7.jpg",
+      "/stays/tamiami/tamiami8.jpg",
+    ],
+  },
+  {
+    id: "coral-way-4br",
+    name: "Coral Way 4BR",
+    subtitle: "Coral Way · pool & spa estate",
+    neighborhood: "Coral Way",
+    cardTagline: "4 bed · 3 bath · pool & spa",
+    lede:
+      "Four-bedroom Coral Way estate with curved pool and spa, covered patio, outdoor kitchen, and Mediterranean curb appeal on a landscaped lot.",
+    description:
+      "Coral Way 4BR is a full-estate stay for groups who want privacy, water, and room to entertain. The front approach sets the tone — stone walkway, orchid-lined beds, wrought-iron entry, and classic Miami color on the façade. Out back, a curved pool and raised spa anchor the patio, shaded by a large navy awning with ceiling fans, wicker loungers, cornhole, and an outdoor kitchen with stainless grill. Inside, beam ceilings, marble floors, and a spiral staircase give the home architectural character, while the open living level flows to the water through wide glass. A blue-marble bar pairs with leather seating for indoor-outdoor nights. Four bedrooms sleep extended family, wedding parties, or friend groups who prefer a house over towers — with Coral Way’s tree-lined streets and quick drives to Brickell, Coconut Grove, and the beaches.",
+    facts: [
+      { label: "Location", value: "Coral Way, Miami" },
+      { label: "Bedrooms", value: "4" },
+      { label: "Bathrooms", value: "3" },
+      { label: "Max guests", value: "12" },
+      { label: "Check-in", value: "Confirmed when you book" },
+      { label: "Check-out", value: "Confirmed when you book" },
+    ],
+    highlights: [
+      "Curved pool and spa with covered patio and outdoor kitchen",
+      "Mediterranean-style exterior and manicured tropical landscaping",
+      "Open interiors — beam ceilings, marble floors, spiral staircase",
+      "Four bedrooms for large groups and celebrations",
+    ],
+    inclusions: [
+      "Wifi",
+      "Air conditioning",
+      "Full kitchen",
+      "Outdoor kitchen and grill",
+      "Private pool and spa",
+      "Free parking on premises",
+      "Washer and dryer",
+      "HDTV",
+    ],
+    policyNotes: [
+      "Rates and event policies are confirmed when you inquire.",
+      "Pool and spa use guidelines confirmed at booking.",
+      "House rules and cancellation terms are confirmed when you inquire.",
+    ],
+    galleryImages: [
+      "/stays/coralway4br/coralway4br1.jpg",
+      "/stays/coralway4br/coralway4br2.jpg",
+      "/stays/coralway4br/coralway4br3.jpg",
+      "/stays/coralway4br/coralway4br4.jpg",
+      "/stays/coralway4br/coralway4br5.jpg",
+      "/stays/coralway4br/coralway4br6.jpg",
+      "/stays/coralway4br/coralway4br7.jpg",
+      "/stays/coralway4br/coralway4br8.jpg",
+      "/stays/coralway4br/coralway4br9.jpg",
+      "/stays/coralway4br/coralway4br10.jpg",
+      "/stays/coralway4br/coralway4br11.jpg",
+      "/stays/coralway4br/coralway4br12.jpg",
+      "/stays/coralway4br/coralway4br13.jpg",
+      "/stays/coralway4br/coralway4br14.jpg",
+      "/stays/coralway4br/coralway4br15.jpg",
+      "/stays/coralway4br/coralway4br16.jpg",
+      "/stays/coralway4br/coralway4br17.jpg",
+      "/stays/coralway4br/coralway4br18.jpg",
+      "/stays/coralway4br/coralway4br19.jpg",
+      "/stays/coralway4br/coralway4br20.jpg",
+      "/stays/coralway4br/coralway4br21.jpg",
+      "/stays/coralway4br/coralway4br22.jpg",
+      "/stays/coralway4br/coralway4br23.jpg",
+      "/stays/coralway4br/coralway4br24.jpg",
+      "/stays/coralway4br/coralway4br25.jpg",
+      "/stays/coralway4br/coralway4br26.jpg",
+      "/stays/coralway4br/coralway4br27.jpg",
+      "/stays/coralway4br/coralway4br28.jpg",
+    ],
+  },
+  {
+    id: "111-coral-way-4br",
+    name: "111 Coral Way 4BR",
+    subtitle: "111 Coral Way · game room estate",
+    neighborhood: "Coral Way",
+    cardTagline: "4 bed · 3 bath · pool table",
+    lede:
+      "Four-bedroom Coral Way home with a statement game room — pool table, arcade, dartboard — plus modern baths and room for the whole group.",
+    description:
+      "111 Coral Way 4BR is built for groups who want a house that feels like a private clubhouse. The main living level opens wide with dark wood floors, plantation shutters, and a cream sectional facing a wall-mounted TV — then the fun begins: a full pool table, classic arcade cabinet, dartboard, and extra lounge seating for tournament weekends. Four bedrooms include a twin room ideal for kids or staff, styled with navy velvet bedding and hotel-ready towels. Bathrooms are contemporary throughout — walk-in shower with stone tile, double vanities, and spa-like lighting. French doors bring light from the exterior, and the kitchen wing keeps everyone fed between games. On Coral Way’s historic corridor, you are close to Coconut Grove, Brickell, and major event venues while keeping a residential, leafy feel.",
+    facts: [
+      { label: "Location", value: "111 Coral Way, Miami" },
+      { label: "Bedrooms", value: "4" },
+      { label: "Bathrooms", value: "3" },
+      { label: "Max guests", value: "12" },
+      { label: "Check-in", value: "Confirmed when you book" },
+      { label: "Check-out", value: "Confirmed when you book" },
+    ],
+    highlights: [
+      "Game room with pool table, arcade, and dartboard",
+      "Four bedrooms including twin configuration for flexible sleeping",
+      "Modern bathrooms with walk-in showers and double vanities",
+      "Coral Way address — central, leafy, minutes to Grove and Brickell",
+    ],
+    inclusions: [
+      "Wifi",
+      "Air conditioning",
+      "Full kitchen",
+      "Pool table",
+      "Arcade game",
+      "Free parking on premises",
+      "Washer and dryer",
+      "HDTV",
+    ],
+    policyNotes: [
+      "Rates and minimum nights are confirmed when you inquire.",
+      "House rules for game room equipment confirmed at booking.",
+      "House rules and cancellation terms are confirmed when you inquire.",
+    ],
+    galleryImages: [
+      "/stays/111coralway/111coralway1.jpg",
+      "/stays/111coralway/111coralway2.jpg",
+      "/stays/111coralway/111coralway3.jpg",
+      "/stays/111coralway/111coralway4.jpg",
+      "/stays/111coralway/111coralway5.jpg",
+      "/stays/111coralway/111coralway6.jpg",
+      "/stays/111coralway/111coralway7.jpg",
+      "/stays/111coralway/111coralway8.jpg",
+      "/stays/111coralway/111coralway9.jpg",
+      "/stays/111coralway/111coralway10.jpg",
+    ],
+  },
+  {
+    id: "oasis-pool",
+    name: "Oasis Pool",
+    subtitle: "Miami · pool & fireside lounge",
+    neighborhood: "Miami Beach",
+    cardTagline: "Pool · 3+ bed · indoor-outdoor",
+    lede:
+      "Oasis Pool is a tropical retreat with a private heated-style pool deck, stacked-stone fireplace lounge, and master suite with custom walk-in closet.",
+    description:
+      "The name fits: Oasis Pool centers on indoor-outdoor living around turquoise water and a designer great room. Sliding glass opens to a covered patio with wicker seating and the pool steps away — perfect for morning coffee and sunset swims. Inside, a blue sectional anchors a stone accent wall with wall-mounted TV and linear electric fireplace, while a natural wood dining table seats six. The master suite brings hotel drama — tufted grey headboard, gold accents, ceiling fan, and a large custom walk-in closet with built-ins. Additional bedrooms and a compact work nook make the home work for families and groups who want a pool-first stay with polished interiors. Lush hedges outside add privacy; the open plan keeps everyone connected whether you are cooking, swimming, or winding down after the city.",
+    facts: [
+      { label: "Location", value: "Miami area" },
+      { label: "Bedrooms", value: "3+" },
+      { label: "Bathrooms", value: "2+" },
+      { label: "Max guests", value: "10" },
+      { label: "Check-in", value: "Confirmed when you book" },
+      { label: "Check-out", value: "Confirmed when you book" },
+    ],
+    highlights: [
+      "Private pool with covered patio and indoor-outdoor sliders",
+      "Stacked-stone feature wall with linear fireplace and blue lounge",
+      "Master suite with custom walk-in closet",
+      "Dining for six and dedicated workspace nook",
+    ],
+    inclusions: [
+      "Wifi",
+      "Air conditioning",
+      "Full kitchen",
+      "Private pool",
+      "Outdoor furniture",
+      "Washer and dryer",
+      "HDTV",
+      "Dedicated workspace",
+    ],
+    policyNotes: [
+      "Rates and minimum nights are confirmed when you inquire.",
+      "Pool hours and heating (if applicable) confirmed at booking.",
+      "House rules and cancellation terms are confirmed when you inquire.",
+    ],
+    galleryImages: [
+      "/stays/oasispool/oasispool1.jpg",
+      "/stays/oasispool/oasispool2.jpg",
+      "/stays/oasispool/oasispool3.jpg",
+      "/stays/oasispool/oasispool4.jpg",
+      "/stays/oasispool/oasispool5.jpg",
+      "/stays/oasispool/oasispool6.jpg",
+      "/stays/oasispool/oasispool7.jpg",
+      "/stays/oasispool/oasispool8.jpg",
+      "/stays/oasispool/oasispool9.jpg",
+      "/stays/oasispool/oasispool10.jpg",
+      "/stays/oasispool/oasispool11.jpg",
+    ],
+  },
+  {
+    id: "port-of-miami",
+    name: "Port of Miami",
+    subtitle: "Downtown · cruise & bay views",
+    neighborhood: "Downtown Miami",
+    cardTagline: "1 bed · 1 bath · port views",
+    nightlyRates: VILLA_RATES_PORT_OF_MIAMI,
+    lede:
+      "Smart Downtown studio near Port of Miami — cruise-ship views, room-divider layout, in-unit laundry, and weekday rates from $285/night.",
+    description:
+      "Watch the ships from a compact, design-forward Downtown stay tailored to cruisers, concert weekends, and city explorers. This open layout uses a custom shelving divider to separate the queen sleeping nook from the living area without losing light — with a pivot-mounted TV that serves both zones. The kitchen is efficient and modern: dark cabinetry, white counters, stainless refrigerator, dishwasher, and coffee setup for early embarkation days. A round dining table and grey sofa handle meals and downtime, while in-unit washer and dryer keep longer stays easy. Bedrooms and living areas catch port, bridge, and bay action through broad windows — the reason guests pick this address. Weekday and weekend rates stay approachable for solo travelers and couples who want the port at their window and Brickell a short ride away.",
+    facts: [
+      { label: "Location", value: "Downtown Miami · Port of Miami" },
+      { label: "Bedrooms", value: "1" },
+      { label: "Bathrooms", value: "1" },
+      { label: "Max guests", value: "4" },
+      { label: "Check-in", value: "Confirmed when you book" },
+      { label: "Check-out", value: "Confirmed when you book" },
+    ],
+    highlights: [
+      "Port and cruise-ship views from the residence",
+      "Clever open layout with shelving divider and pivot TV",
+      "Full kitchen plus in-unit washer and dryer",
+      "Value Downtown base — weekday from $285, weekend from $305",
+    ],
+    inclusions: [
+      "Wifi",
+      "Air conditioning",
+      "Kitchen",
+      "Washer and dryer in unit",
+      "HDTV",
+      "Bay view",
+    ],
+    policyNotes: [
+      "Rates shown are per night; taxes and fees are confirmed at booking.",
+      "Ideal for cruise embarkation — timing confirmed when you book.",
+      "House rules and cancellation terms are confirmed when you inquire.",
+    ],
+    galleryImages: [
+      "/stays/portofmiami/portofmiami1.JPG",
+      "/stays/portofmiami/portofmiami2.JPG",
+      "/stays/portofmiami/portofmiami3.JPG",
+      "/stays/portofmiami/portofmiami4.JPG",
+      "/stays/portofmiami/portofmiami5.JPG",
+      "/stays/portofmiami/portofmiami6.JPG",
+      "/stays/portofmiami/portofmiami7.JPG",
+      "/stays/portofmiami/portofmiami8.JPG",
+      "/stays/portofmiami/portofmiami9.JPG",
     ],
   },
 ];

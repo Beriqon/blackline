@@ -5,11 +5,11 @@ import { useEffect, useMemo, useState } from "react";
 
 import { AvailabilityDatePicker } from "@/components/availability-date-picker";
 import { useCart } from "@/components/cart-context";
+import { useLocale } from "@/components/locale-provider";
 import {
   availableSlotsForDate,
   blockedDateSet,
   computeBookingQuote,
-  describeSelection,
   getExoticCarBookingConfig,
   isDateBlocked,
   rangeContainsBlockedDate,
@@ -17,6 +17,11 @@ import {
   type ExoticCarBookingMode,
 } from "@/lib/bookings";
 import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
+import {
+  describeExoticSelectionLocalized,
+  localizeBookingQuoteLabel,
+  localizeBookingUnavailableReason,
+} from "@/lib/i18n/exotic-cars-page";
 import type { ExoticCar } from "@/lib/exotic-cars-data";
 import { cn } from "@/lib/utils";
 
@@ -41,12 +46,23 @@ function formatTimeAmPm(time24: string) {
   return `${hour12}:${minute} ${ampm}`;
 }
 
+function formatTimeAmPmEs(time24: string) {
+  const match = time24.match(/^(\d{2}):(\d{2})$/);
+  if (!match) return time24;
+  const hour24 = Number.parseInt(match[1]!, 10);
+  const minute = match[2]!;
+  const hour12 = hour24 % 12 || 12;
+  const ampm = hour24 >= 12 ? "p. m." : "a. m.";
+  return `${hour12}:${minute} ${ampm}`;
+}
+
 type Props = {
   car: ExoticCar;
   className?: string;
 };
 
 export function ExoticCarBookingPanel({ car, className }: Props) {
+  const { locale, t } = useLocale();
   const { addItem, items } = useCart();
   const config = getExoticCarBookingConfig(car);
   const [windows, setWindows] = useState<AvailabilityWindow[]>([]);
@@ -62,6 +78,8 @@ export function ExoticCarBookingPanel({ car, className }: Props) {
   );
   const [localError, setLocalError] = useState<string | null>(null);
 
+  const formatTime = locale === "es" ? formatTimeAmPmEs : formatTimeAmPm;
+
   useEffect(() => {
     let cancelled = false;
     fetch(`/api/bookings/availability?category=exotic-car&itemId=${car.id}`)
@@ -70,7 +88,9 @@ export function ExoticCarBookingPanel({ car, className }: Props) {
           windows?: AvailabilityWindow[];
           error?: string;
         };
-        if (!res.ok) throw new Error(data.error || "Could not load availability.");
+        if (!res.ok) {
+          throw new Error(data.error || t("exoticCarsPage.booking.loadAvailabilityError"));
+        }
         if (!cancelled) {
           setWindows(data.windows ?? []);
           setError(null);
@@ -78,7 +98,11 @@ export function ExoticCarBookingPanel({ car, className }: Props) {
       })
       .catch((nextError) => {
         if (!cancelled) {
-          setError(nextError instanceof Error ? nextError.message : "Could not load availability.");
+          setError(
+            nextError instanceof Error
+              ? nextError.message
+              : t("exoticCarsPage.booking.loadAvailabilityError"),
+          );
         }
       })
       .finally(() => {
@@ -87,7 +111,7 @@ export function ExoticCarBookingPanel({ car, className }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [car.id]);
+  }, [car.id, t]);
 
   const slotOptions = useMemo(
     () => availableSlotsForDate(startDate, config.chauffeurSlots, durationHours, windows),
@@ -148,14 +172,24 @@ export function ExoticCarBookingPanel({ car, className }: Props) {
     [config.chauffeurSlots, durationHours, windows],
   );
 
+  const selectionLabel = describeExoticSelectionLocalized(selection, locale, t);
+
+  const displayPriceLabel = quote?.priceLabel
+    ? localizeBookingQuoteLabel(quote.priceLabel, locale)
+    : null;
+  const displayUnavailableReason = localizeBookingUnavailableReason(
+    quote?.reasonIfUnavailable,
+    locale,
+    t,
+  );
+
   return (
     <div className={cn("mt-10 border-t border-gold/10 pt-8", className)}>
       <p className="text-[0.62rem] font-semibold uppercase tracking-[0.32em] text-gold/80">
-        Availability & booking
+        {t("exoticCarsPage.booking.availabilityTitle")}
       </p>
       <p className="mt-3 text-[0.8rem] leading-relaxed text-cream/50">
-        Pick a live booking window before adding this vehicle to checkout. Online
-        payment is available only when the published rate is known.
+        {t("exoticCarsPage.booking.availabilityBody")}
       </p>
 
       {config.rentalModes.length > 1 ? (
@@ -172,7 +206,9 @@ export function ExoticCarBookingPanel({ car, className }: Props) {
                   : "border-gold/15 text-cream/55 hover:border-gold/30",
               )}
             >
-              {option === "self-drive" ? "Self-drive" : "Chauffeur"}
+              {option === "self-drive"
+                ? t("exoticCarsPage.booking.selfDrive")
+                : t("exoticCarsPage.booking.chauffeur")}
             </button>
           ))}
         </div>
@@ -183,7 +219,7 @@ export function ExoticCarBookingPanel({ car, className }: Props) {
           <div>
             <AvailabilityDatePicker
               id={`${car.id}-start-date`}
-              label="Start date"
+              label={t("exoticCarsPage.booking.startDate")}
               value={startDate}
               minDate={todayPlus(0)}
               isBlocked={isSelfDriveDateBlocked}
@@ -197,7 +233,7 @@ export function ExoticCarBookingPanel({ car, className }: Props) {
           <div>
             <AvailabilityDatePicker
               id={`${car.id}-end-date`}
-              label="End date"
+              label={t("exoticCarsPage.booking.endDate")}
               value={endDate}
               minDate={startDate}
               isBlocked={isSelfDriveDateBlocked}
@@ -213,7 +249,7 @@ export function ExoticCarBookingPanel({ car, className }: Props) {
           <div>
             <AvailabilityDatePicker
               id={`${car.id}-chauffeur-date`}
-              label="Date"
+              label={t("exoticCarsPage.booking.date")}
               value={startDate}
               minDate={todayPlus(0)}
               isBlocked={isChauffeurDateBlocked}
@@ -228,7 +264,7 @@ export function ExoticCarBookingPanel({ car, className }: Props) {
               htmlFor={`${car.id}-chauffeur-time`}
               className="text-[0.6rem] font-medium uppercase tracking-[0.24em] text-gold/65"
             >
-              Start time
+              {t("exoticCarsPage.booking.startTime")}
             </label>
             <select
               id={`${car.id}-chauffeur-time`}
@@ -239,11 +275,11 @@ export function ExoticCarBookingPanel({ car, className }: Props) {
               {slotOptions.length > 0 ? (
                 slotOptions.map((slot) => (
                   <option key={slot} value={slot}>
-                    {formatTimeAmPm(slot)}
+                    {formatTime(slot)}
                   </option>
                 ))
               ) : (
-                <option value="">No slots left</option>
+                <option value="">{t("exoticCarsPage.booking.noSlotsLeft")}</option>
               )}
             </select>
           </div>
@@ -252,7 +288,7 @@ export function ExoticCarBookingPanel({ car, className }: Props) {
               htmlFor={`${car.id}-chauffeur-duration`}
               className="text-[0.6rem] font-medium uppercase tracking-[0.24em] text-gold/65"
             >
-              Duration
+              {t("exoticCarsPage.booking.duration")}
             </label>
             <select
               id={`${car.id}-chauffeur-duration`}
@@ -262,7 +298,7 @@ export function ExoticCarBookingPanel({ car, className }: Props) {
             >
               {config.chauffeurDurationHours.map((hours) => (
                 <option key={hours} value={hours}>
-                  {hours} hrs
+                  {t("exoticCarsPage.booking.hoursShort", { hours })}
                 </option>
               ))}
             </select>
@@ -272,40 +308,49 @@ export function ExoticCarBookingPanel({ car, className }: Props) {
 
       <div className="mt-5 rounded-sm border border-gold/15 bg-[#080808] p-4">
         <p className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-gold/75">
-          Booking summary
+          {t("exoticCarsPage.booking.summaryTitle")}
         </p>
-        <p className="mt-2 text-sm text-cream/72">{describeSelection(selection)}</p>
+        <p className="mt-2 text-sm text-cream/72">{selectionLabel}</p>
         <p className="mt-2 font-serif text-xl text-gold-secondary">
-          {quote?.payableOnline ? quote.priceLabel : quote?.reasonIfUnavailable ?? "Quote required"}
+          {quote?.payableOnline
+            ? displayPriceLabel
+            : (displayUnavailableReason ?? t("exoticCarsPage.booking.quoteRequired"))}
         </p>
         {quote?.payableOnline ? (
           <p className="mt-2 text-[0.75rem] leading-relaxed text-cream/48">
-            Deposit due today: {quote.depositUsd > 0 ? `$${quote.depositUsd}` : "n/a"}
+            {t("exoticCarsPage.booking.depositDue", {
+              amount:
+                quote.depositUsd > 0
+                  ? `$${quote.depositUsd}`
+                  : t("exoticCarsPage.booking.depositNa"),
+            })}
           </p>
         ) : null}
       </div>
 
       <div className="mt-5 rounded-sm border border-gold/15 bg-[#080808] p-4">
         <p className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-gold/75">
-          Live availability
+          {t("exoticCarsPage.booking.liveAvailability")}
         </p>
         {loading ? (
-          <p className="mt-2 text-sm text-cream/48">Loading current bookings...</p>
+          <p className="mt-2 text-sm text-cream/48">
+            {t("exoticCarsPage.booking.loadingBookings")}
+          </p>
         ) : error ? (
           <p className="mt-2 text-sm text-red-300/90">{error}</p>
         ) : (
           <>
             <p className="mt-2 text-sm text-cream/58">
               {blockedDays.size > 0
-                ? `Upcoming blocked days: ${Array.from(blockedDays).slice(0, 6).join(", ")}`
-                : "No blocked windows in the next 3 weeks."}
+                ? t("exoticCarsPage.booking.blockedDays", {
+                    days: Array.from(blockedDays).slice(0, 6).join(", "),
+                  })
+                : t("exoticCarsPage.booking.noBlockedWindows")}
             </p>
             {windows.length > 0 ? (
               <ul className="mt-3 space-y-2 text-[0.78rem] text-cream/52">
                 {windows.slice(0, 4).map((window) => (
-                  <li key={window.bookingId}>
-                    {window.label}
-                  </li>
+                  <li key={window.bookingId}>{window.label}</li>
                 ))}
               </ul>
             ) : null}
@@ -325,25 +370,26 @@ export function ExoticCarBookingPanel({ car, className }: Props) {
               mode === "self-drive" &&
               rangeContainsBlockedDate(startDate, endDate, windows)
             ) {
-              setLocalError(
-                "That self-drive range includes one or more booked days.",
-              );
+              setLocalError(t("exoticCarsPage.booking.rangeBlockedError"));
               return;
             }
             if (mode === "chauffeur" && slotOptions.length === 0) {
-              setLocalError("No chauffeur slots are open on that day.");
+              setLocalError(t("exoticCarsPage.booking.noChauffeurSlotsError"));
               return;
             }
             if (!quote) {
-              setLocalError("Complete the booking details first.");
+              setLocalError(t("exoticCarsPage.booking.completeDetailsError"));
               return;
             }
             addItem({
               category: "exotic-car",
               id: car.id,
               title: car.name,
-              subtitle: mode === "self-drive" ? "Self-drive" : "Chauffeur",
-              priceHint: quote.priceLabel,
+              subtitle:
+                mode === "self-drive"
+                  ? t("exoticCarsPage.booking.selfDrive")
+                  : t("exoticCarsPage.booking.chauffeur"),
+              priceHint: displayPriceLabel ?? quote.priceLabel,
               href: "/services/exotic-cars",
               bookingSelection: selection,
               bookingQuote: quote,
@@ -352,14 +398,14 @@ export function ExoticCarBookingPanel({ car, className }: Props) {
           }}
           className="inline-flex min-h-11 items-center justify-center border border-gold/40 bg-gold px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-[#0b0b0b] transition-all hover:bg-gold-secondary"
         >
-          Add booking to checkout
+          {t("exoticCarsPage.booking.addToCheckout")}
         </button>
         {!quote?.payableOnline && !alreadyInCart ? (
           <Link
             href={CONTACT_TRIP_BUILDER_HREF}
             className="inline-flex min-h-11 items-center justify-center border border-gold/22 px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-cream/85 transition-colors hover:border-gold/40"
           >
-            Request custom quote
+            {t("exoticCarsPage.booking.requestQuote")}
           </Link>
         ) : null}
       </div>

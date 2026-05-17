@@ -3,17 +3,20 @@
 import { ArrowUpRight, ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
 import { useEffect, useId, useMemo, useState } from "react";
 
+import { useLocale } from "@/components/locale-provider";
 import { ServicePhotographyAddon } from "@/components/service-photography-addon";
 import { EXOTIC_PHOTOGRAPHY_ADDON_IMAGES } from "@/lib/exotic-car-photos";
-import { cn } from "@/lib/utils";
-import type { ExoticCar } from "@/lib/exotic-cars-data";
-import { exoticGalleryCoverStyle } from "@/lib/exotic-catalog-utils";
 import {
-  CHAUFFEUR_FLEET_SORTED,
-  chauffeurQuoteRateLine,
   FEATURED_CHAUFFEUR_ID_SET,
   type ChauffeurFleetEntry,
 } from "@/lib/chauffeur-fleet-data";
+import {
+  getLocalizedChauffeurFleet,
+  localizedChauffeurQuoteRateLine,
+} from "@/lib/i18n/chauffeur-services-page";
+import type { ExoticCar } from "@/lib/exotic-cars-data";
+import { exoticGalleryCoverStyle } from "@/lib/exotic-catalog-utils";
+import { cn } from "@/lib/utils";
 
 type ChauffeurCar = ChauffeurFleetEntry;
 
@@ -38,6 +41,7 @@ function ChauffeurDetailDialog({
   car: ChauffeurCar | null;
   onClose: () => void;
 }) {
+  const { locale, t } = useLocale();
   const titleId = useId();
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -77,7 +81,7 @@ function ChauffeurDetailDialog({
 
   if (!car) return null;
 
-  const chauffeurRate = chauffeurQuoteRateLine(car);
+  const chauffeurRate = localizedChauffeurQuoteRateLine(car, locale);
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center overflow-x-clip sm:items-center">
@@ -85,7 +89,7 @@ function ChauffeurDetailDialog({
         type="button"
         className="absolute inset-0 bg-[#0b0b0b]/82 backdrop-blur-[2px]"
         onClick={onClose}
-        aria-label="Close"
+        aria-label={t("chauffeurServicesPage.close")}
       />
       <div
         role="dialog"
@@ -104,7 +108,7 @@ function ChauffeurDetailDialog({
             type="button"
             onClick={onClose}
             className="flex h-10 w-10 shrink-0 items-center justify-center border border-gold/15 text-cream/70 transition-colors hover:border-gold/35 hover:text-gold-secondary"
-            aria-label="Close details"
+            aria-label={t("chauffeurServicesPage.closeDetails")}
           >
             <X className="h-5 w-5" />
           </button>
@@ -123,18 +127,18 @@ function ChauffeurDetailDialog({
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center text-[0.72rem] uppercase tracking-[0.2em] text-cream/35">
-                    Photo coming soon
+                    {t("chauffeurServicesPage.photoComingSoon")}
                   </div>
                 )}
                 <button
                   type="button"
                   onClick={() => setLightboxOpen(true)}
                   className="absolute inset-0 z-[1] cursor-zoom-in"
-                  aria-label="View image larger"
+                  aria-label={t("chauffeurServicesPage.viewImageLarger")}
                 />
                 <span className="pointer-events-none absolute right-3 top-3 z-[2] inline-flex items-center gap-1.5 border border-gold/25 bg-[#0b0b0b]/75 px-2.5 py-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-cream/85 backdrop-blur-sm">
                   <Maximize2 className="h-3.5 w-3.5" aria-hidden />
-                  Enlarge
+                  {t("chauffeurServicesPage.enlarge")}
                 </span>
                 {galleryLen > 1 ? (
                   <>
@@ -145,7 +149,7 @@ function ChauffeurDetailDialog({
                         setActiveIndex((i) => (i <= 0 ? galleryLen - 1 : i - 1));
                       }}
                       className="absolute left-2 top-1/2 z-[3] flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gold/20 bg-[#0b0b0b]/80 text-cream/90 backdrop-blur-sm transition-colors hover:border-gold/40"
-                      aria-label="Previous photo"
+                      aria-label={t("chauffeurServicesPage.previousPhoto")}
                     >
                       <ChevronLeft className="h-5 w-5" />
                     </button>
@@ -156,7 +160,7 @@ function ChauffeurDetailDialog({
                         setActiveIndex((i) => (i >= galleryLen - 1 ? 0 : i + 1));
                       }}
                       className="absolute right-2 top-1/2 z-[3] flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gold/20 bg-[#0b0b0b]/80 text-cream/90 backdrop-blur-sm transition-colors hover:border-gold/40"
-                      aria-label="Next photo"
+                      aria-label={t("chauffeurServicesPage.nextPhoto")}
                     >
                       <ChevronRight className="h-5 w-5" />
                     </button>
@@ -176,7 +180,7 @@ function ChauffeurDetailDialog({
                           ? "border-gold/45"
                           : "border-gold/12 hover:border-gold/25",
                       )}
-                      aria-label={`Show photo ${i + 1}`}
+                      aria-label={t("chauffeurServicesPage.showPhoto", { n: i + 1 })}
                       aria-current={i === activeIndex || undefined}
                     >
                       {getGallerySrc(car, i) ? (
@@ -188,7 +192,9 @@ function ChauffeurDetailDialog({
                         />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center bg-[#050505] text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-cream/32">
-                          {car.photosComingSoon ? "Soon" : `${i + 1}`}
+                          {car.photosComingSoon
+                            ? t("chauffeurServicesPage.soon")
+                            : `${i + 1}`}
                         </div>
                       )}
                     </button>
@@ -199,7 +205,7 @@ function ChauffeurDetailDialog({
 
             <div className="min-w-0 flex flex-col p-5 sm:p-7 lg:max-h-[min(70vh,640px)] lg:overflow-y-auto">
               <p className="text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-                Chauffeur rate
+                {t("chauffeurServicesPage.chauffeurRate")}
               </p>
               <p className="mt-3 font-serif text-2xl tabular-nums tracking-tight text-gold-secondary sm:text-[1.65rem]">
                 {chauffeurRate}
@@ -208,7 +214,7 @@ function ChauffeurDetailDialog({
               {car.specs && car.specs.length > 0 ? (
                 <>
                   <p className="mt-6 text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-                    Vehicle details
+                    {t("chauffeurServicesPage.vehicleDetails")}
                   </p>
                   <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-4 sm:gap-x-6">
                     {car.specs.map((row) => (
@@ -229,20 +235,22 @@ function ChauffeurDetailDialog({
                   car.specs?.length ? "mt-8" : "mt-6",
                 )}
               >
-                Vehicle description
+                {t("chauffeurServicesPage.vehicleDescription")}
               </p>
               <p className="mt-4 text-[0.9375rem] leading-relaxed text-cream/72">{car.description}</p>
 
               {car.requirements && car.requirements.length > 0 ? (
                 <>
                   <p className="mt-8 text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-                    Important requirements
+                    {t("chauffeurServicesPage.importantRequirements")}
                   </p>
                   {car.source === "daily" ? (
                     <p className="mt-2 text-[0.78rem] leading-relaxed text-cream/56">
-                      This vehicle is also available as{" "}
-                      <span className="text-cream/74">self-drive</span>. The
-                      list below contains the self-drive requirements.
+                      {t("chauffeurServicesPage.selfDriveNoteBefore")}{" "}
+                      <span className="text-cream/74">
+                        {t("chauffeurServicesPage.selfDriveHighlight")}
+                      </span>
+                      {t("chauffeurServicesPage.selfDriveNoteAfter")}
                     </p>
                   ) : null}
                   <ul className="mt-4 space-y-3" role="list">
@@ -264,13 +272,17 @@ function ChauffeurDetailDialog({
         <div className="fixed inset-0 z-[60] flex flex-col bg-[#050505]/95 backdrop-blur-md" role="presentation">
           <div className="flex items-center justify-between border-b border-gold/12 px-4 py-3 sm:px-6">
             <p className="text-[0.7rem] font-medium uppercase tracking-[0.22em] text-cream/55">
-              {car.name} · {activeIndex + 1} / {galleryLen}
+              {t("chauffeurServicesPage.lightboxCounter", {
+                name: car.name,
+                current: activeIndex + 1,
+                total: galleryLen,
+              })}
             </p>
             <button
               type="button"
               onClick={() => setLightboxOpen(false)}
               className="flex h-10 w-10 items-center justify-center border border-gold/15 text-cream/80 hover:border-gold/35 hover:text-gold-secondary"
-              aria-label="Close enlarged view"
+              aria-label={t("chauffeurServicesPage.closeEnlargedView")}
             >
               <X className="h-5 w-5" />
             </button>
@@ -284,7 +296,7 @@ function ChauffeurDetailDialog({
               />
             ) : (
               <div className="flex h-full max-h-[min(78vh,820px)] w-full max-w-5xl items-center justify-center text-[0.72rem] uppercase tracking-[0.2em] text-cream/35">
-                Photo coming soon
+                {t("chauffeurServicesPage.photoComingSoon")}
               </div>
             )}
           </div>
@@ -295,26 +307,32 @@ function ChauffeurDetailDialog({
 }
 
 export function ChauffeurServicesCatalog() {
+  const { locale, t } = useLocale();
   const [selected, setSelected] = useState<ChauffeurCar | null>(null);
 
-  const chauffeurFleet = useMemo<ChauffeurCar[]>(
-    () => [...CHAUFFEUR_FLEET_SORTED],
-    [],
+  const chauffeurFleet = useMemo(
+    () => getLocalizedChauffeurFleet(locale, t),
+    [locale, t],
   );
+
+  const selectedLocalized = useMemo(() => {
+    if (!selected) return null;
+    return chauffeurFleet.find((c) => c.id === selected.id) ?? selected;
+  }, [selected, chauffeurFleet]);
 
   return (
     <>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-[0.62rem] font-semibold uppercase tracking-[0.34em] text-gold/75">
-            Chauffeur fleet
+            {t("chauffeurServicesPage.fleetEyebrow")}
           </p>
           <h2 className="mt-3 font-serif text-2xl tracking-tight text-cream sm:text-[2.05rem]">
-            Available chauffeur vehicles
+            {t("chauffeurServicesPage.fleetHeadline")}
           </h2>
         </div>
         <p className="text-[0.8rem] leading-relaxed text-cream/50">
-          {chauffeurFleet.length}+ vehicles currently listed
+          {t("chauffeurServicesPage.fleetCount", { count: chauffeurFleet.length })}
         </p>
       </div>
 
@@ -322,7 +340,7 @@ export function ChauffeurServicesCatalog() {
         {chauffeurFleet.map((car) => {
           const image = car.galleryImages?.[0] ?? car.coverImage;
           const isFeatured = FEATURED_CHAUFFEUR_ID_SET.has(car.id);
-          const chauffeurRate = chauffeurQuoteRateLine(car);
+          const chauffeurRate = localizedChauffeurQuoteRateLine(car, locale);
 
           return (
             <button
@@ -334,7 +352,7 @@ export function ChauffeurServicesCatalog() {
               <div className="relative aspect-[4/3] bg-[#050505]">
                 {isFeatured ? (
                   <span className="absolute left-3 top-3 z-10 border border-gold/30 bg-[#0b0b0b]/90 px-2.5 py-1 text-[0.56rem] font-semibold uppercase tracking-[0.2em] text-gold-secondary backdrop-blur-sm">
-                    Featured
+                    {t("chauffeurServicesPage.featured")}
                   </span>
                 ) : null}
                 {image ? (
@@ -346,7 +364,7 @@ export function ChauffeurServicesCatalog() {
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center text-[0.72rem] uppercase tracking-[0.2em] text-cream/35">
-                    Photo coming soon
+                    {t("chauffeurServicesPage.photoComingSoon")}
                   </div>
                 )}
               </div>
@@ -357,14 +375,14 @@ export function ChauffeurServicesCatalog() {
                 </p>
                 <h3 className="mt-2 font-serif text-xl tracking-tight text-cream">{car.name}</h3>
                 <p className="mt-4 text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-cream/45">
-                  Chauffeur rate
+                  {t("chauffeurServicesPage.chauffeurRate")}
                 </p>
                 <div className="mt-1 flex items-center justify-between gap-2">
                   <p className="font-serif text-lg tabular-nums tracking-tight text-gold-secondary">
                     {chauffeurRate}
                   </p>
                   <span className="inline-flex items-center gap-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-cream/42 transition-colors duration-300 group-hover:text-gold-secondary">
-                    Open
+                    {t("chauffeurServicesPage.open")}
                     <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
                   </span>
                 </div>
@@ -374,20 +392,25 @@ export function ChauffeurServicesCatalog() {
         })}
       </div>
 
-      <ChauffeurDetailDialog car={selected} onClose={() => setSelected(null)} />
+      <ChauffeurDetailDialog
+        car={selectedLocalized}
+        onClose={() => setSelected(null)}
+      />
     </>
   );
 }
 
 /** Same add-on strip as exotic cars — shuffled car photo marquee. */
 export function ChauffeurPhotographyAddonBlock() {
+  const { t } = useLocale();
+
   return (
     <>
       <div className="section-gradient-divider" aria-hidden />
       <ServicePhotographyAddon
         className="bg-[#0b0b0b]"
-        headline="Add photo or video shoots"
-        description="Book a photo shoot, a video shoot, or both alongside your exotic — same coordination, briefing, and edited stills and/or motion after your drive."
+        headline={t("chauffeurServicesPage.photography.headline")}
+        description={t("chauffeurServicesPage.photography.description")}
         images={EXOTIC_PHOTOGRAPHY_ADDON_IMAGES}
         marqueeDurationSec={175}
       />

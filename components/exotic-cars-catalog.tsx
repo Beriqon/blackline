@@ -24,8 +24,14 @@ import {
 import { ScrollRevealItem } from "@/components/scroll-reveal-item";
 import { SectionReveal } from "@/components/section-reveal";
 import { ExoticCarBookingPanel } from "@/components/exotic-car-booking-panel";
+import { useLocale } from "@/components/locale-provider";
 import { ServicePhotographyAddon } from "@/components/service-photography-addon";
 import { EXOTIC_CARS_DAILY, type ExoticCar } from "@/lib/exotic-cars-data";
+import {
+  exoticBrandFilterLabel,
+  getLocalizedExoticCars,
+} from "@/lib/i18n/exotic-cars-page";
+import type { Translator } from "@/lib/i18n/translate";
 import { paginateSlice } from "@/lib/pagination";
 import {
   exoticGalleryCoverStyle,
@@ -35,30 +41,10 @@ import {
 import { EXOTIC_PHOTOGRAPHY_ADDON_IMAGES } from "@/lib/exotic-car-photos";
 import { cn } from "@/lib/utils";
 
-const btnPrimary =
-  "inline-flex min-h-11 items-center justify-center border border-gold/40 bg-gold px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-[#0b0b0b] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold-secondary hover:bg-gold-secondary hover:shadow-[0_0_0_1px_rgba(224,195,138,0.4),0_14px_48px_rgba(198,164,108,0.2)] active:translate-y-0";
-
 const CATALOG_PAGE_SIZE = 9;
-
-const SORT_OPTIONS: { id: ExoticSortMode; label: string }[] = [
-  { id: "featured-first", label: "Featured first" },
-  { id: "price-asc", label: "Price: low to high" },
-  { id: "price-desc", label: "Price: high to low" },
-  { id: "name-asc", label: "Name: A → Z" },
-  { id: "name-desc", label: "Name: Z → A" },
-];
 
 const filterSelectClass =
   "w-full cursor-pointer appearance-none rounded-sm border border-gold/22 bg-[#0b0b0b] py-2.5 pl-3 pr-10 text-[0.8125rem] text-cream/90 transition-colors hover:border-gold/32 focus:border-gold/45 focus:outline-none focus:ring-1 focus:ring-gold/25";
-
-/** Optional prettier labels in the brand filter — values stay as `ExoticCar.group`. */
-const EXOTIC_BRAND_FILTER_LABEL: Record<string, string> = {
-  Maybach: "Maybach vans",
-};
-
-function exoticBrandFilterLabel(group: string): string {
-  return EXOTIC_BRAND_FILTER_LABEL[group] ?? group;
-}
 
 function getGalleryLength(car: ExoticCar): number {
   const n = car.galleryImages?.length ?? 0;
@@ -105,11 +91,13 @@ function ImagePlaceholder({
 function CarCard({
   car,
   onOpen,
+  t,
 }: {
   car: ExoticCar;
   onOpen: (car: ExoticCar) => void;
+  t: Translator;
 }) {
-  const brand = car.group.trim() || "Fleet";
+  const brand = car.group.trim() || t("exoticCarsPage.eyebrow");
 
   return (
     <button
@@ -142,7 +130,9 @@ function CarCard({
             <ImagePlaceholder
               className="h-full w-full"
               label={
-                car.photosComingSoon ? "Photos coming soon" : "Photo placeholder"
+                car.photosComingSoon
+                  ? t("exoticCarsPage.photosComingSoon")
+                  : t("exoticCarsPage.photoPlaceholder")
               }
             />
           )}
@@ -151,12 +141,12 @@ function CarCard({
             <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-2 sm:left-4 sm:top-4">
               {car.featured ? (
                 <span className="border border-gold/50 bg-[#0a0a0a]/85 px-2.5 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.2em] text-gold-secondary backdrop-blur-sm">
-                  Featured
+                  {t("exoticCarsPage.featured")}
                 </span>
               ) : null}
               {car.photosComingSoon && !carCardImageSrc(car) ? (
                 <span className="border border-gold/15 bg-[#0a0a0a]/75 px-2.5 py-1 text-[0.58rem] font-medium uppercase tracking-[0.18em] text-cream/50 backdrop-blur-sm">
-                  Gallery soon
+                  {t("exoticCarsPage.gallerySoon")}
                 </span>
               ) : null}
             </div>
@@ -178,7 +168,7 @@ function CarCard({
               </p>
             </div>
             <span className="inline-flex shrink-0 items-center gap-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-cream/42 transition-colors duration-300 group-hover:text-gold-secondary">
-              Open
+              {t("exoticCarsPage.open")}
               <ArrowUpRight
                 className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                 aria-hidden
@@ -194,9 +184,11 @@ function CarCard({
 function CarDetailDialog({
   car,
   onClose,
+  t,
 }: {
   car: ExoticCar | null;
   onClose: () => void;
+  t: Translator;
 }) {
   const titleId = useId();
   const [activeIndex, setActiveIndex] = useState(0);
@@ -246,7 +238,7 @@ function CarDetailDialog({
         type="button"
         className="absolute inset-0 bg-[#0b0b0b]/82 backdrop-blur-[2px]"
         onClick={onClose}
-        aria-label="Close"
+        aria-label={t("exoticCarsPage.close")}
       />
       <div
         role="dialog"
@@ -265,7 +257,7 @@ function CarDetailDialog({
             type="button"
             onClick={onClose}
             className="flex h-10 w-10 shrink-0 items-center justify-center border border-gold/15 text-cream/70 transition-colors hover:border-gold/35 hover:text-gold-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold/50"
-            aria-label="Close details"
+            aria-label={t("exoticCarsPage.closeDetails")}
           >
             <X className="h-5 w-5" />
           </button>
@@ -287,8 +279,11 @@ function CarDetailDialog({
                     className="absolute inset-0 h-full w-full"
                     label={
                       car.photosComingSoon
-                        ? "Photos coming soon"
-                        : `Gallery ${activeIndex + 1} of ${galleryLen}`
+                        ? t("exoticCarsPage.photosComingSoon")
+                        : t("exoticCarsPage.gallerySlot", {
+                            current: activeIndex + 1,
+                            total: galleryLen,
+                          })
                     }
                   />
                 )}
@@ -296,11 +291,11 @@ function CarDetailDialog({
                   type="button"
                   onClick={() => setLightboxOpen(true)}
                   className="absolute inset-0 z-[1] cursor-zoom-in focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold/50"
-                  aria-label="View image larger"
+                  aria-label={t("exoticCarsPage.viewImageLarger")}
                 />
                 <span className="pointer-events-none absolute right-3 top-3 z-[2] inline-flex items-center gap-1.5 border border-gold/25 bg-[#0b0b0b]/75 px-2.5 py-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-cream/85 backdrop-blur-sm">
                   <Maximize2 className="h-3.5 w-3.5" aria-hidden />
-                  Enlarge
+                  {t("exoticCarsPage.enlarge")}
                 </span>
                 {galleryLen > 1 ? (
                   <>
@@ -311,7 +306,7 @@ function CarDetailDialog({
                         goPrev();
                       }}
                       className="absolute left-2 top-1/2 z-[3] flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gold/20 bg-[#0b0b0b]/80 text-cream/90 backdrop-blur-sm transition-colors hover:border-gold/40"
-                      aria-label="Previous photo"
+                      aria-label={t("exoticCarsPage.previousPhoto")}
                     >
                       <ChevronLeft className="h-5 w-5" />
                     </button>
@@ -322,7 +317,7 @@ function CarDetailDialog({
                         goNext();
                       }}
                       className="absolute right-2 top-1/2 z-[3] flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gold/20 bg-[#0b0b0b]/80 text-cream/90 backdrop-blur-sm transition-colors hover:border-gold/40"
-                      aria-label="Next photo"
+                      aria-label={t("exoticCarsPage.nextPhoto")}
                     >
                       <ChevronRight className="h-5 w-5" />
                     </button>
@@ -342,7 +337,7 @@ function CarDetailDialog({
                           ? "border-gold/45"
                           : "border-gold/12 hover:border-gold/25",
                       )}
-                      aria-label={`Show photo ${i + 1}`}
+                      aria-label={t("exoticCarsPage.showPhoto", { n: i + 1 })}
                       aria-current={i === activeIndex}
                     >
                       {getGallerySrc(car, i) ? (
@@ -356,7 +351,9 @@ function CarDetailDialog({
                         <ImagePlaceholder
                           className="h-full w-full"
                           label={
-                            car.photosComingSoon ? "Soon" : `${i + 1}`
+                            car.photosComingSoon
+                              ? t("exoticCarsPage.soon")
+                              : `${i + 1}`
                           }
                         />
                       )}
@@ -368,7 +365,9 @@ function CarDetailDialog({
 
             <div className="min-w-0 flex flex-col p-5 pb-8 sm:p-7 sm:pb-10">
               <p className="text-[0.62rem] font-semibold uppercase tracking-[0.42em] text-gold/90">
-                {car.section === "daily" ? "Daily rate" : "Hourly rate"}
+                {car.section === "daily"
+                  ? t("exoticCarsPage.dailyRate")
+                  : t("exoticCarsPage.hourlyRate")}
               </p>
               <p className="mt-3 font-serif text-2xl tabular-nums tracking-normal text-gold-secondary sm:text-[1.65rem]">
                 {car.priceLine}
@@ -381,14 +380,13 @@ function CarDetailDialog({
               ) : null}
               {showDualRental ? (
                 <p className="mt-4 text-[0.8125rem] leading-relaxed text-cream/55">
-                  Also bookable with a chauffeur on request — ask when you
-                  inquire; we&apos;ll confirm availability and hourly pricing.
+                  {t("exoticCarsPage.dualRentalNote")}
                 </p>
               ) : null}
               {car.specs && car.specs.length > 0 ? (
                 <>
                   <p className="mt-6 text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-                    Vehicle details
+                    {t("exoticCarsPage.vehicleDetails")}
                   </p>
                   <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-4 sm:gap-x-6">
                   {car.specs.map((row) => (
@@ -410,7 +408,7 @@ function CarDetailDialog({
                   car.specs?.length ? "mt-8" : "mt-6",
                 )}
               >
-                Vehicle description
+                {t("exoticCarsPage.vehicleDescription")}
               </p>
               <p className="mt-4 text-[0.9375rem] leading-relaxed text-cream/72">
                 {car.description}
@@ -418,7 +416,7 @@ function CarDetailDialog({
               {car.requirements && car.requirements.length > 0 ? (
                 <>
                   <p className="mt-8 text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-                    Important requirements
+                    {t("exoticCarsPage.importantRequirements")}
                   </p>
                   <ul className="mt-4 space-y-3" role="list">
                     {car.requirements.map((req) => (
@@ -439,7 +437,7 @@ function CarDetailDialog({
               {car.highlights && car.highlights.length > 0 ? (
                 <>
                   <p className="mt-8 text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-                    Highlights
+                    {t("exoticCarsPage.highlights")}
                   </p>
                   <ul className="mt-4 space-y-3" role="list">
                     {car.highlights.map((h) => (
@@ -470,13 +468,17 @@ function CarDetailDialog({
         >
           <div className="flex items-center justify-between border-b border-gold/12 px-4 py-3 sm:px-6">
             <p className="text-[0.7rem] font-medium uppercase tracking-[0.22em] text-cream/55">
-              {car.name} · {activeIndex + 1} / {galleryLen}
+              {t("exoticCarsPage.lightboxCounter", {
+                name: car.name,
+                current: activeIndex + 1,
+                total: galleryLen,
+              })}
             </p>
             <button
               type="button"
               onClick={() => setLightboxOpen(false)}
               className="flex h-10 w-10 items-center justify-center border border-gold/15 text-cream/80 hover:border-gold/35 hover:text-gold-secondary"
-              aria-label="Close enlarged view"
+              aria-label={t("exoticCarsPage.closeEnlargedView")}
             >
               <X className="h-5 w-5" />
             </button>
@@ -493,8 +495,11 @@ function CarDetailDialog({
                 className="h-full max-h-[min(78vh,820px)] w-full max-w-5xl"
                 label={
                   car.photosComingSoon
-                    ? "Photos coming soon"
-                    : `Large preview ${activeIndex + 1} of ${galleryLen}`
+                    ? t("exoticCarsPage.photosComingSoon")
+                    : t("exoticCarsPage.largePreview", {
+                        current: activeIndex + 1,
+                        total: galleryLen,
+                      })
                 }
               />
             )}
@@ -504,7 +509,7 @@ function CarDetailDialog({
                   type="button"
                   onClick={goPrev}
                   className="absolute left-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center border border-gold/25 bg-[#0b0b0b]/85 text-cream sm:left-6"
-                  aria-label="Previous photo"
+                  aria-label={t("exoticCarsPage.previousPhoto")}
                 >
                   <ChevronLeft className="h-6 w-6" />
                 </button>
@@ -512,7 +517,7 @@ function CarDetailDialog({
                   type="button"
                   onClick={goNext}
                   className="absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center border border-gold/25 bg-[#0b0b0b]/85 text-cream sm:right-6"
-                  aria-label="Next photo"
+                  aria-label={t("exoticCarsPage.nextPhoto")}
                 >
                   <ChevronRight className="h-6 w-6" />
                 </button>
@@ -531,12 +536,14 @@ function ExoticCatalogPagination({
   total,
   pageSize,
   onPage,
+  t,
 }: {
   page: number;
   pageCount: number;
   total: number;
   pageSize: number;
   onPage: (p: number) => void;
+  t: Translator;
 }) {
   if (pageCount <= 1) return null;
 
@@ -546,15 +553,10 @@ function ExoticCatalogPagination({
   return (
     <nav
       className="mt-12 flex flex-col items-center gap-5 border-t border-gold/10 pt-10 sm:flex-row sm:justify-between"
-      aria-label="Exotic fleet pages"
+      aria-label={t("exoticCarsPage.paginationAria")}
     >
       <p className="text-[0.72rem] tabular-nums text-cream/42">
-        Showing{" "}
-        <span className="text-cream/55">
-          {from}–{to}
-        </span>{" "}
-        of{" "}
-        <span className="text-cream/55">{total}</span>
+        {t("exoticCarsPage.showingRange", { from, to, total })}
       </p>
       <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
         <button
@@ -568,7 +570,7 @@ function ExoticCatalogPagination({
               : "border-gold/18 text-cream/65 hover:border-gold/32 hover:text-cream",
           )}
         >
-          Prev
+          {t("exoticCarsPage.prev")}
         </button>
         {Array.from({ length: pageCount }, (_, i) => i + 1).map((p) => (
           <button
@@ -597,7 +599,7 @@ function ExoticCatalogPagination({
               : "border-gold/18 text-cream/65 hover:border-gold/32 hover:text-cream",
           )}
         >
-          Next
+          {t("exoticCarsPage.next")}
         </button>
       </div>
     </nav>
@@ -608,21 +610,47 @@ function ExoticCarsCatalogInner() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { locale, t } = useLocale();
 
   const [selected, setSelected] = useState<ExoticCar | null>(null);
   const [brandFilter, setBrandFilter] = useState<string>("all");
   const [sortMode, setSortMode] = useState<ExoticSortMode>("featured-first");
 
+  const localizedDaily = useMemo(
+    () => getLocalizedExoticCars(locale, t),
+    [locale, t],
+  );
+
+  const sortOptions = useMemo(
+    (): { id: ExoticSortMode; label: string }[] => [
+      {
+        id: "featured-first",
+        label: t("exoticCarsPage.sort.featuredFirst"),
+      },
+      { id: "price-asc", label: t("exoticCarsPage.sort.priceAsc") },
+      { id: "price-desc", label: t("exoticCarsPage.sort.priceDesc") },
+      { id: "name-asc", label: t("exoticCarsPage.sort.nameAsc") },
+      { id: "name-desc", label: t("exoticCarsPage.sort.nameDesc") },
+    ],
+    [t],
+  );
+
+  const selectedLocalized = useMemo(() => {
+    if (!selected) return null;
+    return localizedDaily.find((c) => c.id === selected.id) ?? selected;
+  }, [selected, localizedDaily]);
+
   const fleetBrandOptions = useMemo(() => {
     const set = new Set<string>();
-    for (const car of EXOTIC_CARS_DAILY) {
+    const collatorLocale = locale === "es" ? "es" : "en";
+    for (const car of localizedDaily) {
       const g = car.group.trim();
       if (g) set.add(g);
     }
     return Array.from(set).sort((a, b) =>
-      a.localeCompare(b, "en", { sensitivity: "base" }),
+      a.localeCompare(b, collatorLocale, { sensitivity: "base" }),
     );
-  }, []);
+  }, [localizedDaily, locale]);
 
   const carMatchesBrand = useCallback(
     (car: ExoticCar) =>
@@ -638,12 +666,12 @@ function ExoticCarsCatalogInner() {
 
   const flattenedCars = useMemo(() => {
     const out: ExoticCar[] = [];
-    for (const car of EXOTIC_CARS_DAILY) {
+    for (const car of localizedDaily) {
       if (!carMatchesBrand(car)) continue;
       out.push(car);
     }
     return sortExoticCars(out, sortMode);
-  }, [carMatchesBrand, sortMode]);
+  }, [carMatchesBrand, localizedDaily, sortMode]);
 
   const { slice, pageCount, safePage, total } = useMemo(
     () => paginateSlice(flattenedCars, requestedPage, CATALOG_PAGE_SIZE),
@@ -700,7 +728,7 @@ function ExoticCarsCatalogInner() {
     [pathname, router],
   );
 
-  const dailyConfigEmpty = EXOTIC_CARS_DAILY.length === 0;
+  const dailyConfigEmpty = localizedDaily.length === 0;
 
   return (
     <div className="bg-[#0b0b0b] [color-scheme:dark]">
@@ -708,26 +736,24 @@ function ExoticCarsCatalogInner() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(198,164,108,0.06),transparent)]" />
         <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-10">
           <p className="text-[0.65rem] font-medium uppercase tracking-[0.48em] text-gold/90">
-            Fleet
+            {t("exoticCarsPage.eyebrow")}
           </p>
           <div className="mt-4 h-px w-14 bg-gold/30" aria-hidden />
           <h1 className="mt-6 max-w-3xl font-serif text-[2.1rem] leading-[1.12] tracking-tight text-cream sm:text-4xl md:text-[2.65rem]">
-            Exotic car rentals
+            {t("exoticCarsPage.headline")}
           </h1>
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-cream/58 sm:text-[0.9375rem]">
-            Daily self-drive fleet — filter by brand, sort the list, then open
-            a vehicle for full details, gallery, and booking.
+            {t("exoticCarsPage.heroBody")}
           </p>
           <p className="mt-6 max-w-2xl rounded-sm border border-gold/15 bg-[#050505] px-4 py-3 text-[0.8125rem] leading-relaxed text-cream/55 sm:mt-7">
-            Dedicated chauffeur vehicles and hourly rates are on our{" "}
+            {t("exoticCarsPage.chauffeurNoteBefore")}{" "}
             <Link
               href="/services/chauffeur-services"
               className="text-cream/72 underline-offset-4 transition-colors hover:text-gold-secondary hover:underline"
             >
-              chauffeur service
+              {t("exoticCarsPage.chauffeurLink")}
             </Link>{" "}
-            page. Select models here can still be arranged with a driver when
-            you inquire.
+            {t("exoticCarsPage.chauffeurNoteAfter")}
           </p>
         </div>
       </SectionReveal>
@@ -735,7 +761,7 @@ function ExoticCarsCatalogInner() {
       <div
         className="border-b border-gold/12 bg-[#0b0b0b]"
         role="region"
-        aria-label="Fleet filters"
+        aria-label={t("exoticCarsPage.fleetFiltersAria")}
       >
         <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 sm:py-4 lg:px-10">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-8">
@@ -746,7 +772,7 @@ function ExoticCarsCatalogInner() {
                     htmlFor="exotic-filter-brand"
                     className="block text-[0.58rem] font-semibold uppercase tracking-[0.28em] text-gold/55"
                   >
-                    Brand
+                    {t("exoticCarsPage.brand")}
                   </label>
                   <div className="relative mt-2">
                     <select
@@ -755,10 +781,10 @@ function ExoticCarsCatalogInner() {
                       onChange={(e) => setBrandFilter(e.target.value)}
                       className={filterSelectClass}
                     >
-                      <option value="all">All brands</option>
+                      <option value="all">{t("exoticCarsPage.allBrands")}</option>
                       {fleetBrandOptions.map((name) => (
                         <option key={name} value={name}>
-                          {exoticBrandFilterLabel(name)}
+                          {exoticBrandFilterLabel(name, t)}
                         </option>
                       ))}
                     </select>
@@ -776,7 +802,7 @@ function ExoticCarsCatalogInner() {
                 htmlFor="exotic-fleet-sort"
                 className="text-[0.58rem] font-semibold uppercase tracking-[0.28em] text-gold/55"
               >
-                Sort by
+                {t("exoticCarsPage.sortBy")}
               </label>
               <div className="relative mt-1.5 sm:mt-2">
                 <select
@@ -787,7 +813,7 @@ function ExoticCarsCatalogInner() {
                   }
                   className={filterSelectClass}
                 >
-                  {SORT_OPTIONS.map((o) => (
+                  {sortOptions.map((o) => (
                     <option key={o.id} value={o.id}>
                       {o.label}
                     </option>
@@ -803,8 +829,11 @@ function ExoticCarsCatalogInner() {
 
           <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-gold/[0.08] pt-3">
             <p className="text-[0.68rem] leading-relaxed text-cream/40">
-              <span className="tabular-nums text-cream/55">{total}</span>{" "}
-              {`self-drive vehicle${total === 1 ? "" : "s"}`}
+              <span className="tabular-nums text-cream/55">
+                {total === 1
+                  ? t("exoticCarsPage.vehicleCount", { count: total })
+                  : t("exoticCarsPage.vehicleCountPlural", { count: total })}
+              </span>
             </p>
             {brandFilter !== "all" || sortMode !== "featured-first" ? (
               <button
@@ -815,7 +844,7 @@ function ExoticCarsCatalogInner() {
                 }}
                 className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-gold/55 underline-offset-4 transition-colors hover:text-gold-secondary hover:underline"
               >
-                Clear filters
+                {t("exoticCarsPage.clearFilters")}
               </button>
             ) : null}
           </div>
@@ -831,21 +860,29 @@ function ExoticCarsCatalogInner() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
           {dailyConfigEmpty ? (
             <p className="mt-0 max-w-xl text-sm leading-relaxed text-cream/52">
-              Daily self-drive options are being refreshed — ask the team for
-              what&apos;s available on your dates.
+              {t("exoticCarsPage.emptyRefreshing")}
             </p>
           ) : total === 0 ? (
             <p className="mt-0 max-w-xl text-sm leading-relaxed text-cream/52">
               {brandFilter !== "all" ? (
                 <>
-                  No vehicles for this brand with the current view. Try{" "}
-                  <span className="text-cream/60">All brands</span> or{" "}
-                  <span className="text-cream/60">Clear filters</span>.
+                  {t("exoticCarsPage.emptyBrand")}{" "}
+                  <span className="text-cream/60">
+                    {t("exoticCarsPage.allBrands")}
+                  </span>{" "}
+                  {t("exoticCarsPage.emptyBrandOr")}{" "}
+                  <span className="text-cream/60">
+                    {t("exoticCarsPage.clearFilters")}
+                  </span>
+                  .
                 </>
               ) : (
                 <>
-                  No vehicles match your filters. Try{" "}
-                  <span className="text-cream/60">Clear filters</span>.
+                  {t("exoticCarsPage.emptyFilters")}{" "}
+                  <span className="text-cream/60">
+                    {t("exoticCarsPage.clearFilters")}
+                  </span>
+                  .
                 </>
               )}
             </p>
@@ -854,7 +891,7 @@ function ExoticCarsCatalogInner() {
               <div className="mt-2 grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-9 lg:grid-cols-3 lg:gap-8">
                 {slice.map((car, index) => (
                   <ScrollRevealItem key={car.id} index={index}>
-                    <CarCard car={car} onOpen={setSelected} />
+                    <CarCard car={car} onOpen={setSelected} t={t} />
                   </ScrollRevealItem>
                 ))}
               </div>
@@ -864,11 +901,11 @@ function ExoticCarsCatalogInner() {
                 total={total}
                 pageSize={CATALOG_PAGE_SIZE}
                 onPage={goToCatalogPage}
+                t={t}
               />
               {EXOTIC_CARS_DAILY.some((c) => c.pricing === "hourly_range") ? (
                 <p className="mt-12 border-t border-gold/10 pt-8 text-[0.75rem] leading-relaxed text-cream/42">
-                  *Range pricing is confirmed on inquiry based on your
-                  schedule.
+                  {t("exoticCarsPage.rangePricingNote")}
                 </p>
               ) : null}
             </>
@@ -880,16 +917,17 @@ function ExoticCarsCatalogInner() {
 
       <ServicePhotographyAddon
         className="bg-[#0b0b0b]"
-        headline="Add photo or video shoots"
-        description="Book a photo shoot, a video shoot, or both alongside your exotic — same coordination, briefing, and edited stills and/or motion after your drive."
+        headline={t("exoticCarsPage.photography.headline")}
+        description={t("exoticCarsPage.photography.description")}
         images={EXOTIC_PHOTOGRAPHY_ADDON_IMAGES}
         marqueeDurationSec={175}
       />
 
       <CarDetailDialog
-        key={selected?.id ?? "no-car"}
-        car={selected}
+        key={selectedLocalized?.id ?? "no-car"}
+        car={selectedLocalized}
         onClose={() => setSelected(null)}
+        t={t}
       />
     </div>
   );

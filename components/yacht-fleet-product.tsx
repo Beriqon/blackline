@@ -2,7 +2,6 @@
 
 import { ChevronLeft, ChevronRight, Ship } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import {
   useCallback,
   useEffect,
@@ -12,6 +11,7 @@ import {
   useState,
 } from "react";
 
+import { useLocale } from "@/components/locale-provider";
 import {
   YachtListingAbout,
   YachtListingSpecsAndIncluded,
@@ -20,7 +20,9 @@ import { YachtBookingButton } from "@/components/yacht-booking-button";
 import { YachtChartersBackLink } from "@/components/yacht-charters-back-link";
 import { SectionReveal } from "@/components/section-reveal";
 import { YachtProductAddons } from "@/components/yacht-product-addons";
-import { getFleetGalleryPaths } from "@/lib/yacht-fleet-gallery";
+import type { Translator } from "@/lib/i18n/translate";
+import { localizeYacht } from "@/lib/i18n/yachts-page";
+import { resolveYachtGalleryPaths } from "@/lib/yacht-fleet-gallery";
 import {
   FLEET_GRATUITY_PCTS,
   computeFleetTotals,
@@ -32,13 +34,16 @@ import {
 import type { Yacht } from "@/lib/yachts-data";
 import { cn } from "@/lib/utils";
 
-const btnPrimary =
-  "inline-flex min-h-11 items-center justify-center border border-gold/40 bg-gold px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-[#0b0b0b] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold-secondary hover:bg-gold-secondary hover:shadow-[0_0_0_1px_rgba(224,195,138,0.4),0_14px_48px_rgba(198,164,108,0.2)] active:translate-y-0";
-
 const pillClass =
   "min-h-10 rounded-sm border px-3.5 py-2 text-center text-[0.7rem] font-semibold uppercase tracking-[0.14em] transition-colors sm:min-h-9 sm:px-4 sm:text-[0.72rem]";
 
-function PhotoPlaceholder({ className }: { className?: string }) {
+function PhotoPlaceholder({
+  className,
+  photosComingSoon,
+}: {
+  className?: string;
+  photosComingSoon: string;
+}) {
   return (
     <div
       className={cn(
@@ -48,7 +53,7 @@ function PhotoPlaceholder({ className }: { className?: string }) {
     >
       <Ship className="h-10 w-10 text-gold/22 sm:h-12 sm:w-12" aria-hidden />
       <span className="max-w-xs text-[0.65rem] font-medium uppercase tracking-[0.2em] text-cream/35">
-        Photos coming soon
+        {photosComingSoon}
       </span>
     </div>
   );
@@ -66,18 +71,24 @@ function buildAboutParagraphs(y: Yacht): readonly string[] {
   return parts;
 }
 
-function defaultIncluded(y: Yacht): readonly string[] {
+function defaultIncluded(y: Yacht, t: Translator): readonly string[] {
   if (y.inclusions && y.inclusions.length > 0) return y.inclusions;
   return [
-    "Fully inspected yacht",
-    "Licensed captain & crew",
-    "Local fuel for standard routing as quoted",
-    "Water, sodas & ice",
-  ] as const;
+    t("yachtsPage.product.defaultInclusions.0"),
+    t("yachtsPage.product.defaultInclusions.1"),
+    t("yachtsPage.product.defaultInclusions.2"),
+    t("yachtsPage.product.defaultInclusions.3"),
+  ];
 }
 
 export function YachtFleetProduct({ yacht }: { yacht: Yacht }) {
-  const paths = getFleetGalleryPaths(yacht.id);
+  const { locale, t } = useLocale();
+  const y = useMemo(() => localizeYacht(yacht, locale), [yacht, locale]);
+
+  const paths = useMemo(
+    () => resolveYachtGalleryPaths(yacht),
+    [yacht],
+  );
   const hasPhotos = paths.length > 0;
   const galleryLen = paths.length;
   const [photoIndex, setPhotoIndex] = useState(0);
@@ -88,16 +99,16 @@ export function YachtFleetProduct({ yacht }: { yacht: Yacht }) {
 
   const durations = useMemo(() => {
     if (ratesPending) return [];
-    const d = durationOptionsFromYacht(yacht);
+    const d = durationOptionsFromYacht(y);
     if (d.length > 0) return d;
     return [
       {
         id: "d0",
-        label: "Charter base",
-        baseUsd: yacht.listingPriceUsd,
+        label: t("yachtsPage.product.charterBase"),
+        baseUsd: y.listingPriceUsd,
       },
     ];
-  }, [yacht, ratesPending]);
+  }, [y, ratesPending, t]);
 
   const [durationId, setDurationId] = useState<string>(() =>
     durations[0]?.id ?? "d0",
@@ -119,7 +130,7 @@ export function YachtFleetProduct({ yacht }: { yacht: Yacht }) {
 
   const fromUsd = ratesPending
     ? null
-    : (tier?.baseUsd ?? yacht.listingPriceUsd);
+    : (tier?.baseUsd ?? y.listingPriceUsd);
 
   useLayoutEffect(() => {
     if (!hasPhotos) return;
@@ -150,8 +161,8 @@ export function YachtFleetProduct({ yacht }: { yacht: Yacht }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [goPhotoPrev, goPhotoNext, hasPhotos]);
 
-  const uid = `fleet-${yacht.id}`;
-  const departure = yacht.location ?? "—";
+  const uid = `fleet-${y.id}`;
+  const departure = y.location ?? "—";
 
   return (
     <>
@@ -161,21 +172,20 @@ export function YachtFleetProduct({ yacht }: { yacht: Yacht }) {
           <YachtChartersBackLink className="inline-flex items-center gap-2 text-[0.7rem] font-medium uppercase tracking-[0.22em] text-gold/85 transition-colors hover:text-gold-secondary" />
           <div className="mt-8 h-px w-14 bg-gold/30" aria-hidden />
           <p className="mt-6 text-[0.65rem] font-medium uppercase tracking-[0.48em] text-gold/90">
-            Fleet · {yacht.name}
+            {t("yachtsPage.product.fleetEyebrow", { name: y.name })}
           </p>
           <h1 className="mt-4 max-w-3xl font-serif text-[2.1rem] leading-[1.12] tracking-tight text-cream sm:text-4xl md:text-[2.65rem]">
-            {yacht.name}
+            {y.name}
           </h1>
           <p className="mt-4 font-serif text-2xl tabular-nums text-gold-secondary sm:text-[1.75rem]">
             {fromUsd !== null ? (
-              <>from {formatUsd(fromUsd)}</>
+              t("yachtsPage.product.fromPrice", { amount: formatUsd(fromUsd) })
             ) : (
-              <>Rates coming soon</>
+              t("yachtsPage.product.ratesComingSoon")
             )}
           </p>
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-cream/58 sm:text-[0.9375rem]">
-            Crewed day charter — charter rate, 7% tax, and crew gratuity below.
-            Final routing and inclusions are confirmed in your proposal.
+            {t("yachtsPage.product.heroBody")}
           </p>
         </div>
       </SectionReveal>
@@ -191,14 +201,21 @@ export function YachtFleetProduct({ yacht }: { yacht: Yacht }) {
                   <div className="relative aspect-[16/10] overflow-hidden border border-gold/12 bg-[#0b0b0b]">
                     <Image
                       src={paths[photoIndex]!}
-                      alt={`${yacht.name} — photo ${photoIndex + 1} of ${galleryLen}`}
+                      alt={t("yachtsPage.photoOf", {
+                        name: y.name,
+                        current: photoIndex + 1,
+                        total: galleryLen,
+                      })}
                       fill
                       className="object-cover"
                       sizes="(max-width: 1024px) 100vw, 50vw"
                       priority={photoIndex === 0}
                     />
                     <span className="pointer-events-none absolute right-3 top-3 z-[1] border border-gold/25 bg-[#0b0b0b]/75 px-2.5 py-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-cream/85 backdrop-blur-sm">
-                      {photoIndex + 1} / {galleryLen}
+                      {t("yachtsPage.product.photoCounter", {
+                        current: photoIndex + 1,
+                        total: galleryLen,
+                      })}
                     </span>
                     {galleryLen > 1 ? (
                       <>
@@ -206,7 +223,7 @@ export function YachtFleetProduct({ yacht }: { yacht: Yacht }) {
                           type="button"
                           onClick={goPhotoPrev}
                           className="absolute left-2 top-1/2 z-[1] flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gold/20 bg-[#0b0b0b]/80 text-cream/90 backdrop-blur-sm transition-colors hover:border-gold/40"
-                          aria-label="Previous photo"
+                          aria-label={t("yachtsPage.product.previousPhoto")}
                         >
                           <ChevronLeft className="h-5 w-5" />
                         </button>
@@ -214,7 +231,7 @@ export function YachtFleetProduct({ yacht }: { yacht: Yacht }) {
                           type="button"
                           onClick={goPhotoNext}
                           className="absolute right-2 top-1/2 z-[1] flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gold/20 bg-[#0b0b0b]/80 text-cream/90 backdrop-blur-sm transition-colors hover:border-gold/40"
-                          aria-label="Next photo"
+                          aria-label={t("yachtsPage.product.nextPhoto")}
                         >
                           <ChevronRight className="h-5 w-5" />
                         </button>
@@ -241,7 +258,9 @@ export function YachtFleetProduct({ yacht }: { yacht: Yacht }) {
                               ? "border-gold/45"
                               : "border-gold/12 hover:border-gold/25",
                           )}
-                          aria-label={`Show photo ${i + 1}`}
+                          aria-label={t("yachtsPage.product.showPhoto", {
+                            n: i + 1,
+                          })}
                           aria-current={i === photoIndex}
                         >
                           <Image
@@ -257,28 +276,27 @@ export function YachtFleetProduct({ yacht }: { yacht: Yacht }) {
                   ) : null}
                 </>
               ) : (
-                <PhotoPlaceholder className="overflow-hidden" />
+                <PhotoPlaceholder
+                  className="overflow-hidden"
+                  photosComingSoon={t("yachtsPage.product.photosComingSoon")}
+                />
               )}
             </div>
 
             <div className="min-w-0">
               <p className="text-[0.62rem] font-semibold uppercase tracking-[0.38em] text-gold/90">
-                Charter & pricing
+                {t("yachtsPage.product.charterPricing")}
               </p>
               <p className="mt-3 text-[0.8125rem] leading-relaxed text-cream/52">
                 {ratesPending ? (
-                  <>
-                    Published charter rates and the live estimate calculator will
-                    appear here once this vessel is fully onboarded. Request a
-                    tailored quote anytime — we will confirm routing, inclusions,
-                    tax, and gratuity in your proposal.
-                  </>
+                  t("yachtsPage.product.ratesPendingBody")
                 ) : (
                   <>
-                    Charter rates are before tax. Tax is{" "}
-                    <strong className="font-medium text-cream/70">7%</strong> of
-                    the charter. Crew gratuity is a percentage of the charter —
-                    choose what fits your group.
+                    {t("yachtsPage.product.ratesBodyBefore")}{" "}
+                    <strong className="font-medium text-cream/70">
+                      {t("yachtsPage.product.ratesBodyTax")}
+                    </strong>{" "}
+                    {t("yachtsPage.product.ratesBodyAfter")}
                   </>
                 )}
               </p>
@@ -290,7 +308,7 @@ export function YachtFleetProduct({ yacht }: { yacht: Yacht }) {
                       className="text-[0.58rem] font-medium uppercase tracking-[0.26em] text-cream/40"
                       id={`${uid}-duration-label`}
                     >
-                      Duration
+                      {t("yachtsPage.product.duration")}
                     </p>
                     <div
                       className="mt-2.5 flex flex-wrap gap-2"
@@ -320,7 +338,7 @@ export function YachtFleetProduct({ yacht }: { yacht: Yacht }) {
                       className="text-[0.58rem] font-medium uppercase tracking-[0.26em] text-cream/40"
                       id={`${uid}-gratuity-label`}
                     >
-                      Crew gratuity
+                      {t("yachtsPage.product.crewGratuity")}
                     </p>
                     <div
                       className="mt-2.5 flex flex-wrap gap-2"
@@ -347,18 +365,22 @@ export function YachtFleetProduct({ yacht }: { yacht: Yacht }) {
 
                   <div className="mt-10 border border-gold/[0.12] bg-[#0a0a0a] p-5 sm:p-6">
                     <p className="text-[0.58rem] font-medium uppercase tracking-[0.28em] text-gold/75">
-                      Estimate for {tier.label}
+                      {t("yachtsPage.product.estimateFor", {
+                        duration: tier.label,
+                      })}
                     </p>
                     <ul className="mt-5 space-y-4" role="list">
                       <li className="flex flex-wrap items-baseline justify-between gap-2 border-b border-gold/[0.07] pb-4">
-                        <span className="text-[0.8125rem] text-cream/65">Charter</span>
+                        <span className="text-[0.8125rem] text-cream/65">
+                          {t("yachtsPage.product.lineCharter")}
+                        </span>
                         <span className="font-serif text-lg tabular-nums text-cream/90">
                           {formatUsd(tier.baseUsd)}
                         </span>
                       </li>
                       <li className="flex flex-wrap items-baseline justify-between gap-2 border-b border-gold/[0.07] pb-4">
                         <span className="text-[0.8125rem] text-cream/65">
-                          Tax (7%)
+                          {t("yachtsPage.product.lineTax")}
                         </span>
                         <span className="font-serif text-lg tabular-nums text-cream/90">
                           {formatUsd(taxUsd)}
@@ -366,7 +388,9 @@ export function YachtFleetProduct({ yacht }: { yacht: Yacht }) {
                       </li>
                       <li className="flex flex-wrap items-baseline justify-between gap-2">
                         <span className="text-[0.8125rem] text-cream/65">
-                          Gratuity ({gratuityPct}% of charter)
+                          {t("yachtsPage.product.lineGratuity", {
+                            pct: gratuityPct,
+                          })}
                         </span>
                         <span className="font-serif text-lg tabular-nums text-cream/90">
                           {formatUsd(gratuityUsd)}
@@ -375,7 +399,7 @@ export function YachtFleetProduct({ yacht }: { yacht: Yacht }) {
                     </ul>
                     <div className="mt-6 flex flex-wrap items-baseline justify-between gap-3 border-t border-gold/15 pt-5">
                       <span className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-gold/90">
-                        Estimated total
+                        {t("yachtsPage.product.estimatedTotal")}
                       </span>
                       <span className="font-serif text-2xl tabular-nums text-gold-secondary sm:text-[1.75rem]">
                         {formatUsd(totalUsd)}
@@ -387,52 +411,64 @@ export function YachtFleetProduct({ yacht }: { yacht: Yacht }) {
 
               {ratesPending ? (
                 <p className="mt-8 border border-gold/[0.12] bg-[#0a0a0a] p-5 text-[0.8125rem] leading-relaxed text-cream/55 sm:p-6">
-                  Final charter pricing for this listing is not published yet. Use
-                  the button below to inquire — we will reply with availability
-                  and a written estimate.
+                  {t("yachtsPage.product.ratesPendingCta")}
                 </p>
               ) : null}
 
               <p className="mt-4 text-[0.7rem] leading-relaxed text-cream/38">
-                Indicative estimate — final taxes, crew gratuity handling, and dock
-                details are confirmed in your written proposal.
+                {t("yachtsPage.product.estimateFootnote")}
               </p>
               <div className="mt-6">
-                <YachtBookingButton yacht={yacht} layout="inline" />
+                <YachtBookingButton yacht={y} layout="inline" />
               </div>
             </div>
           </div>
 
           <YachtListingAbout
             tagline={
-              yacht.aboutTagline ?? `${yacht.name} — motor yacht charter`
+              y.aboutTagline ??
+              t("yachtsPage.product.defaultTagline", { name: y.name })
             }
-            quote={yacht.aboutQuote}
-            paragraphs={buildAboutParagraphs(yacht)}
+            quote={y.aboutQuote}
+            paragraphs={buildAboutParagraphs(y)}
             departure={departure}
           />
           <YachtListingSpecsAndIncluded
             specRows={[
-              { k: "Overall length", v: `${yacht.lengthFt}′` },
               {
-                k: "Guest capacity",
-                v: yacht.capacityGuests
-                  ? `Up to ${yacht.capacityGuests} guests cruising`
+                k: t("yachtsPage.listing.overallLength"),
+                v: `${y.lengthFt}′`,
+              },
+              {
+                k: t("yachtsPage.listing.guestCapacity"),
+                v: y.capacityGuests
+                  ? t("yachtsPage.listing.guestCapacityValue", {
+                      count: y.capacityGuests,
+                    })
                   : "—",
               },
-              ...(typeof yacht.staterooms === "number"
+              ...(typeof y.staterooms === "number"
                 ? ([
-                    { k: "Staterooms", v: String(yacht.staterooms) },
+                    {
+                      k: t("yachtsPage.listing.staterooms"),
+                      v: String(y.staterooms),
+                    },
                   ] as const)
                 : []),
-              ...(typeof yacht.bathrooms === "number"
+              ...(typeof y.bathrooms === "number"
                 ? ([
-                    { k: "Bathrooms", v: String(yacht.bathrooms) },
+                    {
+                      k: t("yachtsPage.listing.bathrooms"),
+                      v: String(y.bathrooms),
+                    },
                   ] as const)
                 : []),
-              { k: "Departure", v: departure },
+              {
+                k: t("yachtsPage.listing.departureSpec"),
+                v: departure,
+              },
             ]}
-            included={[...defaultIncluded(yacht)]}
+            included={[...defaultIncluded(y, t)]}
           />
         </div>
       </SectionReveal>

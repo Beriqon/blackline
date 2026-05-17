@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 
 import { ExoticCarsCatalog } from "@/components/exotic-cars-catalog";
+import { getI18n } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Exotic car rentals",
-  description:
-    "Daily self-drive exotic and luxury car rentals in Miami — inquire for current lineup, rates, and chauffeur options where offered.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return {
+    title: t("nav.exoticCars"),
+    description: t("exoticCarsPage.metaDescription"),
+  };
+}
 
 export default function ExoticCarsPage() {
   return <ExoticCarsCatalog />;

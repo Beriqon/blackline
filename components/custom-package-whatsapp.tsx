@@ -3,8 +3,12 @@
 import { ChevronDown } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
+import { useLocale, useTranslations } from "@/components/locale-provider";
+import { localizeCatalogText } from "@/lib/i18n/localize-catalog-text";
+
 import {
   CHAUFFEUR_FLEET_SORTED,
+  chauffeurPackageQuoteLine,
   chauffeurQuoteRateLine,
 } from "@/lib/chauffeur-fleet-data";
 import {
@@ -12,8 +16,24 @@ import {
   EXOTIC_CARS_HOURLY_GROUPS,
   type ExoticCar,
 } from "@/lib/exotic-cars-data";
+import {
+  ATV_TOURS,
+  UTV_PRODUCTS,
+  type AtvTourProduct,
+  type UtvDurationOption,
+  type UtvProduct,
+} from "@/lib/atv-booking-data";
+import {
+  CHAUFFEUR_DEFAULT_DURATION_HOURS,
+  CHAUFFEUR_DURATION_HOURS,
+  formatUsd,
+} from "@/lib/bookings";
 import { CUSTOM_PACKAGE_MISC_ADDONS } from "@/lib/custom-package-addons";
 import { JETSKIS_OFFERINGS } from "@/lib/jetskis-jetcars-data";
+import {
+  PRIVATE_CHEF_SERVICE_CARDS,
+  PRIVATE_CHEFS_ROSTER,
+} from "@/lib/private-chefs-data";
 import { PRIVATE_JETS } from "@/lib/private-jets-data";
 import {
   vipFeaturedVenues,
@@ -24,7 +44,6 @@ import { VILLAS } from "@/lib/villas-data";
 import {
   HOSTESS_HEADCOUNT_OPTIONS,
   YACHT_HOSTESS_ADDON,
-  YACHT_HOSTESS_ADDON_SECTION_TITLE,
 } from "@/lib/yacht-hostess-addon";
 import { YACHTS } from "@/lib/yachts-data";
 import { whatsAppUrlWithText } from "@/lib/whatsapp";
@@ -59,20 +78,28 @@ const OPEN_TBD = {
   villa: "open:villa",
   yacht: "open:yacht",
   privateJet: "open:privateJet",
+  atvUtv: "open:atvUtv",
+  privateChef: "open:privateChef",
 } as const;
 
-const OPEN_TBD_MESSAGE_LINE: Record<string, string> = {
-  [OPEN_TBD.chauffeur]:
-    "Chauffeur — specific vehicle not chosen yet; open to recommendations from your fleet",
-  [OPEN_TBD.exoticCar]:
-    "Exotic car — specific model not chosen yet; open to options",
-  [OPEN_TBD.villa]:
-    "Villa / stay — property not chosen yet; open to recommendations for our dates & group",
-  [OPEN_TBD.yacht]:
-    "Yacht charter — vessel not chosen yet; open to recommendations",
-  [OPEN_TBD.privateJet]:
-    "Private jet charter — aircraft not chosen yet; open to recommendations (route & timing in notes)",
-};
+function atvTourQuoteLine(
+  tour: AtvTourProduct,
+  l: (text: string) => string,
+) {
+  const price = `${formatUsd(tour.price)} ${l(tour.unit)}`;
+  const duration = l(tour.duration);
+  return tour.note
+    ? `${duration} ATV — ${price} (${l(tour.note)})`
+    : `${duration} ATV — ${price}`;
+}
+
+function utvOptionQuoteLine(
+  utv: UtvProduct,
+  option: UtvDurationOption,
+  l: (text: string) => string,
+) {
+  return `${l(utv.title)} — ${l(option.duration)} — ${formatUsd(option.price)}`;
+}
 
 function PickRow({
   selected,
@@ -113,12 +140,14 @@ function CatalogSection({
   subtitle,
   defaultOpen,
   badge,
+  selectBadge,
   children,
 }: {
   title: string;
   subtitle?: string;
   defaultOpen?: boolean;
   badge?: string;
+  selectBadge: string;
   children: React.ReactNode;
 }) {
   return (
@@ -129,7 +158,7 @@ function CatalogSection({
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-4 text-left transition-colors hover:bg-gold/[0.04] sm:px-5">
         <div>
           <p className="text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/75">
-            {badge ?? "Select"}
+            {badge ?? selectBadge}
           </p>
           <p className="mt-1 font-serif text-base tracking-tight text-cream sm:text-lg">
             {title}
@@ -149,12 +178,12 @@ function CatalogSection({
   );
 }
 
-function carLine(car: ExoticCar) {
+function carLine(car: ExoticCar, l: (text: string) => string) {
   return (
     <>
       <span className="text-cream/92">{car.name}</span>
       <span className="text-cream/45"> · </span>
-      <span className="tabular-nums text-gold-secondary/95">{car.priceLine}</span>
+      <span className="tabular-nums text-gold-secondary/95">{l(car.priceLine)}</span>
     </>
   );
 }
@@ -170,16 +199,51 @@ export type CustomPackageWhatsAppProps = {
   idSuffix?: string;
 };
 
-const DEFAULT_INTRO =
-  "Hi Blackline — I'd like a custom Miami concierge package.";
-
 export function CustomPackageWhatsApp({
-  whatsAppIntroLine = DEFAULT_INTRO,
-  buildHeading = "Build your package",
-  buildDescription = "Choose specific cars, villas, yachts, and venues — the same inventory as on the site. Open each section and tick what you want quoted together.",
+  whatsAppIntroLine,
+  buildHeading,
+  buildDescription,
   idSuffix = "",
 }: CustomPackageWhatsAppProps = {}) {
+  const { locale } = useLocale();
+  const t = useTranslations();
+  const l = useCallback(
+    (text: string) => localizeCatalogText(text, locale),
+    [locale],
+  );
+  const pb = useCallback(
+    (key: string, params?: Record<string, string | number>) =>
+      t(`packageBuilder.${key}`, params),
+    [t],
+  );
+
+  const resolvedIntro =
+    whatsAppIntroLine ?? pb("defaultIntro");
+  const resolvedBuildHeading = buildHeading ?? pb("defaultBuildHeading");
+  const resolvedBuildDescription =
+    buildDescription ?? pb("defaultBuildDescription");
+  const selectBadge = pb("select");
+
+  const openTbdLine = useCallback(
+    (key: string) => {
+      const map: Record<string, string> = {
+        [OPEN_TBD.chauffeur]: pb("openTbdChauffeur"),
+        [OPEN_TBD.exoticCar]: pb("openTbdExoticCar"),
+        [OPEN_TBD.villa]: pb("openTbdVilla"),
+        [OPEN_TBD.yacht]: pb("openTbdYacht"),
+        [OPEN_TBD.privateJet]: pb("openTbdPrivateJet"),
+        [OPEN_TBD.atvUtv]: pb("openTbdAtvUtv"),
+        [OPEN_TBD.privateChef]: pb("openTbdPrivateChef"),
+      };
+      return map[key] ?? key;
+    },
+    [pb],
+  );
+
   const [sel, setSel] = useState<Record<string, boolean>>({});
+  const [chauffeurHours, setChauffeurHours] = useState<Record<string, number>>(
+    {},
+  );
   const [dates, setDates] = useState("");
   const [groupSize, setGroupSize] = useState("");
   const [notes, setNotes] = useState("");
@@ -199,6 +263,24 @@ export function CustomPackageWhatsApp({
     setSel((prev) => ({ ...prev, [key]: !prev[key] }));
   }, []);
 
+  const toggleChauffeur = useCallback((carId: string) => {
+    const key = `chauffeur:${carId}`;
+    setSel((prev) => {
+      const enabling = !prev[key];
+      if (enabling) {
+        setChauffeurHours((hours) => ({
+          ...hours,
+          [carId]: hours[carId] ?? CHAUFFEUR_DEFAULT_DURATION_HOURS,
+        }));
+      }
+      return { ...prev, [key]: enabling };
+    });
+  }, []);
+
+  const setChauffeurDuration = useCallback((carId: string, hours: number) => {
+    setChauffeurHours((prev) => ({ ...prev, [carId]: hours }));
+  }, []);
+
   const anyYachtSelected = useMemo(
     () =>
       YACHTS.some((y) => sel[`yacht:${y.id}`]) || !!sel[OPEN_TBD.yacht],
@@ -214,9 +296,13 @@ export function CustomPackageWhatsApp({
   );
 
   const message = useMemo(() => {
-    const lines: string[] = [whatsAppIntroLine, ""];
-    if (groupSize.trim()) lines.push(`Group size: ${groupSize.trim()}`);
-    if (dates.trim()) lines.push(`Dates: ${dates.trim()}`);
+    const lines: string[] = [resolvedIntro, ""];
+    if (groupSize.trim()) {
+      lines.push(pb("msgGroupSize", { value: groupSize.trim() }));
+    }
+    if (dates.trim()) {
+      lines.push(pb("msgDates", { value: dates.trim() }));
+    }
     if (groupSize.trim() || dates.trim()) lines.push("");
 
     const cars: ExoticCar[] = [];
@@ -248,6 +334,23 @@ export function CustomPackageWhatsApp({
 
     const selectedPrivateJets = PRIVATE_JETS.filter((j) => sel[`pj:${j.id}`]);
 
+    const atvPicks = ATV_TOURS.filter((t) => sel[`atv:${t.id}`]);
+    const utvPicks: { utv: UtvProduct; option: UtvDurationOption }[] = [];
+    for (const utv of UTV_PRODUCTS) {
+      for (const option of utv.options) {
+        if (sel[`utv:${utv.id}:${option.id}`]) {
+          utvPicks.push({ utv, option });
+        }
+      }
+    }
+
+    const chefServicePicks = PRIVATE_CHEF_SERVICE_CARDS.filter(
+      (s) => sel[`chefService:${s.id}`],
+    );
+    const chefRosterPicks = PRIVATE_CHEFS_ROSTER.filter(
+      (c) => sel[`chef:${c.id}`],
+    );
+
     const sections: { title: string; items: string[] }[] = [];
 
     if (
@@ -257,23 +360,29 @@ export function CustomPackageWhatsApp({
     ) {
       const items: string[] = [];
       if (sel[OPEN_TBD.chauffeur]) {
-        items.push(OPEN_TBD_MESSAGE_LINE[OPEN_TBD.chauffeur]);
+        items.push(openTbdLine(OPEN_TBD.chauffeur));
       }
       if (chauffeurPicks.length > 0) {
         items.push(
-          ...chauffeurPicks.map(
-            (c) =>
-              `${c.name} — ${chauffeurQuoteRateLine(c)} (chauffeur)`,
+          ...chauffeurPicks.map((c) =>
+            l(
+              chauffeurPackageQuoteLine(
+                c,
+                chauffeurHours[c.id] ?? CHAUFFEUR_DEFAULT_DURATION_HOURS,
+              ),
+            ),
           ),
         );
       }
       if (chauffeurPrefs.length > 0) {
         items.push(
-          `Vehicle / ground preferences: ${chauffeurPrefs.join(", ")}`,
+          pb("msgVehiclePrefs", {
+            value: chauffeurPrefs.map((p) => l(p)).join(", "),
+          }),
         );
       }
       sections.push({
-        title: "Chauffeur services",
+        title: pb("msgSectionChauffeur"),
         items,
       });
     }
@@ -281,18 +390,18 @@ export function CustomPackageWhatsApp({
     if (cars.length > 0 || sel[OPEN_TBD.exoticCar]) {
       const items: string[] = [];
       if (sel[OPEN_TBD.exoticCar]) {
-        items.push(OPEN_TBD_MESSAGE_LINE[OPEN_TBD.exoticCar]);
+        items.push(openTbdLine(OPEN_TBD.exoticCar));
       }
       if (cars.length > 0) {
         items.push(
           ...cars.map(
             (c) =>
-              `${c.name} — ${c.priceLine} (${c.section === "daily" ? "daily self-drive" : "hourly rental"})`,
+              `${c.name} — ${l(c.priceLine)} (${c.section === "daily" ? pb("msgDailyRental") : pb("msgHourlyRental")})`,
           ),
         );
       }
       sections.push({
-        title: "Exotic cars (self-drive / hourly catalog picks)",
+        title: pb("msgSectionExoticCars"),
         items,
       });
     }
@@ -300,13 +409,15 @@ export function CustomPackageWhatsApp({
     if (villas.length > 0 || sel[OPEN_TBD.villa]) {
       const items: string[] = [];
       if (sel[OPEN_TBD.villa]) {
-        items.push(OPEN_TBD_MESSAGE_LINE[OPEN_TBD.villa]);
+        items.push(openTbdLine(OPEN_TBD.villa));
       }
       if (villas.length > 0) {
-        items.push(...villas.map((v) => `${v.name} — ${v.cardTagline}`));
+        items.push(
+          ...villas.map((v) => `${v.name} — ${l(v.cardTagline)}`),
+        );
       }
       sections.push({
-        title: "Villas & stays",
+        title: pb("msgSectionVillas"),
         items,
       });
     }
@@ -314,78 +425,126 @@ export function CustomPackageWhatsApp({
     if (yachts.length > 0 || sel[OPEN_TBD.yacht]) {
       const items: string[] = [];
       if (sel[OPEN_TBD.yacht]) {
-        items.push(OPEN_TBD_MESSAGE_LINE[OPEN_TBD.yacht]);
+        items.push(openTbdLine(OPEN_TBD.yacht));
       }
       if (yachts.length > 0) {
         items.push(
           ...yachts.map(
-            (y) => `${y.name} (${y.subtitle}) — ${y.cardPriceLine}`,
+            (y) =>
+              `${y.name} (${l(y.subtitle)}) — ${l(y.cardPriceLine)}`,
           ),
         );
       }
       sections.push({
-        title: "Yachts",
+        title: pb("msgSectionYachts"),
         items,
       });
     }
 
     if (sel.hostessAddon) {
       sections.push({
-        title: YACHT_HOSTESS_ADDON_SECTION_TITLE,
+        title: pb("msgSectionHostess"),
         items: [
-          `Female hosts requested: ${hostessCount} — from ${YACHT_HOSTESS_ADDON.startingPrice} (final quote from team)`,
-          "Profiles / roster from partner agency coordinated on inquiry",
+          pb("msgHostessRequested", {
+            count: hostessCount,
+            price: YACHT_HOSTESS_ADDON.startingPrice,
+          }),
+          pb("msgHostessRoster"),
         ],
       });
     }
 
     if (jetskiPicks.length > 0) {
       sections.push({
-        title: "Jet skis, jetcars & fishing",
-        items: jetskiPicks.map((j) => j.title),
+        title: pb("msgSectionJetskis"),
+        items: jetskiPicks.map((j) => l(j.title)),
+      });
+    }
+
+    if (atvPicks.length > 0 || utvPicks.length > 0 || sel[OPEN_TBD.atvUtv]) {
+      const items: string[] = [];
+      if (sel[OPEN_TBD.atvUtv]) {
+        items.push(openTbdLine(OPEN_TBD.atvUtv));
+      }
+      if (atvPicks.length > 0) {
+        items.push(...atvPicks.map((tour) => atvTourQuoteLine(tour, l)));
+      }
+      if (utvPicks.length > 0) {
+        items.push(
+          ...utvPicks.map(({ utv, option }) => utvOptionQuoteLine(utv, option, l)),
+        );
+      }
+      sections.push({
+        title: pb("msgSectionAtv"),
+        items,
+      });
+    }
+
+    if (
+      chefServicePicks.length > 0 ||
+      chefRosterPicks.length > 0 ||
+      sel[OPEN_TBD.privateChef]
+    ) {
+      const items: string[] = [];
+      if (sel[OPEN_TBD.privateChef]) {
+        items.push(openTbdLine(OPEN_TBD.privateChef));
+      }
+      if (chefServicePicks.length > 0) {
+        items.push(
+          ...chefServicePicks.map(
+            (s) => `${l(s.title)} — ${l(s.eyebrow)}`,
+          ),
+        );
+      }
+      if (chefRosterPicks.length > 0) {
+        items.push(
+          ...chefRosterPicks.map((c) => `${c.name} — ${l(c.role)}`),
+        );
+      }
+      sections.push({
+        title: pb("msgSectionChefs"),
+        items,
       });
     }
 
     if (miscAddonPicks.length > 0) {
       sections.push({
-        title: "Add-ons & on-water extras",
+        title: pb("msgSectionAddons"),
         items: miscAddonPicks.map((a) =>
-          a.hint ? `${a.title} — ${a.hint}` : a.title,
+          a.hint ? `${l(a.title)} — ${l(a.hint)}` : l(a.title),
         ),
       });
     }
 
     if (securityMode === "unarmed") {
       sections.push({
-        title: "Security guards",
-        items: [
-          "Unarmed professional guards — roster, coverage windows, and detail confirmed on inquiry",
-        ],
+        title: pb("msgSectionSecurity"),
+        items: [pb("msgSectionUnarmed")],
       });
     } else if (securityMode === "armed") {
       sections.push({
-        title: "Security guards",
-        items: [
-          "Armed professional guards — licensing, roster, and coverage confirmed on inquiry",
-        ],
+        title: pb("msgSectionSecurity"),
+        items: [pb("msgSectionArmed")],
       });
     }
 
     if (selectedPrivateJets.length > 0 || sel[OPEN_TBD.privateJet]) {
       const items: string[] = [];
       if (sel[OPEN_TBD.privateJet]) {
-        items.push(OPEN_TBD_MESSAGE_LINE[OPEN_TBD.privateJet]);
+        items.push(openTbdLine(OPEN_TBD.privateJet));
       }
       if (selectedPrivateJets.length > 0) {
         items.push(
-          ...selectedPrivateJets.map(
-            (j) =>
-              `${j.name} (${j.categoryLabel}) — charter coordination; route & timing to confirm`,
+          ...selectedPrivateJets.map((j) =>
+            pb("msgJetCharter", {
+              name: j.name,
+              category: l(j.categoryLabel),
+            }),
           ),
         );
       }
       sections.push({
-        title: "Private jets",
+        title: pb("msgSectionJets"),
         items,
       });
     }
@@ -398,32 +557,26 @@ export function CustomPackageWhatsApp({
         ...vipSb,
       ];
       sections.push({
-        title: "VIP nightlife & venues",
+        title: pb("msgSectionVip"),
         items,
       });
     }
 
     if (sel.photoShoot) {
       sections.push({
-        title: "Photo shoot",
-        items: [
-          "Professional photo shoot with our camera crew — edited stills on your timeline",
-        ],
+        title: pb("msgSectionPhoto"),
+        items: [pb("msgPhotoItem")],
       });
     }
     if (sel.videoShoot) {
       sections.push({
-        title: "Video shoot",
-        items: [
-          "Professional video shoot with our camera crew — edited motion on your timeline",
-        ],
+        title: pb("msgSectionVideo"),
+        items: [pb("msgVideoItem")],
       });
     }
 
     if (sections.length === 0) {
-      lines.push(
-        "(Nothing selected yet — pick catalog items, use the “interested but no specific…” options, or add notes below.)",
-      );
+      lines.push(pb("msgNothingSelected"));
     } else {
       for (const block of sections) {
         lines.push(block.title.toUpperCase());
@@ -437,19 +590,23 @@ export function CustomPackageWhatsApp({
 
     if (notes.trim()) {
       lines.push("");
-      lines.push(`Notes: ${notes.trim()}`);
+      lines.push(pb("msgNotes", { value: notes.trim() }));
     }
     lines.push("");
-    lines.push("Please confirm availability and next steps. Thanks!");
+    lines.push(pb("msgClosing"));
     return lines.join("\n");
   }, [
+    chauffeurHours,
     dates,
     groupSize,
     hostessCount,
     notes,
+    l,
+    openTbdLine,
+    pb,
+    resolvedIntro,
     sel,
     securityMode,
-    whatsAppIntroLine,
   ]);
 
   const href = whatsAppUrlWithText(message);
@@ -462,14 +619,14 @@ export function CustomPackageWhatsApp({
             htmlFor={`custom-dates${sid}`}
             className="block text-[0.62rem] font-medium uppercase tracking-[0.28em] text-gold/75"
           >
-            Travel dates (optional)
+            {pb("travelDates")}
           </label>
           <input
             id={`custom-dates${sid}`}
             type="text"
             value={dates}
             onChange={(e) => setDates(e.target.value)}
-            placeholder="e.g. Apr 18–21 or flexible"
+            placeholder={pb("travelDatesPlaceholder")}
             className={cn(inputClass, "mt-2")}
             autoComplete="off"
           />
@@ -479,14 +636,14 @@ export function CustomPackageWhatsApp({
             htmlFor={`custom-group${sid}`}
             className="block text-[0.62rem] font-medium uppercase tracking-[0.28em] text-gold/75"
           >
-            Group size (optional)
+            {pb("groupSize")}
           </label>
           <input
             id={`custom-group${sid}`}
             type="text"
             value={groupSize}
             onChange={(e) => setGroupSize(e.target.value)}
-            placeholder="e.g. 4 guests"
+            placeholder={pb("groupSizePlaceholder")}
             className={cn(inputClass, "mt-2")}
             autoComplete="off"
           />
@@ -495,18 +652,19 @@ export function CustomPackageWhatsApp({
 
       <div>
         <p className="text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/75">
-          {buildHeading}
+          {resolvedBuildHeading}
         </p>
         <p className="mt-2 text-sm leading-relaxed text-cream/52">
-          {buildDescription}
+          {resolvedBuildDescription}
         </p>
 
         <div className="mt-5 space-y-3">
           <CatalogSection
-            title="Chauffeur services"
-            subtitle="Pick exact vehicles or tick below if you want chauffeur ground transport but haven&apos;t chosen a model yet. Optional class preferences at the bottom."
+            title={pb("secChauffeurTitle")}
+            subtitle={pb("secChauffeurSubtitle")}
             defaultOpen
-            badge="Chauffeur"
+            badge={pb("secChauffeurBadge")}
+            selectBadge={selectBadge}
           >
             <div className="max-h-[min(70vh,520px)] space-y-6 overflow-y-auto pr-1">
               <PickRow
@@ -515,38 +673,73 @@ export function CustomPackageWhatsApp({
               >
                 <>
                   <span className="text-cream/92">
-                    Interested in chauffeur — no specific vehicle yet
+                    {pb("secChauffeurInterested")}
                   </span>
                   <span className="block text-[0.8125rem] text-cream/50">
-                    We&apos;ll propose options from the fleet for your dates and group.
+                    {pb("secChauffeurInterestedHint")}
                   </span>
                 </>
               </PickRow>
               <ul className="grid gap-2" role="list">
-                {CHAUFFEUR_FLEET_SORTED.map((car) => (
-                  <li key={car.id}>
-                    <PickRow
-                      selected={!!sel[`chauffeur:${car.id}`]}
-                      onToggle={() => toggle(`chauffeur:${car.id}`)}
-                      density="compact"
-                    >
-                      <>
-                        <span className="text-cream/92">{car.name}</span>
-                        <span className="text-cream/45"> · </span>
-                        <span className="tabular-nums text-gold-secondary/95">
-                          {chauffeurQuoteRateLine(car)}
-                        </span>
-                        <span className="block text-[0.75rem] text-cream/42">
-                          {car.group} · chauffeur
-                        </span>
-                      </>
-                    </PickRow>
-                  </li>
-                ))}
+                {CHAUFFEUR_FLEET_SORTED.map((car) => {
+                  const chauffeurSelected = !!sel[`chauffeur:${car.id}`];
+                  const duration =
+                    chauffeurHours[car.id] ?? CHAUFFEUR_DEFAULT_DURATION_HOURS;
+                  return (
+                    <li key={car.id} className="space-y-2">
+                      <PickRow
+                        selected={chauffeurSelected}
+                        onToggle={() => toggleChauffeur(car.id)}
+                        density="compact"
+                      >
+                        <>
+                          <span className="text-cream/92">{car.name}</span>
+                          <span className="text-cream/45"> · </span>
+                          <span className="tabular-nums text-gold-secondary/95">
+                            {l(chauffeurQuoteRateLine(car))}
+                          </span>
+                          <span className="block text-[0.75rem] text-cream/42">
+                            {l(car.group)} · {pb("chauffeurLabel")}
+                          </span>
+                        </>
+                      </PickRow>
+                      {chauffeurSelected ? (
+                        <div className="pl-7">
+                          <label
+                            htmlFor={`chauffeur-hours-${car.id}${sid}`}
+                            className="block text-[0.6rem] font-medium uppercase tracking-[0.24em] text-gold/65"
+                          >
+                            {pb("duration")}
+                          </label>
+                          <select
+                            id={`chauffeur-hours-${car.id}${sid}`}
+                            value={duration}
+                            onChange={(e) =>
+                              setChauffeurDuration(
+                                car.id,
+                                Number.parseInt(e.target.value, 10),
+                              )
+                            }
+                            className={cn(
+                              inputClass,
+                              "mt-1.5 appearance-none bg-[#0a0a0a]",
+                            )}
+                          >
+                            {CHAUFFEUR_DURATION_HOURS.map((hours) => (
+                              <option key={hours} value={hours}>
+                                {pb("hours", { count: hours })}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      ) : null}
+                    </li>
+                  );
+                })}
               </ul>
               <div>
                 <p className="mb-2 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-cream/38">
-                  Vehicle class preferences (optional)
+                  {pb("vehiclePrefs")}
                 </p>
                 <ul className="grid gap-2 sm:grid-cols-2" role="list">
                   {vipTransport.options.map((opt, i) => (
@@ -556,7 +749,7 @@ export function CustomPackageWhatsApp({
                         onToggle={() => toggle(`chauffOpt:${i}`)}
                         density="compact"
                       >
-                        {opt}
+                        {l(opt)}
                       </PickRow>
                     </li>
                   ))}
@@ -566,9 +759,10 @@ export function CustomPackageWhatsApp({
           </CatalogSection>
 
           <CatalogSection
-            title="Exotic cars"
-            subtitle="Hourly fleet, SUVs, supercars, and daily self-drive — or tick below if you want an exotic but haven&apos;t picked a model yet."
-            badge="Fleet"
+            title={pb("secExoticTitle")}
+            subtitle={pb("secExoticSubtitle")}
+            badge={pb("secExoticBadge")}
+            selectBadge={selectBadge}
           >
             <div className="max-h-[min(70vh,520px)] space-y-6 overflow-y-auto pr-1">
               <PickRow
@@ -577,25 +771,24 @@ export function CustomPackageWhatsApp({
               >
                 <>
                   <span className="text-cream/92">
-                    Interested in exotic rental — no specific car yet
+                    {pb("secExoticInterested")}
                   </span>
                   <span className="block text-[0.8125rem] text-cream/50">
-                    Open to recommendations from your fleet for self-drive / hourly.
+                    {pb("secExoticInterestedHint")}
                   </span>
                 </>
               </PickRow>
               {EXOTIC_CARS_HOURLY_GROUPS.length === 0 &&
               EXOTIC_CARS_DAILY.length === 0 ? (
                 <p className="text-sm leading-relaxed text-cream/48">
-                  Fleet checklist is being updated — describe the vehicles you
-                  want in the notes field and we&apos;ll confirm availability.
+                  {pb("fleetUpdating")}
                 </p>
               ) : (
                 <>
                   {EXOTIC_CARS_HOURLY_GROUPS.map((group) => (
                     <div key={group.title}>
                       <p className="mb-2 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-cream/40">
-                        {group.title}
+                        {l(group.title)}
                       </p>
                       <ul className="grid gap-2" role="list">
                         {group.cars.map((car) => (
@@ -605,7 +798,7 @@ export function CustomPackageWhatsApp({
                               onToggle={() => toggle(`car:${car.id}`)}
                               density="compact"
                             >
-                              {carLine(car)}
+                              {carLine(car, l)}
                             </PickRow>
                           </li>
                         ))}
@@ -614,7 +807,7 @@ export function CustomPackageWhatsApp({
                   ))}
                   <div>
                     <p className="mb-2 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-cream/40">
-                      Daily self-drive
+                      {pb("dailySelfDrive")}
                     </p>
                     <ul className="grid gap-2" role="list">
                       {EXOTIC_CARS_DAILY.map((car) => (
@@ -624,7 +817,7 @@ export function CustomPackageWhatsApp({
                             onToggle={() => toggle(`car:${car.id}`)}
                             density="compact"
                           >
-                            {carLine(car)}
+                            {carLine(car, l)}
                           </PickRow>
                         </li>
                       ))}
@@ -636,41 +829,42 @@ export function CustomPackageWhatsApp({
           </CatalogSection>
 
           <CatalogSection
-            title="Villas & stays"
-            subtitle="Pick a property from the list — or tick below if you want a villa stay but haven&apos;t chosen one yet."
-            badge="Stays"
+            title={pb("secVillaTitle")}
+            subtitle={pb("secVillaSubtitle")}
+            badge={pb("secVillaBadge")}
+            selectBadge={selectBadge}
           >
-            <div className="space-y-4">
+            <div className="max-h-[min(70vh,520px)] space-y-6 overflow-y-auto pr-1">
               <PickRow
                 selected={!!sel[OPEN_TBD.villa]}
                 onToggle={() => toggle(OPEN_TBD.villa)}
               >
                 <>
                   <span className="text-cream/92">
-                    Interested in a villa — no specific property yet
+                    {pb("secVillaInterested")}
                   </span>
                   <span className="block text-[0.8125rem] text-cream/50">
-                    Open to recommendations based on dates, area, and group size.
+                    {pb("secVillaInterestedHint")}
                   </span>
                 </>
               </PickRow>
               {VILLAS.length === 0 ? (
-                <p className="text-[0.8125rem] leading-relaxed text-cream/48">
-                  Named inventory is updating — use the option above or describe
-                  your preferred area in the notes below.
+                <p className="text-sm leading-relaxed text-cream/48">
+                  {pb("villaInventoryUpdating")}
                 </p>
               ) : (
-                <ul className="grid gap-2 sm:grid-cols-1" role="list">
+                <ul className="grid gap-2" role="list">
                   {VILLAS.map((v) => (
                     <li key={v.id}>
                       <PickRow
                         selected={!!sel[`villa:${v.id}`]}
                         onToggle={() => toggle(`villa:${v.id}`)}
+                        density="compact"
                       >
                         <>
                           <span className="text-cream/92">{v.name}</span>
-                          <span className="block text-[0.8125rem] text-cream/50">
-                            {v.cardTagline} · {v.subtitle}
+                          <span className="block text-[0.75rem] text-cream/42">
+                            {l(v.cardTagline)} · {l(v.subtitle)}
                           </span>
                         </>
                       </PickRow>
@@ -682,9 +876,10 @@ export function CustomPackageWhatsApp({
           </CatalogSection>
 
           <CatalogSection
-            title="Yachts"
-            subtitle="Full yacht lineup — or tick below if you want a charter but haven&apos;t picked a vessel yet."
-            badge="Water"
+            title={pb("secYachtTitle")}
+            subtitle={pb("secYachtSubtitle")}
+            badge={pb("secYachtBadge")}
+            selectBadge={selectBadge}
           >
             <div className="space-y-4">
               <PickRow
@@ -693,10 +888,10 @@ export function CustomPackageWhatsApp({
               >
                 <>
                   <span className="text-cream/92">
-                    Interested in a yacht — no specific vessel yet
+                    {pb("secYachtInterested")}
                   </span>
                   <span className="block text-[0.8125rem] text-cream/50">
-                    Open to recommendations for day charter timing and group size.
+                    {pb("secYachtInterestedHint")}
                   </span>
                 </>
               </PickRow>
@@ -711,7 +906,7 @@ export function CustomPackageWhatsApp({
                       <>
                         <span className="text-cream/92">{y.name}</span>
                         <span className="block text-[0.8125rem] text-cream/50">
-                          {y.subtitle} — {y.cardPriceLine}
+                          {l(y.subtitle)} — {l(y.cardPriceLine)}
                         </span>
                       </>
                     </PickRow>
@@ -729,20 +924,25 @@ export function CustomPackageWhatsApp({
             )}
           >
             <CatalogSection
-              title="Female hosts (partner agency)"
-              subtitle={`Women supplied by our partner agency for yacht charters — from ${YACHT_HOSTESS_ADDON.startingPrice}, up to ${YACHT_HOSTESS_ADDON.maxCapacityLabel} when available. Choose a headcount below; profiles on inquiry. Usually booked with a yacht.`}
-              badge="Yacht"
+              title={pb("secHostessTitle")}
+              subtitle={pb("secHostessSubtitle", {
+                price: YACHT_HOSTESS_ADDON.startingPrice,
+                max: YACHT_HOSTESS_ADDON.maxCapacityLabel,
+              })}
+              badge={pb("secHostessBadge")}
+              selectBadge={selectBadge}
             >
               <PickRow
                 selected={!!sel.hostessAddon}
                 onToggle={() => toggle("hostessAddon")}
               >
                 <span className="text-cream/92">
-                  Include female hosts (entertainment)
+                  {pb("secHostessInclude")}
                 </span>
                 <span className="block text-[0.8125rem] text-cream/50">
-                  Partner agency — starting {YACHT_HOSTESS_ADDON.startingPrice}{" "}
-                  (final quote from team)
+                  {pb("secHostessStarting", {
+                    price: YACHT_HOSTESS_ADDON.startingPrice,
+                  })}
                 </span>
               </PickRow>
               {sel.hostessAddon ? (
@@ -751,7 +951,7 @@ export function CustomPackageWhatsApp({
                     htmlFor={`hostess-count${sid}`}
                     className="block text-[0.62rem] font-medium uppercase tracking-[0.28em] text-gold/75"
                   >
-                    How many women
+                    {pb("howManyWomen")}
                   </label>
                   <select
                     id={`hostess-count${sid}`}
@@ -771,9 +971,10 @@ export function CustomPackageWhatsApp({
           </div>
 
           <CatalogSection
-            title="Jet skis, jetcars & fishing"
-            subtitle="Bay sessions, amphibious runs, and fishing — routed with your stay."
-            badge="On-water"
+            title={pb("secJetskiTitle")}
+            subtitle={pb("secJetskiSubtitle")}
+            badge={pb("secJetskiBadge")}
+            selectBadge={selectBadge}
           >
             <ul className="grid gap-2 sm:grid-cols-2" role="list">
               {JETSKIS_OFFERINGS.map((j, i) => (
@@ -782,7 +983,7 @@ export function CustomPackageWhatsApp({
                     selected={!!sel[`jetski:${i}`]}
                     onToggle={() => toggle(`jetski:${i}`)}
                   >
-                    <span className="text-cream/92">{j.title}</span>
+                    <span className="text-cream/92">{l(j.title)}</span>
                   </PickRow>
                 </li>
               ))}
@@ -790,9 +991,171 @@ export function CustomPackageWhatsApp({
           </CatalogSection>
 
           <CatalogSection
-            title="Banana boats, paddleboard, kayak & more"
-            subtitle="Extra on-water activities — quoted with your itinerary."
-            badge="Add-ons"
+            title={pb("secAtvTitle")}
+            subtitle={pb("secAtvSubtitle")}
+            badge={pb("secAtvBadge")}
+            selectBadge={selectBadge}
+          >
+            <div className="space-y-5">
+              <PickRow
+                selected={!!sel[OPEN_TBD.atvUtv]}
+                onToggle={() => toggle(OPEN_TBD.atvUtv)}
+              >
+                <>
+                  <span className="text-cream/92">
+                    {pb("secAtvInterested")}
+                  </span>
+                  <span className="block text-[0.8125rem] text-cream/50">
+                    {pb("secAtvInterestedHint")}
+                  </span>
+                </>
+              </PickRow>
+
+              <div>
+                <p className="mb-2 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-cream/40">
+                  {pb("atvRiders")}
+                </p>
+                <ul className="grid gap-2" role="list">
+                  {ATV_TOURS.map((tour) => (
+                    <li key={tour.id}>
+                      <PickRow
+                        selected={!!sel[`atv:${tour.id}`]}
+                        onToggle={() => toggle(`atv:${tour.id}`)}
+                        density="compact"
+                      >
+                        <>
+                          <span className="text-cream/92">
+                            {l(tour.duration)} ATV
+                          </span>
+                          <span className="text-cream/45"> · </span>
+                          <span className="tabular-nums text-gold-secondary/95">
+                            {formatUsd(tour.price)} {l(tour.unit)}
+                          </span>
+                          {tour.note ? (
+                            <span className="block text-[0.75rem] text-cream/42">
+                              {l(tour.note)}
+                            </span>
+                          ) : null}
+                        </>
+                      </PickRow>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {UTV_PRODUCTS.map((utv) => (
+                <div key={utv.id}>
+                  <p className="mb-2 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-cream/40">
+                    {l(utv.title)}
+                    <span className="font-normal normal-case tracking-normal text-cream/38">
+                      {" "}
+                      · {l(utv.tagline)}
+                    </span>
+                  </p>
+                  <ul className="grid gap-2 sm:grid-cols-2" role="list">
+                    {utv.options.map((option) => (
+                      <li key={option.id}>
+                        <PickRow
+                          selected={!!sel[`utv:${utv.id}:${option.id}`]}
+                          onToggle={() =>
+                            toggle(`utv:${utv.id}:${option.id}`)
+                          }
+                          density="compact"
+                        >
+                          <>
+                            <span className="text-cream/92">
+                              {l(option.duration)}
+                            </span>
+                            <span className="text-cream/45"> · </span>
+                            <span className="tabular-nums text-gold-secondary/95">
+                              {formatUsd(option.price)}
+                            </span>
+                          </>
+                        </PickRow>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </CatalogSection>
+
+          <CatalogSection
+            title={pb("secChefTitle")}
+            subtitle={pb("secChefSubtitle")}
+            badge={pb("secChefBadge")}
+            selectBadge={selectBadge}
+          >
+            <div className="space-y-5">
+              <PickRow
+                selected={!!sel[OPEN_TBD.privateChef]}
+                onToggle={() => toggle(OPEN_TBD.privateChef)}
+              >
+                <>
+                  <span className="text-cream/92">
+                    {pb("secChefInterested")}
+                  </span>
+                  <span className="block text-[0.8125rem] text-cream/50">
+                    {pb("secChefInterestedHint")}
+                  </span>
+                </>
+              </PickRow>
+
+              <div>
+                <p className="mb-2 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-cream/40">
+                  {pb("serviceType")}
+                </p>
+                <ul className="grid gap-2 sm:grid-cols-2" role="list">
+                  {PRIVATE_CHEF_SERVICE_CARDS.map((card) => (
+                    <li key={card.id}>
+                      <PickRow
+                        selected={!!sel[`chefService:${card.id}`]}
+                        onToggle={() => toggle(`chefService:${card.id}`)}
+                        density="compact"
+                      >
+                        <>
+                          <span className="text-cream/92">{l(card.title)}</span>
+                          <span className="block text-[0.75rem] text-cream/42">
+                            {l(card.eyebrow)}
+                          </span>
+                        </>
+                      </PickRow>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <p className="mb-2 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-cream/40">
+                  {pb("chefsRoster")}
+                </p>
+                <ul className="grid gap-2" role="list">
+                  {PRIVATE_CHEFS_ROSTER.map((chef) => (
+                    <li key={chef.id}>
+                      <PickRow
+                        selected={!!sel[`chef:${chef.id}`]}
+                        onToggle={() => toggle(`chef:${chef.id}`)}
+                      >
+                        <>
+                          <span className="text-cream/92">{chef.name}</span>
+                          <span className="block text-[0.8125rem] text-cream/50">
+                            {l(chef.role)}
+                            {!chef.available ? ` ${pb("comingSoon")}` : ""}
+                          </span>
+                        </>
+                      </PickRow>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </CatalogSection>
+
+          <CatalogSection
+            title={pb("secMiscTitle")}
+            subtitle={pb("secMiscSubtitle")}
+            badge={pb("secMiscBadge")}
+            selectBadge={selectBadge}
           >
             <ul className="grid gap-2 sm:grid-cols-1 lg:grid-cols-2" role="list">
               {CUSTOM_PACKAGE_MISC_ADDONS.map((a) => (
@@ -802,9 +1165,9 @@ export function CustomPackageWhatsApp({
                     onToggle={() => toggle(`addon:${a.id}`)}
                   >
                     <>
-                      <span className="text-cream/92">{a.title}</span>
+                      <span className="text-cream/92">{l(a.title)}</span>
                       <span className="block text-[0.8125rem] text-cream/50">
-                        {a.hint}
+                        {l(a.hint)}
                       </span>
                     </>
                   </PickRow>
@@ -814,12 +1177,13 @@ export function CustomPackageWhatsApp({
           </CatalogSection>
 
           <CatalogSection
-            title="Security guards"
-            subtitle="Close protection — choose unarmed or armed detail; roster and licensing confirmed on inquiry."
-            badge="Security"
+            title={pb("secSecurityTitle")}
+            subtitle={pb("secSecuritySubtitle")}
+            badge={pb("secSecurityBadge")}
+            selectBadge={selectBadge}
           >
             <fieldset>
-              <legend className="sr-only">Security guards</legend>
+              <legend className="sr-only">{pb("securityLegend")}</legend>
               <div className="space-y-2">
                 <label
                   className={cn(
@@ -837,7 +1201,7 @@ export function CustomPackageWhatsApp({
                     className={checkboxClass}
                   />
                   <span className="text-[0.875rem] leading-snug text-cream/88">
-                    Not requesting security
+                    {pb("notRequestingSecurity")}
                   </span>
                 </label>
                 <label
@@ -856,7 +1220,7 @@ export function CustomPackageWhatsApp({
                     className={checkboxClass}
                   />
                   <span className="text-[0.875rem] leading-snug text-cream/88">
-                    Unarmed guards
+                    {pb("unarmedGuards")}
                   </span>
                 </label>
                 <label
@@ -875,7 +1239,7 @@ export function CustomPackageWhatsApp({
                     className={checkboxClass}
                   />
                   <span className="text-[0.875rem] leading-snug text-cream/88">
-                    Armed guards
+                    {pb("armedGuards")}
                   </span>
                 </label>
               </div>
@@ -883,9 +1247,10 @@ export function CustomPackageWhatsApp({
           </CatalogSection>
 
           <CatalogSection
-            title="Private jets"
-            subtitle="Select aircraft — or tick below if you want charter help but haven&apos;t chosen a jet yet. Add routes and timing in the notes when you can."
-            badge="Aviation"
+            title={pb("secJetTitle")}
+            subtitle={pb("secJetSubtitle")}
+            badge={pb("secJetBadge")}
+            selectBadge={selectBadge}
           >
             <div className="space-y-4">
               <PickRow
@@ -894,10 +1259,10 @@ export function CustomPackageWhatsApp({
               >
                 <>
                   <span className="text-cream/92">
-                    Interested in private jet charter — no specific aircraft yet
+                    {pb("secJetInterested")}
                   </span>
                   <span className="block text-[0.8125rem] text-cream/50">
-                    Open to aircraft recommendations for your route and dates.
+                    {pb("secJetInterestedHint")}
                   </span>
                 </>
               </PickRow>
@@ -913,7 +1278,7 @@ export function CustomPackageWhatsApp({
                       <>
                         <span className="text-cream/92">{j.name}</span>
                         <span className="block text-[0.8125rem] text-cream/50">
-                          {j.categoryLabel} · {j.passengers}
+                          {l(j.categoryLabel)} · {l(j.passengers)}
                         </span>
                       </>
                     </PickRow>
@@ -925,12 +1290,13 @@ export function CustomPackageWhatsApp({
           </CatalogSection>
 
           <CatalogSection
-            title="VIP nightlife & venues"
-            subtitle="Nightclubs and beach clubs — table and entry confirmed on inquiry."
-            badge="Night"
+            title={pb("secVipTitle")}
+            subtitle={pb("secVipSubtitle")}
+            badge={pb("secVipBadge")}
+            selectBadge={selectBadge}
           >
             <p className="mb-2 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-cream/38">
-              Featured venues
+              {pb("featuredVenues")}
             </p>
             <ul className="mb-6 grid gap-2 sm:grid-cols-2" role="list">
               {vipFeaturedVenues.map((v) => (
@@ -946,7 +1312,7 @@ export function CustomPackageWhatsApp({
               ))}
             </ul>
             <p className="mb-2 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-cream/38">
-              South Beach &amp; strip
+              {pb("southBeach")}
             </p>
             <ul className="grid gap-2 sm:grid-cols-2" role="list">
               {vipSouthBeachClubs.map((name, i) => (
@@ -964,9 +1330,10 @@ export function CustomPackageWhatsApp({
           </CatalogSection>
 
           <CatalogSection
-            title="Photo & video shoots"
-            subtitle="Choose what you want quoted — photo stills, video, or both. Same crew can cover both on one itinerary."
-            badge="Media"
+            title={pb("secMediaTitle")}
+            subtitle={pb("secMediaSubtitle")}
+            badge={pb("secMediaBadge")}
+            selectBadge={selectBadge}
           >
             <ul className="grid gap-2" role="list">
               <li>
@@ -974,9 +1341,9 @@ export function CustomPackageWhatsApp({
                   selected={!!sel.photoShoot}
                   onToggle={() => toggle("photoShoot")}
                 >
-                  <span className="text-cream/92">Photo shoot</span>
+                  <span className="text-cream/92">{pb("secPhotoShoot")}</span>
                   <span className="block text-[0.8125rem] text-cream/50">
-                    Edited stills with our camera crew
+                    {pb("secPhotoHint")}
                   </span>
                 </PickRow>
               </li>
@@ -985,9 +1352,9 @@ export function CustomPackageWhatsApp({
                   selected={!!sel.videoShoot}
                   onToggle={() => toggle("videoShoot")}
                 >
-                  <span className="text-cream/92">Video shoot</span>
+                  <span className="text-cream/92">{pb("secVideoShoot")}</span>
                   <span className="block text-[0.8125rem] text-cream/50">
-                    Edited motion with our camera crew
+                    {pb("secVideoHint")}
                   </span>
                 </PickRow>
               </li>
@@ -1001,13 +1368,13 @@ export function CustomPackageWhatsApp({
           htmlFor={`custom-notes${sid}`}
           className="block text-[0.62rem] font-medium uppercase tracking-[0.28em] text-gold/75"
         >
-          Extra detail (optional)
+          {pb("extraDetail")}
         </label>
         <textarea
           id={`custom-notes${sid}`}
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          placeholder="Occasion, flight times, must-have times on the yacht, bottle preferences…"
+          placeholder={pb("notesPlaceholder")}
           rows={4}
           className={cn(inputClass, "mt-2 resize-y")}
         />
@@ -1015,7 +1382,7 @@ export function CustomPackageWhatsApp({
 
       <div className="border-t border-gold/10 pt-8">
         <p className="text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/65">
-          Preview (sent in WhatsApp)
+          {pb("previewLabel")}
         </p>
         <pre className="mt-3 max-h-64 overflow-auto whitespace-pre-wrap rounded-sm border border-gold/12 bg-[#070707] p-4 text-[0.8125rem] leading-relaxed text-cream/65">
           {message}
@@ -1043,7 +1410,7 @@ export function CustomPackageWhatsApp({
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
                     message,
-                    summary: whatsAppIntroLine,
+                    summary: resolvedIntro,
                     source: "whatsapp",
                   }),
                 });
@@ -1051,7 +1418,7 @@ export function CustomPackageWhatsApp({
                 setQuoteRequestError(
                   err instanceof Error
                     ? err.message
-                    : "Could not create quote request - opening WhatsApp anyway.",
+                    : pb("quoteError"),
                 );
               } finally {
                 setCreatingQuoteRequest(false);
@@ -1060,9 +1427,7 @@ export function CustomPackageWhatsApp({
             }}
           >
             <WhatsAppIcon className="size-5 shrink-0 text-[#0b0b0b]" />
-            {creatingQuoteRequest
-              ? "Requesting quote..."
-              : "Open WhatsApp with this message"}
+            {creatingQuoteRequest ? pb("requestingQuote") : pb("openWhatsapp")}
           </a>
         ) : (
           <p className="mt-6">
@@ -1071,15 +1436,13 @@ export function CustomPackageWhatsApp({
               aria-disabled
             >
               <WhatsAppIcon className="size-5 shrink-0 text-[#0b0b0b]" />
-              Open WhatsApp with this message
+              {pb("openWhatsapp")}
             </span>
           </p>
         )}
         {!hasSelection && (
           <p className="mt-3 text-center text-[0.75rem] text-cream/45">
-            Select catalog items, any “interested — no specific…” row,
-            venues, photo or video shoot, hosts, add-ons, armed/unarmed
-            security, or another option above to enable the link.
+            {pb("enableHint")}
           </p>
         )}
       </div>

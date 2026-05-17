@@ -4,16 +4,19 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
 import { DayPicker } from "react-day-picker";
 
+import { useLocale } from "@/components/locale-provider";
+import type { Locale } from "@/lib/i18n/config";
+
 function parseDateOnly(input: string): Date | undefined {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(input)) return undefined;
   const next = new Date(`${input}T00:00:00`);
   return Number.isNaN(next.getTime()) ? undefined : next;
 }
 
-function formatDateLabel(input: string): string {
+function formatDateLabel(input: string, locale: Locale, selectDateLabel: string): string {
   const date = parseDateOnly(input);
-  if (!date) return "Select a date";
-  return date.toLocaleDateString("en-US", {
+  if (!date) return selectDateLabel;
+  return date.toLocaleDateString(locale === "es" ? "es-ES" : "en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -44,9 +47,12 @@ export function AvailabilityDatePicker({
   onChange,
   isBlocked,
 }: Props) {
+  const { locale, t } = useLocale();
   const [open, setOpen] = useState(false);
   const selected = useMemo(() => parseDateOnly(value), [value]);
   const min = useMemo(() => parseDateOnly(minDate), [minDate]);
+  const selectDateLabel = t("common.datePicker.selectDate");
+  const dateLabel = formatDateLabel(value, locale, selectDateLabel);
 
   return (
     <div className="relative">
@@ -64,8 +70,10 @@ export function AvailabilityDatePicker({
         aria-expanded={open}
         aria-haspopup="dialog"
       >
-        <span>{formatDateLabel(value)}</span>
-        <span className="text-[0.7rem] text-cream/45">Open calendar</span>
+        <span>{dateLabel}</span>
+        <span className="text-[0.7rem] text-cream/45">
+          {t("common.datePicker.openCalendar")}
+        </span>
       </button>
 
       {open ? (
@@ -127,11 +135,10 @@ export function AvailabilityDatePicker({
             }}
           />
           <p className="mt-2 text-[0.68rem] text-cream/45">
-            Red dates are already booked and cannot be selected.
+            {t("common.datePicker.blockedDatesNote")}
           </p>
         </div>
       ) : null}
     </div>
   );
 }
-

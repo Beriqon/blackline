@@ -5,12 +5,13 @@ import { Loader2, Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
 import { useCart } from "@/components/cart-context";
-import type { CartCategory } from "@/lib/cart-types";
+import { useTranslations } from "@/components/locale-provider";
+import type { CartAddonsState, CartCategory } from "@/lib/cart-types";
 import {
-  formatCartAddonsForMessage,
   formatCartLinesForMessage,
   isSingleUnitInventory,
 } from "@/lib/cart-types";
+import type { Translator } from "@/lib/i18n/translate";
 import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import { cn } from "@/lib/utils";
 import { whatsAppUrlWithText } from "@/lib/whatsapp";
@@ -78,7 +79,51 @@ function formatUsdNoCents(n: number): string {
   });
 }
 
+function formatCartAddonsLocalized(
+  addons: CartAddonsState,
+  t: Translator,
+): string {
+  const parts: string[] = [];
+  if (addons.femaleHosts) {
+    const n = Math.min(8, Math.max(1, Math.floor(addons.femaleHostsCount) || 1));
+    parts.push(
+      t("cart.addonSummary.femaleHostsYes", {
+        n,
+        hostLabel:
+          n === 1
+            ? t("cart.addonSummary.host")
+            : t("cart.addonSummary.hosts"),
+      }),
+    );
+  } else {
+    parts.push(t("cart.addonSummary.femaleHostsNo"));
+  }
+  parts.push(
+    t("cart.addonSummary.photoshoot", {
+      value: addons.photoshoot
+        ? t("cart.addonSummary.yes")
+        : t("cart.addonSummary.no"),
+    }),
+  );
+  parts.push(
+    t("cart.addonSummary.securityArmed", {
+      value: addons.securityArmed
+        ? t("cart.addonSummary.yes")
+        : t("cart.addonSummary.no"),
+    }),
+  );
+  parts.push(
+    t("cart.addonSummary.securityUnarmed", {
+      value: addons.securityUnarmed
+        ? t("cart.addonSummary.yes")
+        : t("cart.addonSummary.no"),
+    }),
+  );
+  return parts.join("\n");
+}
+
 export function CartDrawer() {
+  const t = useTranslations();
   const {
     items,
     addons,
@@ -199,8 +244,8 @@ export function CartDrawer() {
     if (!canPay) {
       setCheckoutError(
         hasContactDetails
-          ? "Only fully configured yacht and car bookings with published online rates can be paid here."
-          : "Enter your name, email, and phone number before checkout.",
+          ? t("cart.errors.onlyPayableOnline")
+          : t("cart.errors.contactRequiredCheckout"),
       );
       return;
     }
@@ -222,13 +267,13 @@ export function CartDrawer() {
       });
       const data = (await res.json()) as { url?: string; error?: string };
       if (!res.ok) {
-        setCheckoutError(data.error ?? "Checkout failed.");
+        setCheckoutError(data.error ?? t("cart.errors.checkoutFailed"));
         return;
       }
       if (data.url) window.location.href = data.url;
-      else setCheckoutError("No redirect URL returned.");
+      else setCheckoutError(t("cart.errors.noRedirect"));
     } catch {
-      setCheckoutError("Network error. Try again.");
+      setCheckoutError(t("cart.errors.networkError"));
     } finally {
       setCheckoutLoading(false);
     }
@@ -241,30 +286,37 @@ export function CartDrawer() {
     customerPhoneFull,
     hasContactDetails,
     payMode,
+    t,
   ]);
 
   const startQuoteWhatsApp = useCallback(async () => {
     if (items.length === 0) return;
     if (!hasContactDetails) {
-      setCheckoutError("Enter your name, email, and phone number first.");
+      setCheckoutError(t("cart.errors.contactRequiredQuote"));
       return;
     }
 
     const message = [
-      "Hi Blackline - I'd like a quote on these options:",
+      t("cart.whatsapp.greeting"),
       "",
-      `Requested from site:\n${formatCartLinesForMessage(items)}`,
+      `${t("cart.whatsapp.requestedFromSite")}\n${formatCartLinesForMessage(items)}`,
       items.length > 0
-        ? `Add-ons:\n${formatCartAddonsForMessage(addonsForRequest)}`
+        ? `${t("cart.whatsapp.addonsLabel")}\n${formatCartAddonsLocalized(addonsForRequest, t)}`
         : "",
-      customerName.trim() ? `Name: ${customerName.trim()}` : "",
-      customerEmail.trim() ? `Email: ${customerEmail.trim()}` : "",
-      customerPhoneFull ? `Phone: ${customerPhoneFull}` : "",
+      customerName.trim()
+        ? `${t("cart.whatsapp.nameLabel")} ${customerName.trim()}`
+        : "",
+      customerEmail.trim()
+        ? `${t("cart.whatsapp.emailLabel")} ${customerEmail.trim()}`
+        : "",
+      customerPhoneFull
+        ? `${t("cart.whatsapp.phoneLabel")} ${customerPhoneFull}`
+        : "",
       payMode === "full"
-        ? "Pay preference: Full payment"
-        : `Pay preference: Deposit (${DEPOSIT_PCT}%)`,
+        ? t("cart.whatsapp.payFull")
+        : t("cart.whatsapp.payDeposit", { pct: DEPOSIT_PCT }),
       "",
-      "Please confirm availability and next steps. Thanks!",
+      t("cart.whatsapp.closing"),
     ]
       .filter(Boolean)
       .join("\n");
@@ -286,9 +338,7 @@ export function CartDrawer() {
         }),
       });
     } catch {
-      setCheckoutError(
-        "Could not create a quote request record - opening WhatsApp anyway.",
-      );
+      setCheckoutError(t("cart.errors.quoteRecordFailed"));
     } finally {
       setQuoteRequestLoading(false);
       window.open(href, "_blank", "noopener,noreferrer");
@@ -303,6 +353,7 @@ export function CartDrawer() {
     items,
     payMode,
     setOpen,
+    t,
   ]);
 
   if (!open) return null;
@@ -312,25 +363,25 @@ export function CartDrawer() {
       <button
         type="button"
         className="absolute inset-0 bg-[#0b0b0b]/65 backdrop-blur-[2px]"
-        aria-label="Close cart"
+        aria-label={t("cart.closeCart")}
         onClick={() => setOpen(false)}
       />
       <aside
         className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col overflow-y-auto border-l border-gold/20 bg-[#161616] shadow-[-12px_0_48px_rgba(0,0,0,0.42)]"
-        aria-label="Selection cart"
+        aria-label={t("cart.selectionCartAria")}
       >
         <div className="flex items-center justify-between border-b border-gold/18 bg-[#1b1b1b] px-4 py-4 sm:px-5">
           <div className="flex items-center gap-2">
             <ShoppingBag className="size-5 text-gold/80" aria-hidden />
             <h2 className="font-serif text-lg tracking-tight text-cream">
-              Your selection
+              {t("cart.yourSelection")}
             </h2>
           </div>
           <button
             type="button"
             onClick={() => setOpen(false)}
             className="flex h-10 w-10 items-center justify-center border border-gold/20 bg-white/[0.03] text-cream/80 transition-colors hover:border-gold/40 hover:bg-gold/10 hover:text-gold-secondary"
-            aria-label="Close"
+            aria-label={t("cart.close")}
           >
             <X className="size-5" />
           </button>
@@ -339,8 +390,7 @@ export function CartDrawer() {
         <div className="px-4 py-4 sm:px-5">
           {items.length === 0 ? (
             <p className="text-sm leading-relaxed text-cream/65">
-              Nothing selected yet. Browse services and tap &quot;Add to
-              selection&quot; to build your request.
+              {t("cart.emptyState")}
             </p>
           ) : (
             <ul className="space-y-3" role="list">
@@ -352,7 +402,7 @@ export function CartDrawer() {
                   <div className="flex gap-3">
                     <div className="min-w-0 flex-1">
                       <p className="text-[0.6rem] font-semibold uppercase tracking-[0.28em] text-gold/90">
-                        {labelForCategory(line.category)}
+                        {labelForCategory(line.category, t)}
                       </p>
                       <p className="mt-1 font-serif text-[0.95rem] leading-snug text-cream">
                         {line.title}
@@ -377,20 +427,20 @@ export function CartDrawer() {
                         className="mt-2 inline-block text-[0.68rem] font-medium uppercase tracking-[0.14em] text-gold-secondary underline-offset-4 hover:underline"
                         onClick={() => setOpen(false)}
                       >
-                        View listing
+                        {t("cart.viewListing")}
                       </Link>
                     </div>
                     <div className="flex shrink-0 flex-col items-end gap-2">
                       {isSingleUnitInventory(line.category) ? (
                         <p className="max-w-[7rem] text-right text-[0.62rem] leading-snug text-cream/58">
-                          One line item
+                          {t("cart.oneLineItem")}
                         </p>
                       ) : (
                         <div className="flex items-center gap-1 border border-gold/18 bg-[#181818]">
                           <button
                             type="button"
                             className="flex h-8 w-8 items-center justify-center text-cream/80 hover:bg-gold/10 hover:text-gold-secondary"
-                            aria-label="Decrease quantity"
+                            aria-label={t("cart.decreaseQuantity")}
                             onClick={() => decrementItem(line.key)}
                           >
                             <Minus className="size-3.5" />
@@ -401,7 +451,7 @@ export function CartDrawer() {
                           <button
                             type="button"
                             className="flex h-8 w-8 items-center justify-center text-cream/80 hover:bg-gold/10 hover:text-gold-secondary"
-                            aria-label="Increase quantity"
+                            aria-label={t("cart.increaseQuantity")}
                             onClick={() =>
                               addItem({
                                 category: line.category,
@@ -421,7 +471,7 @@ export function CartDrawer() {
                         type="button"
                         onClick={() => removeItem(line.key)}
                         className="text-cream/60 transition-colors hover:text-cream/90"
-                        aria-label="Remove"
+                        aria-label={t("cart.remove")}
                       >
                         <Trash2 className="size-4" />
                       </button>
@@ -438,7 +488,7 @@ export function CartDrawer() {
             <div className="mb-4 space-y-3">
               <div>
                 <p className="text-[0.6rem] font-medium uppercase tracking-[0.24em] text-gold/80">
-                  Checkout total
+                  {t("cart.checkoutTotal")}
                 </p>
                 <p className="mt-1.5 font-serif text-xl text-gold-secondary">
                   ${checkoutTotal.toLocaleString("en-US")}
@@ -450,7 +500,7 @@ export function CartDrawer() {
                     htmlFor="cart-customer-name"
                     className="text-[0.6rem] font-medium uppercase tracking-[0.24em] text-gold/65"
                   >
-                    Name
+                    {t("cart.name")}
                   </label>
                   <input
                     id="cart-customer-name"
@@ -465,7 +515,7 @@ export function CartDrawer() {
                     htmlFor="cart-customer-email"
                     className="text-[0.6rem] font-medium uppercase tracking-[0.24em] text-gold/65"
                   >
-                    Email
+                    {t("cart.email")}
                   </label>
                   <input
                     id="cart-customer-email"
@@ -480,7 +530,7 @@ export function CartDrawer() {
                     htmlFor="cart-customer-phone"
                     className="text-[0.6rem] font-medium uppercase tracking-[0.24em] text-gold/65"
                   >
-                    Phone number
+                    {t("cart.phone")}
                   </label>
                   <div className="mt-1.5 flex gap-2">
                     <select
@@ -517,7 +567,7 @@ export function CartDrawer() {
                       : "border-gold/18 bg-white/[0.03] text-cream/72 hover:border-gold/32",
                   )}
                 >
-                  {DEPOSIT_PCT}% deposit
+                  {t("cart.payDeposit", { pct: DEPOSIT_PCT })}
                 </button>
                 <button
                   type="button"
@@ -529,12 +579,12 @@ export function CartDrawer() {
                       : "border-gold/18 bg-white/[0.03] text-cream/72 hover:border-gold/32",
                   )}
                 >
-                  Pay full amount
+                  {t("cart.payFull")}
                 </button>
               </div>
               {chargeToday !== null ? (
                 <p className="text-[0.75rem] text-cream/80">
-                  Charged today:{" "}
+                  {t("cart.chargedToday")}{" "}
                   <span className="font-semibold text-gold">
                     ${chargeToday.toLocaleString("en-US", {
                       minimumFractionDigits: 2,
@@ -544,27 +594,25 @@ export function CartDrawer() {
                   {payMode === "deposit" ? (
                     <span className="text-cream/60">
                       {" "}
-                      ({DEPOSIT_PCT}% of $
-                      {checkoutTotal.toLocaleString("en-US", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
+                      {t("cart.chargedTodayDepositSuffix", {
+                        pct: DEPOSIT_PCT,
+                        total: checkoutTotal.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }),
                       })}
-                      )
                     </span>
                   ) : null}
                 </p>
               ) : null}
               {nonBookableItems.length > 0 ? (
                 <p className="text-[0.72rem] leading-relaxed text-cream/62">
-                  This cart also contains selection-only items that are not wired
-                  for online payment yet. Keep those for inquiry, or remove them to
-                  pay online for cars/yachts only.
+                  {t("cart.nonBookableHint")}
                 </p>
               ) : null}
               {unsupportedItems.length > 0 ? (
                 <p className="text-[0.72rem] leading-relaxed text-cream/62">
-                  Some selected car or yacht bookings still need a custom quote or
-                  a complete date/time selection before payment can start.
+                  {t("cart.unsupportedHint")}
                 </p>
               ) : null}
               {checkoutError ? (
@@ -582,7 +630,7 @@ export function CartDrawer() {
               {checkoutLoading ? (
                 <Loader2 className="size-4 animate-spin" aria-hidden />
               ) : null}
-              Pay with card
+              {t("cart.payWithCard")}
             </button>
             <button
               type="button"
@@ -590,17 +638,17 @@ export function CartDrawer() {
               disabled={items.length === 0}
               className="inline-flex min-h-11 flex-1 items-center justify-center border border-gold/24 bg-white/[0.03] px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.16em] text-cream/88 transition-colors hover:border-gold/40 hover:bg-white/[0.05] disabled:cursor-not-allowed disabled:opacity-35"
             >
-              Clear all
+              {t("cart.clearAll")}
             </button>
           </div>
 
           {items.length > 0 ? (
             <div className="mt-5 border-t border-gold/[0.08] pt-5">
               <p className="text-[0.55rem] font-semibold uppercase tracking-[0.26em] text-gold/55">
-                Optional add-ons
+                {t("cart.optionalAddons")}
               </p>
               <p className="mt-1.5 text-[0.65rem] leading-relaxed text-cream/48">
-                Whole request — scope confirmed by the team.
+                {t("cart.addonsScopeNote")}
               </p>
               <div className="mt-3 rounded-sm border border-gold/10 bg-[#181818]/90 p-2.5">
                 {!hasSecurityItems ? (
@@ -615,9 +663,15 @@ export function CartDrawer() {
                         }
                       />
                       <span className="text-[0.72rem] leading-snug text-cream/75">
-                        Armed security
+                        {t("cart.armedSecurity")}
                         <span className="ml-1.5 text-[0.6rem] text-cream/45">
-                          {`$${armedRateCard.hourlyRateUsd}/hr · ${armedRateCard.minimumHours}h min ($${formatUsdNoCents(armedRateCard.minimumTotalUsd)})`}
+                          {t("cart.rateSuffix", {
+                            rate: armedRateCard.hourlyRateUsd,
+                            hours: armedRateCard.minimumHours,
+                            minTotal: formatUsdNoCents(
+                              armedRateCard.minimumTotalUsd,
+                            ),
+                          })}
                         </span>
                       </span>
                     </label>
@@ -631,9 +685,15 @@ export function CartDrawer() {
                         }
                       />
                       <span className="text-[0.72rem] leading-snug text-cream/75">
-                        Unarmed security
+                        {t("cart.unarmedSecurity")}
                         <span className="ml-1.5 text-[0.6rem] text-cream/45">
-                          {`$${unarmedRateCard.hourlyRateUsd}/hr · ${unarmedRateCard.minimumHours}h min ($${formatUsdNoCents(unarmedRateCard.minimumTotalUsd)})`}
+                          {t("cart.rateSuffix", {
+                            rate: unarmedRateCard.hourlyRateUsd,
+                            hours: unarmedRateCard.minimumHours,
+                            minTotal: formatUsdNoCents(
+                              unarmedRateCard.minimumTotalUsd,
+                            ),
+                          })}
                         </span>
                       </span>
                     </label>
@@ -654,7 +714,7 @@ export function CartDrawer() {
                     }
                   />
                   <span className="text-[0.72rem] leading-snug text-cream/75">
-                    Female hostess(es)
+                    {t("cart.femaleHosts")}
                   </span>
                 </label>
                 {addons.femaleHosts ? (
@@ -663,7 +723,7 @@ export function CartDrawer() {
                       htmlFor="addon-host-count"
                       className="text-[0.55rem] font-medium uppercase tracking-[0.2em] text-gold/50"
                     >
-                      Headcount
+                      {t("cart.headcount")}
                     </label>
                     <input
                       id="addon-host-count"
@@ -693,21 +753,18 @@ export function CartDrawer() {
                     }
                   />
                   <span className="text-[0.72rem] leading-snug text-cream/75">
-                    Photo / video shoot
+                    {t("cart.photoshoot")}
                   </span>
                 </label>
                 <p className="mt-2 border-t border-gold/[0.06] pt-2 text-[0.58rem] leading-relaxed text-cream/42">
-                  {formatCartAddonsForMessage(addonsForRequest)}
+                  {formatCartAddonsLocalized(addonsForRequest, t)}
                 </p>
               </div>
             </div>
           ) : null}
 
           <p className="mt-3 text-[0.65rem] leading-relaxed text-cream/58">
-            Secure checkout via Stripe. Cars and yachts with a configured booking
-            window now use live pricing and availability. Other services can stay
-            in your selection for inquiry. Your selection is saved in this browser
-            until you clear it.{" "}
+            {t("cart.footerNote")}{" "}
             {needsQuoteWhatsApp ? (
               <button
                 type="button"
@@ -716,8 +773,8 @@ export function CartDrawer() {
                 className="text-gold/70 underline-offset-2 hover:underline disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {quoteRequestLoading
-                  ? "Requesting quote..."
-                  : "Request quote on WhatsApp"}
+                  ? t("cart.requestingQuote")
+                  : t("cart.requestWhatsapp")}
               </button>
             ) : (
               <Link
@@ -725,7 +782,7 @@ export function CartDrawer() {
                 className="text-gold/70 underline-offset-2 hover:underline"
                 onClick={() => setOpen(false)}
               >
-                Contact us first
+                {t("cart.contactUsFirst")}
               </Link>
             )}
             .
@@ -736,32 +793,36 @@ export function CartDrawer() {
   );
 }
 
-function labelForCategory(c: CartCategory): string {
+function labelForCategory(c: CartCategory, t: Translator): string {
   switch (c) {
     case "exotic-car":
-      return "Exotic car";
+      return t("cart.categories.exoticCar");
     case "yacht":
-      return "Yacht";
+      return t("cart.categories.yacht");
     case "private-jet":
-      return "Private jet";
+      return t("cart.categories.privateJet");
     case "fishing":
-      return "Fishing";
+      return t("cart.categories.fishing");
     case "jetski":
-      return "Jet ski";
+      return t("cart.categories.jetski");
     case "jetcar":
-      return "Jetcar";
+      return t("cart.categories.jetcar");
     case "kayak":
-      return "Kayak";
+      return t("cart.categories.kayak");
     case "paddleboard":
-      return "Paddle board (SUP)";
+      return t("cart.categories.paddleboard");
     case "parasailing":
-      return "Parasailing";
+      return t("cart.categories.parasailing");
     case "security-armed":
-      return "Security (armed)";
+      return t("cart.categories.securityArmed");
     case "security-unarmed":
-      return "Security (unarmed)";
+      return t("cart.categories.securityUnarmed");
+    case "atv":
+      return t("cart.categories.atv");
+    case "utv":
+      return t("cart.categories.utv");
     case "other":
-      return "Item";
+      return t("cart.categories.other");
     default: {
       const _x: never = c;
       return _x;

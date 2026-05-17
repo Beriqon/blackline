@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "@/components/locale-provider";
 import { WHATSAPP_PHONE_E164 } from "@/lib/whatsapp";
 
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -20,6 +21,7 @@ export function WhatsappFloatingButton({
 }: {
   className?: string;
 }) {
+  const t = useTranslations();
   const href = `https://wa.me/${WHATSAPP_PHONE_E164}`;
 
   return (
@@ -27,7 +29,7 @@ export function WhatsappFloatingButton({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Chat on WhatsApp"
+      aria-label={t("common.chatWhatsapp")}
       className={[
         "fixed bottom-6 right-6 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full border border-gold/55 bg-[#0b0b0b]/95 shadow-[0_18px_45px_rgba(198,164,108,0.22),0_0_0_1px_rgba(198,164,108,0.12)] backdrop-blur transition-all hover:border-gold/75 hover:bg-[#0b0b0b]/100 hover:shadow-[0_22px_55px_rgba(198,164,108,0.28),0_0_0_1px_rgba(198,164,108,0.18)] active:scale-[0.98]",
         className ?? "",

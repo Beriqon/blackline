@@ -2,10 +2,12 @@
 
 import { ShoppingBag } from "lucide-react";
 
+import { useTranslations } from "@/components/locale-provider";
 import { useCart } from "@/components/cart-context";
 import { cn } from "@/lib/utils";
 
 export function CartHeaderButton() {
+  const t = useTranslations();
   const { count, setOpen } = useCart();
 
   return (
@@ -15,7 +17,11 @@ export function CartHeaderButton() {
       className={cn(
         "relative inline-flex h-10 w-10 items-center justify-center border border-gold/22 bg-charcoal/80 text-cream transition-colors hover:border-gold/40 hover:text-gold-secondary sm:h-11 sm:w-11",
       )}
-      aria-label={count > 0 ? `Open selection cart, ${count} items` : "Open selection cart"}
+      aria-label={
+        count > 0
+          ? t("common.openSelectionCartCount", { count })
+          : t("common.openSelectionCart")
+      }
     >
       <ShoppingBag className="size-[1.15rem] shrink-0 sm:size-5" aria-hidden />
       {count > 0 ? (

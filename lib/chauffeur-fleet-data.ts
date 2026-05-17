@@ -49,8 +49,28 @@ export const CHAUFFEUR_FLEET_SORTED: readonly ChauffeurFleetEntry[] =
     return a.name.localeCompare(b.name, "en", { sensitivity: "base" });
   });
 
+/** Drops redundant “driver included” copy — implied on every chauffeur listing. */
+export function sanitizeChauffeurRateLine(line: string): string {
+  return line
+    .replace(/\s*[—–-]\s*driver included\.?/gi, "")
+    .replace(/\s*[—–-]\s*chófer incluido\.?/gi, "")
+    .replace(/\s*\(driver included\)/gi, "")
+    .replace(/\s*\(chófer incluido\)/gi, "")
+    .trim();
+}
+
 export function chauffeurQuoteRateLine(car: ChauffeurFleetEntry): string {
-  return car.source === "hourly"
-    ? car.priceLine
-    : car.chauffeurPriceLine ?? "Rate on request";
+  const raw =
+    car.source === "hourly"
+      ? car.priceLine
+      : car.chauffeurPriceLine ?? "Rate on request";
+  return sanitizeChauffeurRateLine(raw);
+}
+
+export function chauffeurPackageQuoteLine(
+  car: ChauffeurFleetEntry,
+  durationHours: number,
+): string {
+  const hoursLabel = `${durationHours} hour${durationHours === 1 ? "" : "s"}`;
+  return `${car.name} — ${chauffeurQuoteRateLine(car)} · ${hoursLabel} (chauffeur)`;
 }

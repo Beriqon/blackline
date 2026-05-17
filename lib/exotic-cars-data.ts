@@ -196,7 +196,7 @@ export const EXOTIC_CARS_HOURLY_GROUPS: { title: string; cars: ExoticCar[] }[] =
         specs: [
           { label: "Brand", value: "Chevrolet" },
           { label: "Model", value: "Suburban" },
-          { label: "Service", value: "Chauffeur only (driver included)" },
+          { label: "Service", value: "Chauffeur only" },
         ],
         highlights: [
           "Matte black full wrap exterior",
@@ -229,7 +229,7 @@ export const EXOTIC_CARS_HOURLY_GROUPS: { title: string; cars: ExoticCar[] }[] =
         ],
         specs: [
           { label: "Type", value: "Exclusive sprinter" },
-          { label: "Service", value: "Chauffeur only (driver included)" },
+          { label: "Service", value: "Chauffeur only" },
         ],
         highlights: [
           "Custom sky blue hexagon-stitched leather captain seats",
@@ -826,13 +826,13 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     dualRentalOnCard: true,
     group: "Mercedes",
     priceLine: "$499 / day",
-    chauffeurPriceLine: "$125 / hr",
+    chauffeurPriceLine: "$150 / hr",
     pricing: "daily",
     description:
       "An S580 rental is tailored for executive-level comfort. The cabin is whisper-quiet with generous legroom and a refined ride that smooths over city pavement. Ambient lighting and premium audio enhance night cruises and business transfers. Technology supports relaxed driving, while the rear seating area provides space to unwind or work between stops. The exterior communicates understated luxury that suits any venue. Choose the S580 for discreet elegance and first-class comfort. It's the smart pick for meetings, fine dining, and effortless airport runs.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "$125 / hr" },
+      { label: "Chauffeur", value: "$150 / hr" },
       { label: "Seats", value: "5+" },
       { label: "Style", value: "Sedan" },
       { label: "Color", value: "Black" },
@@ -899,13 +899,13 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     dualRentalOnCard: true,
     group: "Mercedes",
     priceLine: "$599 / day",
-    chauffeurPriceLine: "$125 / hr",
+    chauffeurPriceLine: "$150 / hr",
     pricing: "daily",
     description:
       "The Mercedes-Benz S580 is a top-tier luxury sedan renowned for its blend of performance, technology, and comfort. It features a potent 4.0-liter V8 biturbo engine with mild-hybrid EQ Boost, delivering both impressive power and enhanced fuel efficiency. The S580's interior epitomizes modern opulence, with high-quality materials, advanced infotainment systems, and superior comfort features such as massaging seats and ambient lighting. Its exterior design combines sleek aesthetics with aerodynamic efficiency, embodying the sophistication and refinement expected from the iconic S-Class lineup. The Mercedes-Benz S580 is perfect for those who demand the best in automotive innovation and luxury.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "$125 / hr" },
+      { label: "Chauffeur", value: "$150 / hr" },
       { label: "Terms", value: "100 free miles/day | $4/extra mile" },
       { label: "Security deposit", value: "$500–$1000" },
       {
@@ -1762,13 +1762,13 @@ export const EXOTIC_CARS_DAILY: ExoticCar[] = [
     group: "Lamborghini",
     dualRentalOnCard: true,
     priceLine: "$950 / day",
-    chauffeurPriceLine: "$200–$250 / hr — driver included",
+    chauffeurPriceLine: "$200–$250 / hr",
     pricing: "daily",
     description:
       "Experience luxury with this Lamborghini Urus Widebody in Miami—bold widebody presence, bespoke cabin details, and the versatility of a super-SUV. Blackline coordinates your booking from inquiry through return: self-drive rental (license and insurance required) or optional chauffeur service, timed with the rest of your stay.",
     specs: [
       { label: "Self-drive", value: "License & insurance required" },
-      { label: "Chauffeur", value: "$200–$250/hr — driver included" },
+      { label: "Chauffeur", value: "$200–$250/hr" },
       { label: "Seats", value: "3" },
       { label: "Style", value: "SUV" },
       { label: "Segment", value: "Luxury" },

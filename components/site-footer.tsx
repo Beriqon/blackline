@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Mail } from "lucide-react";
+import { getI18n } from "@/lib/i18n/server";
+import { getMainNavLinks } from "@/lib/i18n/nav";
 
 function InstagramGlyph({ className }: { className?: string }) {
   return (
@@ -30,15 +32,13 @@ function TikTokGlyph({ className }: { className?: string }) {
 const socialIconLinkClass =
   "inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-gold/20 text-cream/55 transition-colors hover:border-gold/45 hover:text-gold-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold/50";
 
-const footerLinks = [
-  { href: "/services", label: "Services" },
-  { href: "/packages", label: "Packages" },
-  { href: "/experiences", label: "Experiences" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-] as const;
+export async function SiteFooter() {
+  const { t } = await getI18n();
+  const footerLinks = [
+    { href: "/services", label: t("common.services") },
+    ...getMainNavLinks(t),
+  ];
 
-export function SiteFooter() {
   return (
     <footer className="border-t border-gold/10 bg-charcoal">
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8">
@@ -51,8 +51,7 @@ export function SiteFooter() {
               Concierge
             </p>
             <p className="mt-5 max-w-sm text-sm leading-relaxed text-cream/58">
-              Miami luxury concierge — yachts, jets, exotics, villas,
-              and VIP access. One team, one call.
+              {t("footer.tagline")}
             </p>
           </div>
           <div className="flex flex-wrap gap-x-10 gap-y-4 text-sm">
@@ -70,7 +69,7 @@ export function SiteFooter() {
         <div className="mt-16 flex flex-col gap-4 border-t border-gold/10 pt-10 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs tracking-wide text-cream/42">
-              © {new Date().getFullYear()} Blackline Concierge. Miami, Florida.
+              {t("footer.copyright", { year: new Date().getFullYear() })}
             </p>
           </div>
           <div className="flex flex-row flex-wrap items-center gap-3 sm:gap-4">
@@ -78,7 +77,7 @@ export function SiteFooter() {
               href="https://www.instagram.com/blackline_concierge/"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Instagram — @blackline_concierge"
+              aria-label={t("footer.instagramAria")}
               className={socialIconLinkClass}
             >
               <InstagramGlyph className="size-[1.15rem]" />
@@ -87,14 +86,14 @@ export function SiteFooter() {
               href="https://www.tiktok.com/@blacklineconcierge"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="TikTok — @blacklineconcierge"
+              aria-label={t("footer.tiktokAria")}
               className={socialIconLinkClass}
             >
               <TikTokGlyph className="size-[1.05rem]" />
             </a>
             <a
               href="mailto:Blackline235@gmail.com"
-              aria-label="Email Blackline235@gmail.com"
+              aria-label={t("footer.emailAria")}
               className={socialIconLinkClass}
             >
               <Mail className="size-[1.15rem]" strokeWidth={1.75} aria-hidden />
@@ -105,3 +104,4 @@ export function SiteFooter() {
     </footer>
   );
 }
+

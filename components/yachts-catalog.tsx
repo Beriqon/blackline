@@ -17,6 +17,7 @@ import {
 } from "react";
 
 import { ChauffeurServiceCrosslink } from "@/components/chauffeur-service-crosslink";
+import { useLocale } from "@/components/locale-provider";
 import { ScrollRevealItem } from "@/components/scroll-reveal-item";
 import { SectionReveal } from "@/components/section-reveal";
 import { ServicePhotographyAddon } from "@/components/service-photography-addon";
@@ -29,55 +30,20 @@ import {
   type YachtFeaturedFilter,
   type YachtSortMode,
 } from "@/lib/yacht-catalog-utils";
+import { getLocalizedYachts } from "@/lib/i18n/yachts-page";
+import type { Translator } from "@/lib/i18n/translate";
 import {
   YACHT_PHOTO_ADDON_IMAGES,
-  YACHTS,
   type Yacht,
   type YachtPriceBand,
   type YachtRegion,
   type YachtSizeBand,
 } from "@/lib/yachts-data";
-import { getFleetGalleryPaths } from "@/lib/yacht-fleet-gallery";
+import { resolveYachtGalleryPaths } from "@/lib/yacht-fleet-gallery";
 import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import { cn } from "@/lib/utils";
 
 const CATALOG_PAGE_SIZE = 9;
-
-const FEATURED_OPTIONS: { id: YachtFeaturedFilter; label: string }[] = [
-  { id: "all", label: "All listings" },
-  { id: "featured", label: "Featured only" },
-];
-
-const PRICE_OPTIONS: { id: YachtPriceBand; label: string }[] = [
-  { id: "all", label: "All prices" },
-  { id: "under-4k", label: "Under $4k" },
-  { id: "3k-5k", label: "$3k — $5k" },
-  { id: "over-5k", label: "Over $5k" },
-];
-
-const REGION_OPTIONS: { id: YachtRegion | "all"; label: string }[] = [
-  { id: "all", label: "All locations" },
-  { id: "north-miami", label: "North Miami" },
-  { id: "miami", label: "Miami" },
-  { id: "fort-lauderdale", label: "Fort Lauderdale" },
-  { id: "bahamas", label: "Bahamas" },
-];
-
-const SIZE_OPTIONS: { id: YachtSizeBand; label: string }[] = [
-  { id: "all", label: "All sizes" },
-  { id: "under-50", label: "Under 50 ft" },
-  { id: "50-70", label: "50 – 70 ft" },
-  { id: "70-100", label: "70 – 100 ft" },
-  { id: "over-100", label: "Over 100 ft" },
-];
-
-const SORT_OPTIONS: { id: YachtSortMode; label: string }[] = [
-  { id: "default", label: "Default (featured first)" },
-  { id: "price-asc", label: "Price: low to high" },
-  { id: "price-desc", label: "Price: high to low" },
-  { id: "name-asc", label: "Name: A → Z" },
-  { id: "name-desc", label: "Name: Z → A" },
-];
 
 const catalogSelectClass =
   "mt-1.5 w-full min-h-10 cursor-pointer appearance-none rounded-sm border border-gold/18 bg-[#101010] bg-[length:0.875rem] bg-[right_0.65rem_center] bg-no-repeat px-2.5 py-2 pr-9 text-[0.72rem] font-medium text-cream/88 outline-none transition-[border-color] focus-visible:border-gold/40 sm:min-h-9 sm:text-[0.75rem]";
@@ -127,10 +93,12 @@ function YachtCard({
   yacht,
   onOpen,
   catalogPage,
+  t,
 }: {
   yacht: Yacht;
   onOpen: (y: Yacht) => void;
   catalogPage: number;
+  t: Translator;
 }) {
   const isSpotlight = CATALOG_SPOTLIGHT_IDS.has(yacht.id);
   const inner = (
@@ -152,7 +120,7 @@ function YachtCard({
         {isSpotlight ? (
           <div className="absolute left-3 top-3 z-[3] sm:left-4 sm:top-4">
             <span className="inline-flex items-center justify-center rounded-sm border border-gold/55 bg-[#0b0b0b]/92 px-2.5 py-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-gold shadow-[0_4px_20px_rgba(0,0,0,0.5)] backdrop-blur-sm sm:px-3 sm:py-2 sm:text-[0.65rem]">
-              Featured
+              {t("yachtsPage.featured")}
             </span>
           </div>
         ) : null}
@@ -168,7 +136,7 @@ function YachtCard({
         ) : (
           <ImagePlaceholder
             className="absolute inset-0 h-full w-full"
-            label="Photo placeholder"
+            label={t("yachtsPage.photoPlaceholder")}
           />
         )}
         <div
@@ -188,7 +156,9 @@ function YachtCard({
         </div>
       </div>
       <p className="mt-3 text-[0.7rem] font-medium uppercase tracking-[0.22em] text-cream/40">
-        {yacht.productPageHref ? "Open full listing" : "Tap for full details"}
+        {yacht.productPageHref
+          ? t("yachtsPage.openFullListing")
+          : t("yachtsPage.tapForDetails")}
       </p>
     </>
   );
@@ -201,8 +171,8 @@ function YachtCard({
         className={cn(yachtCardClass, "block")}
         aria-label={
           isSpotlight
-            ? `${yacht.name} — featured charter`
-            : `${yacht.name} — yacht charter listing`
+            ? t("yachtsPage.cardAriaFeatured", { name: yacht.name })
+            : t("yachtsPage.cardAriaListing", { name: yacht.name })
         }
       >
         {inner}
@@ -220,9 +190,11 @@ function YachtCard({
 function YachtDetailDialog({
   yacht,
   onClose,
+  t,
 }: {
   yacht: Yacht | null;
   onClose: () => void;
+  t: Translator;
 }) {
   const titleId = useId();
   const [activeIndex, setActiveIndex] = useState(0);
@@ -231,10 +203,7 @@ function YachtDetailDialog({
 
   const gallerySlides = useMemo((): readonly string[] => {
     if (!yacht) return [];
-    const paths = getFleetGalleryPaths(yacht.id);
-    if (paths.length > 0) return paths;
-    if (yacht.cardCoverSrc) return [yacht.cardCoverSrc];
-    return [];
+    return resolveYachtGalleryPaths(yacht);
   }, [yacht]);
 
   const slideCount = gallerySlides.length;
@@ -302,7 +271,7 @@ function YachtDetailDialog({
         type="button"
         className="absolute inset-0 bg-[#0b0b0b]/82 backdrop-blur-[2px]"
         onClick={onClose}
-        aria-label="Close"
+        aria-label={t("yachtsPage.close")}
       />
       <div
         role="dialog"
@@ -326,7 +295,7 @@ function YachtDetailDialog({
             type="button"
             onClick={onClose}
             className="flex h-10 w-10 shrink-0 items-center justify-center border border-gold/15 text-cream/70 transition-colors hover:border-gold/35 hover:text-gold-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold/50"
-            aria-label="Close details"
+            aria-label={t("yachtsPage.closeDetails")}
           >
             <X className="h-5 w-5" />
           </button>
@@ -348,7 +317,11 @@ function YachtDetailDialog({
                   <>
                     <Image
                       src={mainSlideSrc}
-                      alt={`${yacht.name} — photo ${safeSlideIndex + 1} of ${slideCount}`}
+                      alt={t("yachtsPage.photoOf", {
+                        name: yacht.name,
+                        current: safeSlideIndex + 1,
+                        total: slideCount,
+                      })}
                       fill
                       className="object-cover"
                       sizes="(max-width: 1024px) 100vw, 55vw"
@@ -361,7 +334,7 @@ function YachtDetailDialog({
                 ) : (
                   <ImagePlaceholder
                     className="absolute inset-0 h-full w-full"
-                    label="Photos coming soon"
+                    label={t("yachtsPage.photosComingSoon")}
                   />
                 )}
                 {slideCount > 1 ? (
@@ -373,7 +346,7 @@ function YachtDetailDialog({
                         goPrev();
                       }}
                       className="absolute left-2 top-1/2 z-[2] flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gold/20 bg-[#0b0b0b]/80 text-cream/90 backdrop-blur-sm transition-colors hover:border-gold/40"
-                      aria-label="Previous photo"
+                      aria-label={t("yachtsPage.previousPhoto")}
                     >
                       <ChevronLeft className="h-5 w-5" />
                     </button>
@@ -384,7 +357,7 @@ function YachtDetailDialog({
                         goNext();
                       }}
                       className="absolute right-2 top-1/2 z-[2] flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gold/20 bg-[#0b0b0b]/80 text-cream/90 backdrop-blur-sm transition-colors hover:border-gold/40"
-                      aria-label="Next photo"
+                      aria-label={t("yachtsPage.nextPhoto")}
                     >
                       <ChevronRight className="h-5 w-5" />
                     </button>
@@ -407,7 +380,7 @@ function YachtDetailDialog({
                           ? "border-gold/45"
                           : "border-gold/12 hover:border-gold/25",
                       )}
-                      aria-label={`Show photo ${i + 1}`}
+                      aria-label={t("yachtsPage.showPhoto", { n: i + 1 })}
                       aria-current={i === safeSlideIndex}
                     >
                       <Image
@@ -425,7 +398,7 @@ function YachtDetailDialog({
 
             <div className="flex flex-col p-5 sm:p-7 lg:max-h-[min(72vh,680px)] lg:overflow-y-auto">
               <p className="text-[0.62rem] font-semibold uppercase tracking-[0.38em] text-gold/90">
-                Charter rates
+                {t("yachtsPage.charterRates")}
               </p>
               <ul className="mt-4 space-y-0" role="list">
                 {yacht.priceTiers.map((tier) => (
@@ -453,7 +426,7 @@ function YachtDetailDialog({
               {hasPromos ? (
                 <div className="mt-6 border-t border-gold/10 pt-6">
                   <p className="text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-                    Promotions
+                    {t("yachtsPage.promotions")}
                   </p>
                   <ul className="mt-3 space-y-3" role="list">
                     {yacht.promotions!.map((p) => (
@@ -472,14 +445,17 @@ function YachtDetailDialog({
 
               {typeof yacht.capacityGuests === "number" ? (
                 <p className="mt-6 text-[0.8125rem] text-cream/55">
-                  <span className="font-medium text-cream/70">Guest capacity:</span>{" "}
-                  up to {yacht.capacityGuests} guests
+                  {t("yachtsPage.guestCapacity", {
+                    count: yacht.capacityGuests,
+                  })}
                 </p>
               ) : null}
 
               {yacht.location ? (
                 <p className="mt-4 text-[0.8125rem] leading-relaxed text-cream/52">
-                  <span className="font-medium text-cream/70">Departure:</span>{" "}
+                  <span className="font-medium text-cream/70">
+                    {t("yachtsPage.departureLabel")}
+                  </span>{" "}
                   {yacht.location}
                 </p>
               ) : null}
@@ -489,7 +465,7 @@ function YachtDetailDialog({
               </p>
 
               <p className="mt-8 text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-                Highlights
+                {t("yachtsPage.highlights")}
               </p>
               <ul className="mt-4 space-y-3" role="list">
                 {yacht.highlights.map((h) => (
@@ -509,7 +485,7 @@ function YachtDetailDialog({
               {hasInclusions ? (
                 <div className="mt-8 border-t border-gold/10 pt-6">
                   <p className="text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-                    Inclusions
+                    {t("yachtsPage.inclusions")}
                   </p>
                   <ul className="mt-4 space-y-3" role="list">
                     {yacht.inclusions!.map((line) => (
@@ -543,11 +519,10 @@ function YachtDetailDialog({
 
               <div className="mt-10 flex flex-col gap-3 border-t border-gold/10 pt-8 sm:flex-row sm:flex-wrap">
                 <Link href={CONTACT_TRIP_BUILDER_HREF} className={cn(btnPrimary, "w-full sm:w-auto")}>
-                  Request this charter
+                  {t("yachtsPage.requestCharter")}
                 </Link>
                 <p className="mt-4 text-[0.7rem] leading-relaxed text-cream/38">
-                  Seasonal availability. Final pricing, crew, and dock details are
-                  confirmed when you inquire.
+                  {t("yachtsPage.detailFootnote")}
                 </p>
               </div>
               <div className="mt-6">
@@ -565,13 +540,17 @@ function YachtDetailDialog({
         >
           <div className="flex items-center justify-between border-b border-gold/12 px-4 py-3 sm:px-6">
             <p className="text-[0.7rem] font-medium uppercase tracking-[0.22em] text-cream/55">
-              {yacht.name} · {safeSlideIndex + 1} / {slideCount}
+              {t("yachtsPage.lightboxCounter", {
+                name: yacht.name,
+                current: safeSlideIndex + 1,
+                total: slideCount,
+              })}
             </p>
             <button
               type="button"
               onClick={() => setLightboxOpen(false)}
               className="flex h-10 w-10 items-center justify-center border border-gold/15 text-cream/80 hover:border-gold/35 hover:text-gold-secondary"
-              aria-label="Close enlarged view"
+              aria-label={t("yachtsPage.closeEnlargedView")}
             >
               <X className="h-5 w-5" />
             </button>
@@ -581,7 +560,11 @@ function YachtDetailDialog({
               {mainSlideSrc ? (
                 <Image
                   src={mainSlideSrc}
-                  alt={`${yacht.name} — enlarged ${safeSlideIndex + 1} of ${slideCount}`}
+                  alt={t("yachtsPage.photoEnlarged", {
+                    name: yacht.name,
+                    current: safeSlideIndex + 1,
+                    total: slideCount,
+                  })}
                   fill
                   className="object-contain"
                   sizes="(max-width: 1024px) 100vw, min(896px, 100vw)"
@@ -594,7 +577,7 @@ function YachtDetailDialog({
                   type="button"
                   onClick={goPrev}
                   className="absolute left-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center border border-gold/25 bg-[#0b0b0b]/85 text-cream sm:left-6"
-                  aria-label="Previous photo"
+                  aria-label={t("yachtsPage.previousPhoto")}
                 >
                   <ChevronLeft className="h-6 w-6" />
                 </button>
@@ -602,7 +585,7 @@ function YachtDetailDialog({
                   type="button"
                   onClick={goNext}
                   className="absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center border border-gold/25 bg-[#0b0b0b]/85 text-cream sm:right-6"
-                  aria-label="Next photo"
+                  aria-label={t("yachtsPage.nextPhoto")}
                 >
                   <ChevronRight className="h-6 w-6" />
                 </button>
@@ -629,6 +612,7 @@ function YachtCatalogFilters({
   setSize,
   sort,
   setSort,
+  t,
 }: {
   featured: YachtFeaturedFilter;
   setFeatured: (v: YachtFeaturedFilter) => void;
@@ -640,16 +624,71 @@ function YachtCatalogFilters({
   setSize: (v: YachtSizeBand) => void;
   sort: YachtSortMode;
   setSort: (v: YachtSortMode) => void;
+  t: Translator;
 }) {
   const labelClass =
     "block text-[0.58rem] font-medium uppercase tracking-[0.26em] text-cream/40";
+
+  const featuredOptions = useMemo(
+    (): { id: YachtFeaturedFilter; label: string }[] => [
+      { id: "all", label: t("yachtsPage.filters.featured.all") },
+      { id: "featured", label: t("yachtsPage.filters.featured.featuredOnly") },
+    ],
+    [t],
+  );
+
+  const priceOptions = useMemo(
+    (): { id: YachtPriceBand; label: string }[] => [
+      { id: "all", label: t("yachtsPage.filters.price.all") },
+      { id: "under-4k", label: t("yachtsPage.filters.price.under4k") },
+      { id: "3k-5k", label: t("yachtsPage.filters.price.range3k5k") },
+      { id: "over-5k", label: t("yachtsPage.filters.price.over5k") },
+    ],
+    [t],
+  );
+
+  const regionOptions = useMemo(
+    (): { id: YachtRegion | "all"; label: string }[] => [
+      { id: "all", label: t("yachtsPage.filters.region.all") },
+      { id: "north-miami", label: t("yachtsPage.filters.region.northMiami") },
+      { id: "miami", label: t("yachtsPage.filters.region.miami") },
+      {
+        id: "fort-lauderdale",
+        label: t("yachtsPage.filters.region.fortLauderdale"),
+      },
+      { id: "bahamas", label: t("yachtsPage.filters.region.bahamas") },
+    ],
+    [t],
+  );
+
+  const sizeOptions = useMemo(
+    (): { id: YachtSizeBand; label: string }[] => [
+      { id: "all", label: t("yachtsPage.filters.size.all") },
+      { id: "under-50", label: t("yachtsPage.filters.size.under50") },
+      { id: "50-70", label: t("yachtsPage.filters.size.50to70") },
+      { id: "70-100", label: t("yachtsPage.filters.size.70to100") },
+      { id: "over-100", label: t("yachtsPage.filters.size.over100") },
+    ],
+    [t],
+  );
+
+  const sortOptions = useMemo(
+    (): { id: YachtSortMode; label: string }[] => [
+      { id: "default", label: t("yachtsPage.sort.default") },
+      { id: "price-asc", label: t("yachtsPage.sort.priceAsc") },
+      { id: "price-desc", label: t("yachtsPage.sort.priceDesc") },
+      { id: "name-asc", label: t("yachtsPage.sort.nameAsc") },
+      { id: "name-desc", label: t("yachtsPage.sort.nameDesc") },
+    ],
+    [t],
+  );
 
   return (
     <div className="rounded-sm border border-gold/12 bg-[#0c0c0c] px-3 py-3 sm:px-4 sm:py-3.5">
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:gap-x-3 sm:gap-y-2.5">
         <div className={filterFieldClass}>
           <label htmlFor="yacht-spotlight" className={labelClass}>
-            Spotlight
+            {t("yachtsPage.spotlight")}
           </label>
           <select
             id="yacht-spotlight"
@@ -660,7 +699,7 @@ function YachtCatalogFilters({
             className={catalogSelectClass}
             style={catalogSelectStyle}
           >
-            {FEATURED_OPTIONS.map((o) => (
+            {featuredOptions.map((o) => (
               <option key={o.id} value={o.id}>
                 {o.label}
               </option>
@@ -670,7 +709,7 @@ function YachtCatalogFilters({
 
         <div className={filterFieldClass}>
           <label htmlFor="yacht-price" className={labelClass}>
-            Price
+            {t("yachtsPage.price")}
           </label>
           <select
             id="yacht-price"
@@ -679,7 +718,7 @@ function YachtCatalogFilters({
             className={catalogSelectClass}
             style={catalogSelectStyle}
           >
-            {PRICE_OPTIONS.map((o) => (
+            {priceOptions.map((o) => (
               <option key={o.id} value={o.id}>
                 {o.label}
               </option>
@@ -689,7 +728,7 @@ function YachtCatalogFilters({
 
         <div className={filterFieldClass}>
           <label htmlFor="yacht-location" className={labelClass}>
-            Location
+            {t("yachtsPage.location")}
           </label>
           <select
             id="yacht-location"
@@ -700,7 +739,7 @@ function YachtCatalogFilters({
             className={catalogSelectClass}
             style={catalogSelectStyle}
           >
-            {REGION_OPTIONS.map((o) => (
+            {regionOptions.map((o) => (
               <option key={o.id} value={o.id}>
                 {o.label}
               </option>
@@ -710,7 +749,7 @@ function YachtCatalogFilters({
 
         <div className={filterFieldClass}>
           <label htmlFor="yacht-size" className={labelClass}>
-            Size
+            {t("yachtsPage.size")}
           </label>
           <select
             id="yacht-size"
@@ -719,7 +758,7 @@ function YachtCatalogFilters({
             className={catalogSelectClass}
             style={catalogSelectStyle}
           >
-            {SIZE_OPTIONS.map((o) => (
+            {sizeOptions.map((o) => (
               <option key={o.id} value={o.id}>
                 {o.label}
               </option>
@@ -729,7 +768,7 @@ function YachtCatalogFilters({
 
         <div className={filterFieldClass}>
           <label htmlFor="yacht-sort" className={labelClass}>
-            Sort by
+            {t("yachtsPage.sortBy")}
           </label>
           <select
             id="yacht-sort"
@@ -738,7 +777,7 @@ function YachtCatalogFilters({
             className={catalogSelectClass}
             style={catalogSelectStyle}
           >
-            {SORT_OPTIONS.map((o) => (
+            {sortOptions.map((o) => (
               <option key={o.id} value={o.id}>
                 {o.label}
               </option>
@@ -756,12 +795,14 @@ function CatalogPagination({
   total,
   pageSize,
   onPage,
+  t,
 }: {
   page: number;
   pageCount: number;
   total: number;
   pageSize: number;
   onPage: (p: number) => void;
+  t: Translator;
 }) {
   if (pageCount <= 1) return null;
 
@@ -771,15 +812,10 @@ function CatalogPagination({
   return (
     <nav
       className="mt-12 flex flex-col items-center gap-5 border-t border-gold/10 pt-10 sm:flex-row sm:justify-between"
-      aria-label="Yacht catalog pages"
+      aria-label={t("yachtsPage.paginationAria")}
     >
       <p className="text-[0.72rem] tabular-nums text-cream/42">
-        Showing{" "}
-        <span className="text-cream/55">
-          {from}–{to}
-        </span>{" "}
-        of{" "}
-        <span className="text-cream/55">{total}</span>
+        {t("yachtsPage.showingRange", { from, to, total })}
       </p>
       <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
         <button
@@ -793,7 +829,7 @@ function CatalogPagination({
               : "border-gold/18 text-cream/65 hover:border-gold/32 hover:text-cream",
           )}
         >
-          Prev
+          {t("yachtsPage.prev")}
         </button>
         {Array.from({ length: pageCount }, (_, i) => i + 1).map((p) => (
           <button
@@ -822,7 +858,7 @@ function CatalogPagination({
               : "border-gold/18 text-cream/65 hover:border-gold/32 hover:text-cream",
           )}
         >
-          Next
+          {t("yachtsPage.next")}
         </button>
       </div>
     </nav>
@@ -833,6 +869,7 @@ function YachtsCatalogInner() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { locale, t } = useLocale();
 
   const [selected, setSelected] = useState<Yacht | null>(null);
   const [featured, setFeatured] = useState<YachtFeaturedFilter>("all");
@@ -841,6 +878,16 @@ function YachtsCatalogInner() {
   const [size, setSize] = useState<YachtSizeBand>("all");
   const [sort, setSort] = useState<YachtSortMode>("default");
 
+  const localizedYachts = useMemo(
+    () => getLocalizedYachts(locale, t),
+    [locale, t],
+  );
+
+  const selectedLocalized = useMemo(() => {
+    if (!selected) return null;
+    return localizedYachts.find((y) => y.id === selected.id) ?? selected;
+  }, [selected, localizedYachts]);
+
   const requestedPage = useMemo(() => {
     const raw = searchParams.get("page");
     const n = parseInt(raw || "1", 10);
@@ -848,14 +895,14 @@ function YachtsCatalogInner() {
   }, [searchParams]);
 
   const filteredSorted = useMemo(() => {
-    const f = filterYachtCatalog(YACHTS, {
+    const f = filterYachtCatalog(localizedYachts, {
       featured,
       price,
       region,
       size,
     });
     return sortYachtCatalog(f, sort);
-  }, [featured, price, region, size, sort]);
+  }, [localizedYachts, featured, price, region, size, sort]);
 
   const { slice, pageCount, safePage, total } = useMemo(
     () => paginateSlice(filteredSorted, requestedPage, CATALOG_PAGE_SIZE),
@@ -912,16 +959,14 @@ function YachtsCatalogInner() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(198,164,108,0.06),transparent)]" />
         <div className="relative mx-auto max-w-7xl px-4 pb-8 pt-16 sm:px-6 sm:pb-10 sm:pt-20 lg:px-10">
           <p className="text-[0.65rem] font-medium uppercase tracking-[0.48em] text-gold/90">
-            Fleet
+            {t("yachtsPage.eyebrow")}
           </p>
           <div className="mt-4 h-px w-14 bg-gold/30" aria-hidden />
           <h1 className="mt-6 max-w-3xl font-serif text-[2.1rem] leading-[1.12] tracking-tight text-cream sm:text-4xl md:text-[2.65rem]">
-            Yacht charters
+            {t("yachtsPage.headline")}
           </h1>
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-cream/58 sm:text-[0.9375rem]">
-            Miami motor yacht day charters — each listing below includes
-            duration-based rates, inclusions, and departure notes so you can plan
-            with confidence before you inquire.
+            {t("yachtsPage.heroBody")}
           </p>
           <ChauffeurServiceCrosslink variant="yacht" />
         </div>
@@ -932,7 +977,7 @@ function YachtsCatalogInner() {
       <SectionReveal className="border-b border-gold/10 bg-charcoal pb-14 pt-6 sm:pb-16 sm:pt-8 lg:pb-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
           <p className="mb-3 pl-[calc(1px+0.75rem)] text-[0.62rem] font-semibold uppercase tracking-[0.32em] text-gold/80 sm:mb-3.5 sm:pl-[calc(1px+1rem)]">
-            Find your yacht
+            {t("yachtsPage.findYourYacht")}
           </p>
           <YachtCatalogFilters
             featured={featured}
@@ -945,12 +990,12 @@ function YachtsCatalogInner() {
             setSize={setSize}
             sort={sort}
             setSort={setSort}
+            t={t}
           />
 
           {total === 0 ? (
             <p className="mt-12 text-center text-sm text-cream/48">
-              No yachts match these filters — try a wider price range, another
-              location, or switch back to{" "}
+              {t("yachtsPage.emptyFiltersBefore")}{" "}
               <button
                 type="button"
                 onClick={() => {
@@ -961,9 +1006,9 @@ function YachtsCatalogInner() {
                 }}
                 className="text-gold-secondary/90 underline decoration-gold/25 underline-offset-4 hover:decoration-gold/50"
               >
-                all listings
+                {t("yachtsPage.allListings")}
               </button>
-              .
+              {t("yachtsPage.emptyFiltersAfter")}
             </p>
           ) : (
             <>
@@ -974,6 +1019,7 @@ function YachtsCatalogInner() {
                       yacht={yacht}
                       onOpen={setSelected}
                       catalogPage={safePage}
+                      t={t}
                     />
                   </ScrollRevealItem>
                 ))}
@@ -984,13 +1030,13 @@ function YachtsCatalogInner() {
                 total={total}
                 pageSize={CATALOG_PAGE_SIZE}
                 onPage={goToCatalogPage}
+                t={t}
               />
             </>
           )}
 
           <p className="mt-12 border-t border-gold/10 pt-8 text-[0.75rem] leading-relaxed text-cream/42">
-            New hulls and seasonal rotations are added here as they come online
-            — ask if you do not see the length or builder you want.
+            {t("yachtsPage.catalogFooterNote")}
           </p>
         </div>
       </SectionReveal>
@@ -1001,15 +1047,16 @@ function YachtsCatalogInner() {
 
       <ServicePhotographyAddon
         layout="static"
-        headline="Add photo or video shoots"
-        description="Book a photo shoot, a video shoot, or both for your charter — deck, tender, and golden-hour coverage in stills and/or motion, coordinated with your itinerary."
+        headline={t("yachtsPage.photography.headline")}
+        description={t("yachtsPage.photography.description")}
         images={YACHT_PHOTO_ADDON_IMAGES}
       />
 
       <YachtDetailDialog
-        key={selected?.id ?? "no-yacht"}
-        yacht={selected}
+        key={selectedLocalized?.id ?? "no-yacht"}
+        yacht={selectedLocalized}
         onClose={() => setSelected(null)}
+        t={t}
       />
     </>
   );

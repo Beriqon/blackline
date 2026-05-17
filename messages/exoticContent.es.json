@@ -1,0 +1,157 @@
+{
+  "exoticContent": {
+    "chevrolet-corvette-c8-stingray": {
+      "description": "Alquilar el Corvette C8 azul en Miami le ofrece el rendimiento de un superdeportivo moderno con un diseño esbelto que no pasa desapercibido. La silhouette baja, las líneas afiladas y el azul intenso contrastan con el skyline de la bahía y captan miradas en Ocean Drive, Brickell y en cada valet. Al volante, la dirección precisa y la respuesta inmediata del acelerador hacen que los trayectos por los causeways y el tráfico urbano se sientan sin esfuerzo. El motor central ofrece tracción y equilibrio seguros; los frenos potentes mantienen todo bajo control. En el interior, asientos deportivos de apoyo, materiales premium y tecnología intuitiva para música, navegación y llamadas. Elija el C8 azul cuando busque una experiencia auténticamente miamense: estética de superdeportivo, confort diario y el sonido de un American V8 resonando frente al waterfront."
+    },
+    "chevrolet-corvette-z06": {
+      "description": "Un Corvette Z06 en Miami entrega emoción de circuito con usabilidad cotidiana. Su carrocería esculpida, la anchura de vías y el sonido de escape distintivo atraen miradas en Ocean Drive y más allá. Dirección precisa y respuesta inmediata del acelerador hacen especiales los sprints por los causeways. En el interior encontrará asientos deportivos cómodos, mandos intuitivos y conectividad moderna para recorrer con calma. El chasis equilibrado y los frenos contundentes inspiran confianza en calles urbanas o rutas costeras. Elija el Z06 si busca carácter de supercoche americano con dinámica afilada y estilo llamativo. Viva la energía de Miami en una máquina pensada para presencia y rendimiento: el Z06 combina velocidad, diseño y practicidad para días y noches memorables en la Magic City."
+    },
+    "chevrolet-corvette-c8": {
+      "description": "El Chevrolet C8 Corvette es un deportivo estadounidense revolucionario, con disposición mid-engine que redefine sus capacidades. Impulsado por un V8 de 6.2 L, ofrece aceleración impresionante y una mezcla de potencia y precisión en el manejo. El C8 presenta un diseño agresivo y aerodinámico con líneas marcadas y un interior moderno centrado en el conductor, con tecnología avanzada y materiales premium. Conocido por un rendimiento de supercoche a un precio más accesible, el C8 Corvette combina innovación, estilo y dinámica de conducción electrizante."
+    },
+    "ferrari-812-superfast": {
+      "description": "Alquilar un Ferrari 812 Superfast es el prestigio del V12 delantero en su máxima expresión. La silhouette de capó largo y la presencia imponente proyectan autoridad desde el forecourt del hotel hasta eventos privados. La entrega de potencia es fluida y abundante, creando velocidad sin esfuerzo. El interior ofrece confort gran turismo, asientos de apoyo y ergonomía cuidada en trayectos largos. Dirección y frenos siguen siendo precisos, dando al 812 una sensación segura y compuesta en ciudad y autopista. Elija el 812 Superfast cuando busque la presencia clásica de Ferrari con refinamiento moderno: convierte cualquier itinerario en un momento memorable en Miami."
+    },
+    "ferrari-f8-spider-red": {
+      "description": "El Ferrari F8 Spider aporta aplomo de motor central y libertad descapotable a Miami. Su techo rígido retráctil conserva la sobriedad de coupé y permite en segundos el cielo abierto. La aceleración es instantánea y la dirección comunica de forma natural. El habitáculo combina fibra de carbono con materiales selectos, en clave GT moderna. El rodar sigue compuesto para ciudad mientras el chasis está listo para rutas exigentes. Elija el F8 Spider para un Ferrari de última generación con glamour open-top: ideal para itinerarios de lujo, puentes panorámicos y llegadas al atardecer."
+    },
+    "ferrari-portofino": {
+      "description": "Un Ferrari Portofino en Miami aporta elegancia gran turismo. Con techo rígido retráctil pasa en segundos de la calma de coupé al aire libre. El largo capó, las líneas limpias y el sonido refinado del escape anuncian un rendimiento sofisticado. El interior mezcla artesanía italiana con confort cotidiano: asientos de apoyo, mandos intuitivos y un rodar complaciente hacen fáciles los trayectos largos. La potencia llega con suavidad, perfecta para pasear por el boulevard o incorporarse a la autopista con brío. Elija el Portofino por carácter Ferrari refinado y uso versátil: encaja en almuerzos frente al mar, aperturas de galería y trayectos nocturnos por la bahía."
+    },
+    "ferrari-f8-spider-gray": {
+      "description": "El Ferrari F8 Spider es un descapotable deportivo de alto rendimiento que combina diseño impactante con ingeniería excepcional. Ofrece manejo quirúrgico, aceleración explosiva y una banda sonora V8 memorable, especialmente con el techo bajado. Es el equilibrio entre confort y emoción derivada de la competición."
+    },
+    "tesla-cybertruck": {
+      "description": "Le presentamos el Tesla Cybertruck Cyberbeast: ideal si busca aventura, tecnología de vanguardia y una presencia inconfundible en la carretera. Esta pick-up eléctrica futurista redefine capacidad off-road y exploración urbana; es una opción de alquiler muy buscada por quienes buscan adrenalina y también por conductores sensibles al medio ambiente. El exterior angular de acero inoxidable capta miradas y ofrece un robusto sistema AWD dual o tri-motor; el Cyberbeast presume aceleración impresionante, de 0 a 60 mph en tan solo 2.9 segundos. El par excepcional facilita remolque y carga, con capacidad máxima de remolque de más de 14,000 lb."
+    },
+    "bmw-m5": {
+      "description": "El BMW M5 2026 es una berlina deportiva de altas prestaciones que combina potencia de supercoche con practicidad diaria. Por primera vez en la historia del M5 incorpora tren motriz híbrido enchufable: un V8 biturbo de 4.4 L acoplado a un motor eléctrico para unos 717 hp y 738 lb-ft de par."
+    },
+    "cadillac-escalade": {
+      "description": "La Cadillac Escalade es un SUV de lujo de gran tamaño que encarna opulencia y sofisticación con espacio y versatilidad excepcionales. Como versión extendida de la Escalade estándar, ofrece mayor batalla y más habitáculo, sobre todo en el área de carga. Equipa un V8 potente y dinámica de marcha avanzada para un viaje suave y seguro. En el interior, materiales de primera, tecnología puntera y confort premium: asientos de piel, infoentretenimiento de última generación y asistencias al conductor avanzadas. Ideal para quien exige una experiencia de conducción de lujo con amplitud para pasajeros y equipaje."
+    },
+    "mclaren-gt": {
+      "description": "El McLaren GT es un gran turismo refinado que fusiona alto rendimiento con uso cotidiano. Cuenta con un V8 biturbo de 4.0 L que entrega aceleración y velocidad máxima sobresalientes. Su chasis de fibra de carbono ligera aporta agilidad y manejo dinámico de supercoche, pensado también para el confort en distancia. El exterior es aerodinámico y esbelto; el interior amplio y elegante con materiales de primer nivel y tecnología avanzada. Con buen espacio de carga y un rodar sofisticado, el McLaren GT equilibra la emoción de un deportivo con la practicidad de un tourer de larga distancia: la elección versátil para quien valora estilo y sustancia por igual."
+    },
+    "porsche-911-gt3-blue": {
+      "description": "El Porsche 911 GT3 2024 resume el compromiso de la marca con la ingeniería de precisión y el rendimiento listo para circuito, con una entrada más alcanzable a la gama GT del 911. El motor deriva del 911 Speedster, con experiencia de altas revoluciones y régimen hasta 9,000 rpm. La transmisión PDK ofrece cambios ultrarrápidos; la caja manual satisface a los puristas que buscan máximo vínculo con la máquina."
+    },
+    "porsche-911-gt3-green": {
+      "description": "El Porsche 911 GT3 2024 resume el compromiso de la marca con la ingeniería de precisión y el rendimiento listo para circuito, con una entrada más alcanzable a la gama GT del 911. El motor deriva del 911 Speedster, con experiencia de altas revoluciones y régimen hasta 9,000 rpm. La transmisión PDK ofrece cambios ultrarrápidos; la caja manual satisface a los puristas que buscan máximo vínculo con la máquina."
+    },
+    "porsche-911-turbo-s": {
+      "description": "El Porsche 911 Turbo S (992) es el buque insignia de altas prestaciones de la gama 911, representando la generación 992 del deportivo icónico de motor trasero. Combina el bóxer biturbo (ahora con tecnología T-Hybrid y doble turbo eléctrico), la caja PDK de ocho relaciones y tracción total AWD para unos 700+ hp, aceleración arrolladora (aprox. 0–100 km/h en ~2.5 s o menos) y velocidad máxima cercana a 200 mph (322 km/h), entre los 911 de producción más rápidos jamás construidos. El Turbo S mezcla rendimiento de supercoche con uso diario, manejo refinado y equipamiento de lujo en la silhouette clásica del 911."
+    },
+    "maybach-gls-600-unit-a": {
+      "description": "Un Maybach GLS 600 ofrece confort tipo lounge en formato SUV. El rodar es sereno, el habitáculo silencioso y los materiales, de primera clase. Las plazas traseras priorizan el descanso con espacio generoso y equipamiento refinado. A pesar del tamaño, el GLS 600 se mueve con fluidez en tráfico urbano y se desliza en autopista. El exterior comunica status discreto, ideal para llegadas elegantes a hoteles y restaurantes. Elija el Maybach GLS por confort sin concesiones y practicidad VIP: eleva cada traslado a experiencia cinco estrellas."
+    },
+    "mercedes-g63-light-blue": {
+      "description": "El Mercedes-AMG G63 combina diseño icónico con lujo contemporáneo. La posición elevada, el interior artesanal y su presencia distintiva hacen que cada llegada importe. La potencia es inmediata y el rodar seguro por las calles de Miami. En el interior, materiales premium, asientos de apoyo y conectividad sólida para el día a día. El carácter audaz del G63 fotografía bien y destaca en cualquier escenario. Alquílelo cuando busque espacio, lujo y estilo inconfundible: perfecto para grupos, eventos y llegadas dignas de foto."
+    },
+    "mercedes-s580-unit-a": {
+      "description": "Un S580 está pensado para el confort de nivel ejecutivo. El habitáculo es susurrante, con amplia batalla en las piernas y un rodar que alisa el pavimento urbano. La iluminación ambiental y el audio premium realzan los cruceros nocturnos y los traslados de negocios. La tecnología facilita una conducción relajada, y la zona trasera ofrece espacio para descansar o trabajar entre paradas. El exterior comunica lujo sobrio para cualquier venue. Elija el S580 por elegancia discreta y confort de primera: la opción inteligente para reuniones, cenas y transfers fluidos al aeropuerto."
+    },
+    "mercedes-g63-green": {
+      "description": "El Mercedes-Benz G 63 AMG es un SUV de lujo decididamente deportivo que fusiona diseño icónico, tecnología puntera y potencia cruda. Su silhouette cuadrada rinde homenaje a las raíces militares del G-Wagen y simboliza opulencia y capacidad todoterreno. Bajo el capó, un V8 biturbo de 4.0 L entrega unos 577 hp y 627 lb-ft de par, acoplado a una automática de 9 velocidades y el sistema 4MATIC. Gracias a AMG, el G 63 puede ir de 0 a 60 mph en solo 3.9 s, un logro notable para un SUV de este tamaño."
+    },
+    "mercedes-s580-unit-b": {
+      "description": "El Mercedes-Benz S580 es una berlina de lujo máximo que combina rendimiento, tecnología y confort. Equipa un V8 biturbo de 4.0 L con asistencia eléctrica EQ Boost, que aporta potencia y mayor eficiencia. El interior encarna la opulencia moderna: materiales de primer nivel, infotainment avanzado y confort superior —asientos con masaje, iluminación ambiental—. El exterior une estética fluida y eficiencia aerodinámica, con la sofisticación esperada del S-Class. El S580 es para quien exige lo mejor en innovación y lujo automovilístico."
+    },
+    "maybach-s680": {
+      "description": "El Mercedes-Maybach S680 es la cúspide del lujo automovilístico, uniendo la elegancia atemporal del S-Class con los refinamientos exclusivos Maybach. Impulsado por un V8 biturbo de 4.0 L con EQ Boost, conjuga potencia y eficiencia para una experiencia de marcha suprema. El interior es un santuario de opulencia: las mejores pieles, maderas exquisitas y tecnología de vanguardia. Los pasajeros traseros disfrutan de asientos ejecutivos de categoría superior. El Maybach S680 condensa confort absoluto y artesanía para quien busca la máxima distinción."
+    },
+    "maybach-gls-600-unit-b": {
+      "description": "El Mercedes-Maybach GLS 600 es la expresión máxima del lujo en formato SUV. Combina la presencia dominante de un todoterreno de alta gama con la elegancia y artesanía Maybach. Bajo el capó, un V8 biturbo de 4.0 L con EQ Boost ofrece rendimiento fluido y sin esfuerzo. El interior está meticulosamente acabado: pieles generosas, maderas y tecnología de última generación. Los ocupantes traseros reciben tratamiento de primera —asientos reclinables, climatización avanzada y entretenimiento—. El GLS 600 Maybach es la elección para quien exige excelencia absoluta en tecnología, prestaciones y refinamiento."
+    },
+    "rolls-royce-ghost-black-badge": {
+      "description": "Un Ghost Black Badge fusiona el refinamiento Rolls-Royce con un carácter más deportivo. Los acentos oscuros y la presencia firme marcan el tono. En marcha, la berlina se siente compuesta y rápidamente veloz. El habitáculo es minimalista, silencioso y ricamente acabado; las plazas traseras son generosas y la experiencia sirve tanto al trabajo como al ocio. Elija el Ghost Black Badge para una declaración segura y contemporánea: ideal para agendas ejecutivas y noches especiales por la Magic City."
+    },
+    "rolls-royce-cullinan-white-unit-a": {
+      "description": "El Cullinan blanco enfatiza pureza y elegancia. Fotografía de día o de noche y encaja en bodas, eventos de lujo e itinerarios premium. El rodar sigue siendo tranquilo y el interior, impecablemente acabado. Las plazas traseras ofrecen espacio y comodidades selectas. Es un vehículo de declaración que mantiene la calma en cualquier situación. Alquile el Cullinan blanco para unir lujo icónico a una estética limpia y moderna: convierte cualquier plan en Miami en experiencia de primera clase."
+    },
+    "rolls-royce-cullinan-black-unit-a": {
+      "description": "Un Rolls-Royce Cullinan eleva su estancia en Miami con una serenidad incomparable. El acabado negro proyecta autoridad mientras el habitáculo aísla el ruido de la carretera para un viaje calmado. Las puertas abren de par en par a un interior artesanal. Los pasajeros disfrutan de asientos plúmbeos, audio premium y un deslizamiento sin esfuerzo por la ciudad. Cada detalle transmite artesanía y cuidado. Elija el Cullinan negro para transporte VIP y entradas memorables: sofisticación y confort supremo."
+    },
+    "rolls-royce-cullinan-white-unit-b": {
+      "description": "El Rolls-Royce Cullinan es el primer SUV de lujo de la marca, cúspide de opulencia y prestaciones. Nombrado como el diamante más grande jamás hallado, impone presencia con líneas audaces y elegantes. Equipa un V12 de 6.75 L que ofrece un rodar sedoso y sin esfuerzo. El interior luce los mejores materiales: piel cosida a mano, chapa de madera y opciones bespoke. Tecnología avanzada, amplio espacio y sistemas de seguridad de primer nivel aseguran una combinación insuperable de lujo, confort y versatilidad para la ciudad y más allá."
+    },
+    "rolls-royce-cullinan-black-unit-b": {
+      "description": "El Rolls-Royce Cullinan es el primer SUV de lujo de la marca, cúspide de opulencia y prestaciones. Nombrado como el diamante más grande jamás hallado, impone presencia con líneas audaces y elegantes. Equipa un V12 de 6.75 L que ofrece un rodar sedoso y sin esfuerzo. El interior luce los mejores materiales: piel cosida a mano, chapa de madera y opciones bespoke. Tecnología avanzada, amplio espacio y sistemas de seguridad de primer nivel aseguran una combinación insuperable de lujo, confort y versatilidad para la ciudad y más allá."
+    },
+    "rolls-royce-cullinan-black-unit-c": {
+      "description": "Un Rolls-Royce Cullinan eleva su estancia en Miami con serenidad incomparable. El acabado negro proyecta autoridad y el habitáculo aísla el ruido para un viaje calmado. El Cullinan es el primer SUV de lujo de la marca —el nombre rinde homenaje al mayor diamante descubierto— con presencia dominante y líneas elegantes. Bajo el capó, un V12 potente ofrece un rodar sedoso y sin esfuerzo. Las puertas desvelan un interior artesanal con materiales premium: piel cosida a mano, chapa fina y detalles bespoke. Tecnología avanzada, plazas amplias y sistemas de seguridad refinados se combinan con confort plúmbeo y audio de alta gama para una mezcla insuperable de lujo y versatilidad, ya sea atravesando la ciudad o planeando una escapada más larga. Elija este Cullinan negro para transporte VIP y entradas memorables: sofisticación y confort supremo."
+    },
+    "lamborghini-urus-s-gray": {
+      "description": "El Urus S refina diseño y puesta a punto de chasis para una sensación más afilada y compuesta. El gris realza la carrocería nítida y fotografía limpio en cualquier luz. Las actualizaciones de dirección y suspensión soportan un manejo ágil pero confortable. En el interior, materiales premium, pantallas claras y capacidad para cinco ocupantes. Encaja en planes de lujo que exigen rendimiento y espacio. Elija el Urus S por una interpretación pulida de la fórmula super-SUV: utilidad diaria con estilo Lamborghini inconfundible."
+    },
+    "lamborghini-urus-black": {
+      "description": "En negro, el Urus adopta un look stealth y premium. El acabado oscuro enfatiza su musculatura y detalles fotogénicos. El rendimiento sigue siendo inmediato, con modos de conducción que van del crucero relajado al manejo enérgico. La cabina combina asientos de apoyo con mandos intuitivos y espacio amplio para acompañantes. Sirve para la jornada de día a noche sin concesiones. Elija el Urus negro por presencia poderosa y practicidad integral: un match seguro para venues exclusivos en toda la ciudad."
+    },
+    "lamborghini-urus-m-black": {
+      "description": "El Lamborghini Urus fusiona estética exótica con versatilidad cotidiana. En azul, sus líneas afiladas y el techo coupé destacan frente al skyline de Miami. La aceleración es enérgica, la dirección rápida y el frenado contundente. En el interior, cinco plazas con materiales de gama alta y tecnología moderna. Altura libre y maletero facilitan el uso diario sin renunciar al drama de supercoche. Elija el Urus azul por imágenes impactantes y lujo flexible: ideal para la playa, distrito comercial y eventos nocturnos."
+    },
+    "lamborghini-urus-s-white": {
+      "description": "El Lamborghini Urus S es la síntesis de lujo y rendimiento: dinámica de deportivo con la solidez de un SUV. Como uno de los modelos más potentes de Lamborghini, combina tecnología de vanguardia, artesanía italiana y placer de conducción visceral. En su corazón late un V8 biturbo de 4.0 L con unos asombrosos 657 hp."
+    },
+    "lamborghini-urus-se-black": {
+      "description": "El Lamborghini Urus SE 2025 marca una evolución clave en la gama: el primer super SUV híbrido enchufable de la marca. Une electrificación con el rendimiento y diseño Lamborghini legendarios para una experiencia electrizante. Combina un V8 biturbo de 4.0 L con un motor eléctrico de 189 hp integrado en la transmisión automática de 8 relaciones. El conjunto híbrido ofrece unos 789 hp combinados y 701 lb-ft de par."
+    },
+    "lamborghini-urus-s-lightblue": {
+      "description": "El Lamborghini Urus S en acabado Blu Cepheus une el rendimiento y el lujo legendarios de la marca con un color que lo convierte en protagonista absoluto. Blu Cepheus es un azul impactante que acentúa el diseño audaz del Urus y suma una capa extra de exclusividad y sofisticación. Bajo ese exterior cautivador, el Urus S mantiene un rendimiento sin rival con su V8 biturbo de 4.0 L."
+    },
+    "lamborghini-huracan-evo-spyder-white": {
+      "description": "Este Huracán Evo Spyder blanco realza las superficies esculpidas y un look limpio y moderno. El acabado claro fotografía de maravilla a la luz del día o bajo las luces de la ciudad. Conducir a cielo abierto potencia la experiencia V10 mientras el chasis sigue ágil y preciso. En el interior, materiales premium y asientos de apoyo para recorrer los distritos de Miami con comodidad. Elija el Evo Spyder blanco por estética elegante y rendimiento vívido: entradas memorables e imágenes impactantes en cada parada."
+    },
+    "lamborghini-huracan-evo-spyder-yellow": {
+      "description": "Combine la dinámica más afilada del Evo con el teatro del techo abierto. El Huracán Evo Spyder convierte el telón de fondo de Miami en escena móvil, con toldo de acción rápida y sonido de motor envolvente. Perfeccionamiento aerodinámico y frenos contundentes ofrecen un rendimiento emocionante y domado. La cabina ofrece asientos de apoyo, acabados selectos y mandos directos. Con el techo arriba, calma de coupé; abajo, cielo y brisa marina. Elija el Evo Spyder para máximo espectáculo con uso cotidiano: cruceros frente al mar, sesiones de foto y noches especiales."
+    },
+    "lamborghini-huracan-evo-blue": {
+      "description": "El Huracán Evo lleva la fórmula del Huracán a aerodinámica y chasis más afilados. Luce agresivo y enfocado, captando miradas en entradas de hotel y filas de valet. La respuesta de dirección y acelerador es inmediata, cada conducción se siente precisa. En el interior, un layout centrado en el conductor con materiales premium y pantallas digitales claras. La suspensión equilibra control y confort, estable en calles miamenses y lista para carreteras dinámicas. Alquile el Huracán Evo si busca superdeportivo moderno y pulido: pensado para huéspedes que valoran rendimiento, diseño y una llegada segura."
+    },
+    "lamborghini-huracan-spyder-red": {
+      "description": "Alquile el Huracán Spyder para unir libertad a cielo abierto con rendimiento de supercoche. El techo de acción rápida convierte el skyline de Miami y la brisa marina en parte de la experiencia. La nota del V10 se intensifica con el toldo bajado, con sonido y sensación a partes iguales. El manejo es preciso, con dirección rápida y frenos seguros para ciudad o causeways panorámicos. En el interior, acabados premium, tecnología moderna y asientos de apoyo para el crucero descapotado. Para quien busca vistas inmersivas y estilo inconfundible, el Huracán Spyder cumple: la elección ideal para fotos a la hora dorada y rutas costeras inolvidables."
+    },
+    "lamborghini-huracan-white": {
+      "description": "Un Lamborghini Huracán transforma cualquier itinerario en Miami. El perfil bajo en cuña, los ángulos dramáticos y la banda sonora V10 crean espectáculo al instante. Cambios ultrarrápidos y dirección comunicativa mantienen el coche vivo y envolvente. La cabina está centrada en el conductor con materiales premium, asientos de apoyo e infotainment claro. El rodar sigue compuesto sobre pavimento urbano mientras el chasis permanece alerta para la conducción enérgica. Es tan pieza de escenario como instrumento de precisión. Elija el Huracán para entradas memorables y sensación pura de superdeportivo: ideal para cenas de lujo, llegadas a hotel y cruceros fotogénicos frente al agua."
+    },
+    "lamborghini-evo-spyder-grey": {
+      "description": "El Lamborghini Huracán Evo Spyder RWD es un superdeportivo descapotable electrizante que combina la emoción de tracción trasera con la experiencia visceral del aire libre. Impulsado por un V10 atmosférico de 5.2 L, entrega rendimiento sobrecogedor y manejo afilado. El diseño destaca líneas agresivas, aerodinámica depurada y señales de identidad Lamborghini. El interior conjuga materiales de alta gama y tecnología puntera para confort y conectividad. Con el soft top retráctil, la experiencia es totalmente inmersiva para disfrutar el sonido y la sensación del V10 en plenitud."
+    },
+    "lamborghini-temerario": {
+      "description": "Dé el salto a la siguiente generación de rendimiento con el Lamborghini Temerario, el revolucionario superdeportivo híbrido que releva al icónico Huracán. Pensado para adrenalina pura e innovación de vanguardia, el Temerario fusiona el diseño legendario de Lamborghini con potencia electrificada para una experiencia inolvidable. Bajo el capó, un V8 biturbo de 4.0 L con tres motores eléctricos produce más de 900 hp. Este sistema híbrido avanzado dispara el coche de 0–60 mph en unos 2.7 segundos y supera las 210 mph de velocidad máxima, con aceleración explosiva y manejo quirúrgico. El motor alcanza un régimen de hasta 10,000 RPM, con una sensación sonora única en el segmento híbrido. Con tracción total AWD, vectorización de par y una transmisión de doble embrague ultrarrápida, el Temerario ofrece control excepcional tanto en ciudad como en rectas abiertas."
+    },
+    "ferrari-purosangue-suv": {
+      "description": "Viva el lujo con este Ferrari Purosangue en Miami: la expresión Ferrari de cuatro puertas y tracción integral, con el ADN de rendimiento y diseño de la marca. Perfecto para una estadía inolvidable, combina amenidades de clase mundial y una presentación impecable. Blackline coordina su alquiler de punta a punta —entrega, horarios y ruta opcional— para que cada detalle cumpla sus expectativas."
+    },
+    "lamborghini-urus-red": {
+      "description": "Viva el lujo con este Lamborghini Urus en rojo intenso, disponible en Miami. Perfecto para una estadía inolvidable, une la presencia del super-SUV con amenidades de clase mundial y una presentación impecable. Blackline coordina su alquiler de punta a punta —entrega, horarios y ruta opcional— para que cada detalle cumpla sus expectativas."
+    },
+    "lamborghini-urus-widebody": {
+      "description": "Viva el lujo con este Lamborghini Urus Widebody en Miami: presencia de carrocería ensanchada, detalles de cabina bespoke y la versatilidad de un super-SUV. Blackline coordina su reserva de la consulta hasta la devolución: alquiler self-drive (licencia y seguro requeridos) o servicio opcional de chófer, coordinado con el resto de su estadía.",
+      "highlights": [
+        "Carrocería wide body exterior",
+        "Asientos deportivos de piel negra y amarilla con costuras hexagonales",
+        "Volante forrado en piel amarilla con detalle de bandera italiana",
+        "Pantalla de entretenimiento trasera con logo Lamborghini",
+        "Consola de modos de conducción (Strada, Sport, Corsa y más)",
+        "Cuadro de instrumentos digital"
+      ]
+    },
+    "lamborghini-huracan-evo-spyder-orange": {
+      "description": "Viva el lujo con este Lamborghini Huracán Evo Spyder en Miami: drama del V10 a cielo abierto, líneas afiladas y presencia inconfundible en naranja. Perfecto para una estadía inolvidable, combina amenidades de clase mundial y presentación impecable. Blackline coordina su alquiler de punta a punta —entrega, horarios y ruta opcional— para que cada detalle cumpla sus expectativas."
+    },
+    "lamborghini-huracan-evo-spyder-stage-2": {
+      "description": "Viva el lujo con este Lamborghini Huracán Evo Spyder Stage 2 en Miami: presencia preparada, carácter V10 descapotable y detalles enfocados al rendimiento. Perfecto para una estadía inolvidable, combina amenidades de clase mundial y presentación impecable. Blackline coordina su alquiler de punta a punta —entrega, horarios y ruta opcional— para que cada detalle cumpla sus expectativas."
+    },
+    "mercedes-maybach-gls-600-unit-c": {
+      "description": "Viva el lujo con este Mercedes-Maybach GLS 600 en Miami: la unidad C ofrece habitabilidad trasera de primera, presencia refinada en carretera y acabados de cabina impecables. Perfecto para una estadía inolvidable, combina amenidades de clase mundial y atención al detalle. Blackline coordina su reserva de punta a punta —alquiler self-drive (licencia y seguro requeridos) o servicio opcional de chófer— al ritmo de su itinerario.",
+      "highlights": [
+        "Platinas de umbral interiores con logo Maybach",
+        "Asientos capitán traseros individuales con controles táctiles integrados",
+        "Piel negra acolchada en todo el habitáculo",
+        "Cortinillas traseras de privacidad",
+        "Paneles tablet / de control duales en las plazas traseras"
+      ]
+    }
+  }
+}

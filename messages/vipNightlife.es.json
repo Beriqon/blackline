@@ -1,0 +1,189 @@
+{
+  "vipNightlifePage": {
+    "metaDescription": "Mesas VIP y entrada preferente en los mejores clubes nocturnos y beach clubs de Miami — coordinado por Blackline Miami.",
+    "heroHeadline": "Clubes de lujo en Miami primero — beach clubs cuando quieres energía de día a noche",
+    "heroLead": "Olvida las dudas en la cuerda. Coordinamos mesas VIP y entrada preferente en los mejores clubes de la ciudad; si quieres terraza junto a la piscina o fiestas frente al mar, también organizamos acceso a beach clubs — con precios claros y seguimiento real.",
+    "bookWhatsapp": "Reservar por WhatsApp",
+    "viewVenues": "Ver locales",
+    "venuesEyebrow": "Locales VIP",
+    "venuesHeadline": "Clubes nocturnos primero — beach clubs cuando quieres día y noche",
+    "venuesBody": "Nos enfocamos en clubes de lujo en Miami para mesas y entrada; si buscas terraza o arena bajo los pies, organizamos acceso a beach clubs con la misma coordinación. El cartel cambia por temporada — pregúntanos qué está más fuerte para tus fechas.",
+    "venuesNote": "Abre cualquier local para una descripción breve y fotos extra — placeholders por ahora; podemos cambiar por tu fotografía con licencia cuando quieras.",
+    "whyEyebrow": "Por qué reservar con nosotros",
+    "whyHeadline": "Planes sólidos. Relaciones reales.",
+    "intro": {
+      "0": "Los clubes de Miami siempre son buena idea — si entras con la configuración correcta. ¿Cansado de filas largas, covers sorpresa y promotores que desaparecen en la puerta? Aquí, nuestra palabra es ley. Llevamos años construyendo relaciones con los clubes y salas nocturnas más demandados de la ciudad.",
+      "1": "Si quieres secciones prime, servicio de botellas de verdad y una noche a tu ritmo — no al del público — este es tu servicio."
+    },
+    "transportEyebrow": "Muévete en grupo",
+    "transportTitle": "Transporte",
+    "transportLead": "Todo tu grupo en un solo vehículo — dinos cuántos sois y el itinerario y organizamos el ride adecuado.",
+    "transportMinimum": "Mínimo 4 horas",
+    "transportOption": {
+      "0": "Sprinter vans",
+      "1": "Party buses",
+      "2": "Limusinas",
+      "3": "SUVs de lujo"
+    },
+    "requestEyebrow": "Solicitud de mesa VIP",
+    "requestHeadline": "Cuéntanos qué planeas",
+    "requestBody": "No usamos formulario web — escríbenos o llama y respondemos lo antes posible. Incluye los detalles de abajo para avanzar más rápido.",
+    "requestHint": {
+      "0": "Nombre del local y noche preferida (fecha)",
+      "1": "Tamaño del grupo y ocasión",
+      "2": "Rango de presupuesto o preferencia de botellas / mesa",
+      "3": "Hora de llegada o planes de after"
+    },
+    "callPhone": "Llamar {phone}",
+    "subtitleVipAccess": "Acceso VIP",
+    "subtitleBeachClub": "Beach club",
+    "subtitleVipDining": "Cena VIP",
+    "card": {
+      "showLess": "Ver menos",
+      "morePhotos": "Más fotos e info ({count} más)",
+      "readFull": "Leer descripción completa",
+      "additionalPhotos": "Fotos adicionales",
+      "galleryAria": "Galería de fotos de {name}"
+    },
+    "venues": {
+      "livMiami": {
+        "imageAlt": "Club nocturno LIV Miami",
+        "about": "Club icónico del Fontainebleau con energía de gran sala, headliners rotativos y servicio de botellas en varios niveles. Te llevamos más allá de la cuerda con mínimos de mesa y horarios claros para tu grupo.",
+        "gallery1": "LIV Miami — foto adicional 1",
+        "gallery2": "LIV Miami — foto adicional 2"
+      },
+      "cocoMiami": {
+        "imageAlt": "Club nocturno COCO Miami",
+        "about": "Energía del centro de Miami — botellas, noches con DJ y público arreglado. Dinos el tamaño del grupo y qué tan cerca quieres estar de la acción; cerramos mesas y entrada con mínimos claros.",
+        "gallery1": "COCO Miami — foto adicional 1",
+        "gallery2": "COCO Miami — foto adicional 2"
+      },
+      "e11even": {
+        "imageAlt": "E11EVEN Miami",
+        "about": "Local 24/7 en el centro con varias salas y formatos — dinos a qué hora vas y alineamos entrada, secciones y pickup con tu transporte.",
+        "gallery1": "E11EVEN — foto adicional 1",
+        "gallery2": "E11EVEN — foto adicional 2"
+      },
+      "mrJones": {
+        "imageAlt": "Mr. Jones Miami",
+        "about": "Club en Miami Beach con energía íntima y nocturna, fuerte programación de botellas y público que viste para la ocasión. Cuéntanos el vibe — mesa lounge vs. pista — y reservamos el espacio correcto.",
+        "gallery1": "Mr. Jones — foto adicional 1",
+        "gallery2": "Mr. Jones — foto adicional 2"
+      },
+      "clubSpace": {
+        "imageAlt": "Club Space Miami",
+        "about": "Institución legendaria after-hours — sets maratonianos y público global. Dinos hasta qué hora vas; coordinamos entrada, reentrada y pickup al amanecer.",
+        "gallery1": "Club Space — foto adicional 1",
+        "gallery2": "Club Space — foto adicional 2"
+      },
+      "vendome": {
+        "imageAlt": "Vendome",
+        "about": "Club en Miami Beach con mesas orientadas a botellas y sala arreglada. Pregunta por ubicación de mesa — visibilidad vs. intimidad — y ajustamos la sección a tu grupo.",
+        "gallery1": "Vendome — foto adicional 1",
+        "gallery2": "Vendome — foto adicional 2"
+      },
+      "m2Miami": {
+        "imageAlt": "M2 Miami",
+        "about": "Club en South Beach con gran sala, noches con DJ y botellas en toda la pista. Dinos el tamaño del grupo y qué tan cerca del escenario — cerramos mesas y entrada con mínimos claros.",
+        "gallery1": "M2 Miami — foto adicional 1",
+        "gallery2": "M2 Miami — foto adicional 2"
+      },
+      "nikkiBeach": {
+        "imageAlt": "Nikki Beach Miami",
+        "about": "Beach club de día a noche en la arena — terrazas, daybeds y tardes con DJ que pasan a botellas al atardecer. Ideal si quieres aire de mar antes de los clubes nocturnos.",
+        "gallery1": "Nikki Beach Miami — foto adicional 1",
+        "gallery2": "Nikki Beach Miami — foto adicional 2"
+      },
+      "joiaBeach": {
+        "imageAlt": "Joia Beach Miami",
+        "about": "Energía de day club frente al mar — cabañas, DJs y botellas con los pies en la arena. Organizamos entrada y mínimos de mesa para que la tarde encaje con tu grupo.",
+        "gallery1": "Joia Beach — foto adicional 1",
+        "gallery2": "Joia Beach — foto adicional 2"
+      },
+      "mona": {
+        "imageAlt": "Mona Miami",
+        "about": "Sala íntima y nocturna con público arreglado y mesas de botellas. Dinos tamaño del grupo y horario preferido; coordinamos entrada y mesa con mínimos claros.",
+        "gallery1": "Mona — foto adicional 1",
+        "gallery2": "Mona — foto adicional 2"
+      },
+      "madclub": {
+        "imageAlt": "Madclub Miami",
+        "about": "Club de alta energía con secciones VIP y servicio de botellas. Alineamos hora de llegada, mesa y transporte para que la noche fluya con tu grupo.",
+        "gallery1": "Madclub — foto adicional 1",
+        "gallery2": "Madclub — foto adicional 2"
+      },
+      "palmTreeClub": {
+        "imageAlt": "Palm Tree Club Miami",
+        "about": "Energía de day club con cabañas, mesas y botellas — ideal para celebraciones de día que pasan al atardecer. Coordinamos entrada y mesa según tu itinerario.",
+        "gallery1": "Palm Tree Club — foto adicional 1",
+        "gallery2": "Palm Tree Club — foto adicional 2"
+      },
+      "strawberryMoon": {
+        "imageAlt": "Strawberry Moon Miami",
+        "about": "Vibe de terraza día-noche con cabañas y mesa — perfecto para cumpleaños y días en grupo. Confirmamos entrada, mínimos y la mejor ubicación para tu número de personas.",
+        "gallery1": "Strawberry Moon — foto adicional 1",
+        "gallery2": "Strawberry Moon — foto adicional 2"
+      },
+      "boobyTrap": {
+        "imageAlt": "Booby Trap on the River",
+        "about": "Spot nocturno frente al río con opciones VIP y botellas. Comparte tamaño del grupo y horario; coordinamos entrada y mesa.",
+        "gallery1": "Booby Trap on the River — foto adicional 1",
+        "gallery2": "Booby Trap on the River — foto adicional 2"
+      },
+      "tootsies": {
+        "imageAlt": "Tootsies Miami",
+        "about": "Destino clásico de madrugada — asientos VIP y botellas bajo consulta. Coordinamos entrada, asientos y horarios con tu ruta nocturna y pickups.",
+        "gallery1": "Tootsies — foto adicional 1",
+        "gallery2": "Tootsies — foto adicional 2"
+      },
+      "sexyFish": {
+        "imageAlt": "Sexy Fish Miami",
+        "about": "Sala de cena muy demandada con fuerte cruce a vida nocturna — perfecta para anclar la noche antes de los clubes. Coordinamos reservas y mesas VIP según tu horario.",
+        "gallery1": "Sexy Fish — foto adicional 1",
+        "gallery2": "Sexy Fish — foto adicional 2"
+      },
+      "komodo": {
+        "imageAlt": "Komodo Miami",
+        "about": "Clásico de Brickell para flujo cena-noche — buen ambiente, horas pico y mesas VIP. Alineamos reserva con transporte y planes después de cenar.",
+        "gallery1": "Komodo — foto adicional 1",
+        "gallery2": "Komodo — foto adicional 2"
+      },
+      "gekko": {
+        "imageAlt": "Gekko Miami",
+        "about": "Cena upscale con atmósfera lista para la noche. Dinos fecha, personas y horario; coordinamos reservas y mesas VIP cuando haya disponibilidad.",
+        "gallery1": "Gekko — foto adicional 1",
+        "gallery2": "Gekko — foto adicional 2"
+      },
+      "bagatelle": {
+        "imageAlt": "Bagatelle Miami",
+        "about": "Local de alta energía donde la cena puede convertirse en fiesta — mesas VIP y entrada bajo consulta. Confirmamos mínimos y la mejor ubicación para tu grupo.",
+        "gallery1": "Bagatelle — foto adicional 1",
+        "gallery2": "Bagatelle — foto adicional 2"
+      },
+      "kikiOnTheRiver": {
+        "imageAlt": "Kiki on the River Miami",
+        "about": "Favorito frente al río con ambiente animado y orientado a la noche. Reservas VIP bajo consulta — coordinamos horario, entrada y pickups.",
+        "gallery1": "Kiki on the River — foto adicional 1",
+        "gallery2": "Kiki on the River — foto adicional 2"
+      },
+      "habibi": {
+        "imageAlt": "Habibi Miami",
+        "about": "Local nocturno con asientos VIP y botellas. Indica tamaño del grupo y tipo de sección; coordinamos entrada y mesa bajo consulta.",
+        "gallery1": "Habibi — foto adicional 1",
+        "gallery2": "Habibi — foto adicional 2"
+      },
+      "seaSpice": {
+        "imageAlt": "Sea Spice Miami",
+        "about": "Cena frente al agua que encaja con un itinerario nocturno completo — ideal para planes de tarde-noche temprana. Coordinamos reservas y horarios con tus traslados.",
+        "gallery1": "Sea Spice — foto adicional 1",
+        "gallery2": "Sea Spice — foto adicional 2"
+      },
+      "casaNeos": {
+        "imageAlt": "Casa Neos Miami",
+        "about": "Local nocturno con mesas VIP y público arreglado. Confirmamos entrada, mínimos y ubicación de mesa bajo consulta según personas y horario.",
+        "gallery1": "Casa Neos — foto adicional 1",
+        "gallery2": "Casa Neos — foto adicional 2"
+      }
+    }
+  }
+}

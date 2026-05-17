@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { VillaFleetProduct } from "@/components/villa-fleet-product";
+import { localizeVilla } from "@/lib/i18n/villas-page";
+import { getI18n } from "@/lib/i18n/server";
 import { getVillaBySlug, VILLAS } from "@/lib/villas-data";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -13,14 +15,19 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const { t, locale } = await getI18n();
   const villa = getVillaBySlug(slug);
-  if (!villa) return { title: "Villa stay" };
+  if (!villa) {
+    return { title: t("villasPage.productMetaFallback") };
+  }
+  const localized = localizeVilla(villa, locale, t);
+  const description =
+    localized.description.length > 155
+      ? `${localized.description.slice(0, 152)}…`
+      : localized.description;
   return {
-    title: `${villa.name} — Villa stay`,
-    description:
-      villa.description.length > 155
-        ? `${villa.description.slice(0, 152)}…`
-        : villa.description,
+    title: t("villasPage.productMetaTitle", { name: villa.name }),
+    description,
   };
 }
 

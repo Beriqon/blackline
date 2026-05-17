@@ -1,7 +1,11 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
 import { ClientMomentsCarousel } from "@/components/client-moments-carousel";
+import { HomeServicesShowcase } from "@/components/home-services-showcase";
+import { useTranslations } from "@/components/locale-provider";
 import { SectionReveal } from "@/components/section-reveal";
 import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import { cn } from "@/lib/utils";
@@ -19,312 +23,55 @@ const btnGhost =
 const btnOutlineStrong =
   "inline-flex min-h-12 items-center justify-center border-2 border-gold/50 bg-transparent px-8 py-3.5 text-center text-xs font-semibold uppercase tracking-[0.2em] text-gold transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold hover:bg-gold/10 hover:text-gold-secondary hover:shadow-[0_0_40px_rgba(198,164,108,0.14)] active:translate-y-0";
 
-const linkSubtle =
-  "text-sm font-medium tracking-wide text-gold-secondary underline-offset-8 transition-all duration-300 ease-out hover:text-gold hover:underline hover:drop-shadow-[0_0_14px_rgba(198,164,108,0.35)]";
-
-type ServiceItem = {
-  title: string;
-  description: string;
-  href: string;
-  image: string;
-  imageAlt: string;
-  collageImages?: { src: string; alt: string }[];
-  /** Small highlight label on the card (e.g. social proof). */
-  badge?: string;
-};
-
-const services: ServiceItem[] = [
-  {
-    title: "Chauffeur services",
-    badge: "Most booked",
-    description:
-      "Mercedes-Maybach vans, executive SUVs, and VIP sprinters — professional drivers for airports, nights out, and multi-stop Miami days.",
-    href: "/services/chauffeur-services",
-    image: "/exoticcar/chauffeur/royalblue/ROYAL.jpg",
-    imageAlt: "Mercedes-Maybach chauffeur van in royal blue finish",
-    collageImages: [
-      {
-        src: "/exoticcar/chauffeur/royalblue/ROYAL.jpg",
-        alt: "Maybach van — Royal Blue",
-      },
-      {
-        src: "/exoticcar/chauffeur/tiffanyblue/5STAR.jpg",
-        alt: "Maybach van — Tiffany Blue",
-      },
-      {
-        src: "/sitephotos/chauffeurhome.png",
-        alt: "Blackline chauffeur services overview",
-      },
-      {
-        src: "/exoticcar/chauffeur/royalblue/ROYAL-2.jpg",
-        alt: "Maybach van — Royal Blue alternate angle",
-      },
-    ],
-  },
-  {
-    title: "Exotic Car Rentals",
-    description:
-      "Curated self-drive exotics and supercars — delivered and ready for Miami streets.",
-    href: "/services/exotic-cars",
-    image: "/exoticcar/lamborghini/lamborghiniurusmblack/lamborghiniurusmblack1.png",
-    imageAlt: "Black exotic supercar parked at night under city lights",
-    collageImages: [
-      {
-        src: "/exoticcar/lamborghini/lamborghiniurusmblack/lamborghiniurusmblack1.png",
-        alt: "Lamborghini Urus M-Black",
-      },
-      {
-        src: "/exoticcar/rollsroyce/rrcullinanblack-a/rrcullinanblack-a-1.webp",
-        alt: "Rolls-Royce Cullinan Black Unit A",
-      },
-      {
-        src: "/exoticcar/lamborghini/evospyderstage2/evospyderstage2-1.png",
-        alt: "Lamborghini Huracan Evo Spyder Stage 2",
-      },
-      {
-        src: "/exoticcar/mercedes/g63lightblue/g63lightblue1.webp",
-        alt: "Mercedes-AMG G63 Light blue",
-      },
-    ],
-  },
-  {
-    title: "Yacht Charters",
-    description:
-      "Day charters and celebrations on the water — crewed, stocked, and routed.",
-    href: "/services/yachts",
-    image: "/yachts/166trinity/166trinity.jpg",
-    imageAlt: "Superyacht charter at night with underwater hull lighting",
-  },
-  {
-    title: "Villas & Stays",
-    description:
-      "Private residences and estates matched to your group, dates, and standards.",
-    href: "/services/villas",
-    image: "/stays/soleil/soleil1.jpg",
-    imageAlt: "Modern luxury villa with illuminated pool at night",
-  },
-  {
-    title: "Private Jets",
-    description:
-      "Charter coordination for personal and corporate travel — terminals, timing, crew.",
-    href: "/services/private-jets",
-    image: "/privatejets/challenger605/challenger605.webp",
-    imageAlt: "Luxury private jet cabin with leather seating",
-  },
-  {
-    title: "On the water",
-    description:
-      "Jet skis, jetcars, parasailing, kayaks, and fishing — coordinated in one thread, timed with your stay.",
-    href: "/services/jetskis-jetcars",
-    image: "/sitephotos/jetski3.jpg",
-    imageAlt: "Jet ski on turquoise water at speed",
-  },
-  {
-    title: "ATV",
-    badge: "Details soon",
-    description:
-      "Off-road ATV rides are available to book and ride now—message us to reserve and pair with your Miami itinerary. Full write-up, pricing, and route info on this site are still on the way.",
-    href: "/services/atv",
-    image: "/atv/atv1.webp",
-    imageAlt: "ATV off-road ride",
-  },
-  {
-    title: "VIP Nightlife",
-    description:
-      "Table reservations and priority access at Miami’s most sought-after venues.",
-    href: "/services/vip-nightlife",
-    image: "/vipvenues/cocomiami2.webp",
-    imageAlt: "Dimly lit premium bar with bottles and neon accent lighting",
-  },
-  {
-    title: "Photo & video shoots",
-    description:
-      "Book a photo shoot, a video shoot, or both — our camera crew on yachts, villas, nights out, and more. Edited stills and motion on your timeline.",
-    href: "/services/photographer",
-    image: "/photography/Schermafbeelding 2026-04-15 165659.png",
-    imageAlt: "Professional camera and lens in moody lighting",
-  },
-  {
-    title: "Security guards",
-    description:
-      "Licensed armed and unarmed bodyguards — hourly coverage with a four-hour minimum, coordinated with your itinerary.",
-    href: "/services/security-guards",
-    image: "/sitephotos/securityguard2.jpg",
-    imageAlt: "Velvet rope and evening venue entrance with soft lighting",
-  },
-];
-
-function ServiceEditorialCard({
-  s,
-  variant,
-}: {
-  s: ServiceItem;
-  variant: "feature" | "compact";
-}) {
-  const isFeature = variant === "feature";
-  return (
-    <Link
-      href={s.href}
-      className={cn(
-        "service-card-tilt group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold/50",
-        isFeature && "flex h-full min-h-0 flex-col"
-      )}
-    >
-      <div
-        className={cn(
-          "service-card-media relative overflow-hidden border border-gold/12 bg-[#0b0b0b] transition-[border-color,box-shadow,transform] duration-500 ease-out group-hover:border-gold/28 group-hover:shadow-[0_0_0_1px_rgba(198,164,108,0.08)]",
-          isFeature
-            ? "min-h-[min(70vw,300px)] flex-1 lg:min-h-[min(380px,38vh)]"
-            : "aspect-[16/10] sm:aspect-[2/1] lg:aspect-[16/10]"
-        )}
-      >
-        {s.collageImages?.length ? (
-          <div className="grid h-full w-full grid-cols-2 grid-rows-2">
-            {s.collageImages.slice(0, 4).map((img) => (
-              <div key={img.src} className="relative overflow-hidden">
-                <Image
-                  src={img.src}
-                  alt=""
-                  fill
-                  sizes={
-                    isFeature
-                      ? "(max-width: 1024px) 50vw, 29vw"
-                      : "(max-width: 1024px) 50vw, 21vw"
-                  }
-                  className="object-cover blur-[1.5px] brightness-[0.62] saturate-[0.88]"
-                  aria-hidden
-                />
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  fill
-                  sizes={
-                    isFeature
-                      ? "(max-width: 1024px) 50vw, 29vw"
-                      : "(max-width: 1024px) 50vw, 21vw"
-                  }
-                  className="service-card-image object-contain brightness-[0.96] contrast-[1.04] saturate-[0.9] transition duration-[750ms] ease-out group-hover:scale-[1.03] group-hover:brightness-[1.02] group-hover:contrast-[1.06]"
-                />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <Image
-            src={s.image}
-            alt={s.imageAlt}
-            fill
-            sizes={
-              isFeature
-                ? "(max-width: 1024px) 100vw, 58vw"
-                : "(max-width: 1024px) 100vw, 42vw"
-            }
-            className="service-card-image object-cover brightness-[0.9] contrast-[1.08] saturate-[0.92] transition duration-[750ms] ease-out group-hover:scale-[1.05] group-hover:brightness-[1.06] group-hover:contrast-[1.1]"
-          />
-        )}
-        <div
-          className="service-card-glow pointer-events-none absolute inset-0"
-          aria-hidden
-        />
-        {s.badge ? (
-          <span
-            className="pointer-events-none absolute left-3 top-3 z-[2] inline-flex max-w-[calc(100%-1.5rem)] border border-gold/40 bg-[#0b0b0b]/80 px-2.5 py-1 text-[0.58rem] font-semibold uppercase leading-tight tracking-[0.18em] text-gold/95 shadow-sm backdrop-blur-sm sm:left-4 sm:top-4 sm:px-3 sm:text-[0.6rem] sm:tracking-[0.2em]"
-          >
-            {s.badge}
-          </span>
-        ) : null}
-      </div>
-      <div
-        className={cn(
-          "border-t border-gold/10",
-          isFeature ? "mt-4 pt-4 lg:mt-5 lg:pt-5" : "mt-3 pt-3 lg:mt-4 lg:pt-4"
-        )}
-      >
-        <h3
-          className={cn(
-            "font-serif tracking-tight text-cream",
-            isFeature
-              ? "text-lg leading-snug sm:text-xl md:text-[1.4rem]"
-              : "text-base leading-snug sm:text-lg"
-          )}
-        >
-          {s.title}
-        </h3>
-        <p
-          className={cn(
-            "font-normal leading-relaxed text-cream/58",
-            isFeature
-              ? "mt-2 max-w-2xl text-[0.8125rem] sm:text-sm"
-              : "mt-1.5 text-[0.8125rem] sm:text-sm"
-          )}
-        >
-          {s.description}
-        </p>
-      </div>
-    </Link>
-  );
-}
-
-const featuredExperienceItems = [
-  "Chauffeur & Maybach vans",
-  "Airport pickup",
-  "Luxury villa stay",
-  "Exotic car",
-  "Yacht day",
-  "VIP nightlife",
-] as const;
-
-const socialProofQuotes = [
-  {
-    quote:
-      "One team on text — wheels, water, and the right table at midnight. No chaos, no chasing vendors.",
-    attribution: "Private client · New York",
-  },
-  {
-    quote:
-      "We don’t piece Miami together ourselves anymore. They run the playbook end to end.",
-    attribution: "Repeat guest · London",
-  },
-] as const;
-
-const heroStats = [
-  { value: "500+", label: "Experiences arranged" },
-  { value: "24/7", label: "Concierge access" },
-  { value: "Top 1%", label: "Miami vendor network" },
-] as const;
-
-const realtimeProofItems = [
-  "Priority reservations",
-  "Preferred partner rates",
-  "Last-minute solutions",
-  "End-to-end itinerary planning",
-  "Single point of contact",
-  "Discreet concierge coordination",
-  "White-glove arrivals and departures",
-  "Vetted luxury partner network",
-  "24/7 on-call concierge access",
-  "Cars, water, air, and nightlife synchronized",
-] as const;
-
-const beforeAfterItems = [
-  {
-    title: "Without Blackline",
-    points: [
-      "Multiple vendors and delayed confirmations",
-      "No single itinerary or point of contact",
-      "Time lost coordinating transport and nightlife",
-    ],
-  },
-  {
-    title: "With Blackline",
-    points: [
-      "One concierge manages every moving part",
-      "A single itinerary synced to your schedule",
-      "Priority access for cars, yachts, stays, and tables",
-    ],
-  },
-] as const;
-
 export default function HomePage() {
+  const t = useTranslations();
+
+  const featuredExperienceItems = [
+    t("home.featured1"),
+    t("home.featured2"),
+    t("home.featured3"),
+    t("home.featured4"),
+    t("home.featured5"),
+    t("home.featured6"),
+  ];
+
+  const socialProofQuotes = [
+    { quote: t("home.quote1"), attribution: t("home.quote1Attr") },
+    { quote: t("home.quote2"), attribution: t("home.quote2Attr") },
+  ];
+
+  const heroStats = [
+    { value: t("home.statExperiencesValue"), label: t("home.statExperiences") },
+    { value: t("home.statAccessValue"), label: t("home.statAccess") },
+    { value: t("home.statNetworkValue"), label: t("home.statNetwork") },
+  ];
+
+  const realtimeProofItems = [
+    t("home.proofPriority"),
+    t("home.proofRates"),
+    t("home.proofLastMinute"),
+    t("home.proofItinerary"),
+    t("home.proofContact"),
+    t("home.proofDiscreet"),
+    t("home.proofArrivals"),
+    t("home.proofNetwork"),
+    t("home.proofOnCall"),
+    t("home.proofSync"),
+  ];
+
+  const beforeAfterItems = [
+    {
+      title: t("home.withoutTitle"),
+      points: [t("home.without1"), t("home.without2"), t("home.without3")],
+      highlight: false,
+    },
+    {
+      title: t("home.withTitle"),
+      points: [t("home.with1"), t("home.with2"), t("home.with3")],
+      highlight: true,
+    },
+  ];
+
   return (
     <>
       <section className="relative min-h-[min(82vh,880px)] overflow-hidden border-b border-gold/10 bg-background">
@@ -339,14 +86,8 @@ export default function HomePage() {
               className="object-cover object-center brightness-[0.93] contrast-[1.06] saturate-[0.92]"
             />
           </div>
-          <div
-            className="absolute inset-0 bg-[#0b0b0b]/68"
-            aria-hidden
-          />
-          <div
-            className="absolute inset-0 bg-charcoal/22"
-            aria-hidden
-          />
+          <div className="absolute inset-0 bg-[#0b0b0b]/68" aria-hidden />
+          <div className="absolute inset-0 bg-charcoal/22" aria-hidden />
           <div
             className="absolute inset-0 bg-gradient-to-r from-[#0b0b0b]/78 via-[#0b0b0b]/28 to-transparent"
             aria-hidden
@@ -356,32 +97,26 @@ export default function HomePage() {
         <div className="relative z-10 mx-auto flex min-h-[min(82vh,880px)] max-w-7xl items-center px-4 py-16 sm:px-6 sm:py-20 lg:px-10">
           <div className="w-full max-w-[min(52rem,100%)] text-left">
             <p className="text-[0.65rem] font-semibold uppercase tracking-[0.42em] text-gold">
-              Miami luxury concierge
+              {t("home.eyebrow")}
             </p>
-            <div
-              className="mt-5 h-px w-14 bg-gold/35"
-              aria-hidden
-            />
+            <div className="mt-5 h-px w-14 bg-gold/35" aria-hidden />
             <h1 className="hero-headline-in mt-6 font-serif text-[2.55rem] leading-[1.12] tracking-tight text-cream sm:text-5xl md:text-[3.25rem] lg:text-[3.85rem] xl:text-[4.1rem]">
-              One call. Every detail.
+              {t("home.headline")}
             </h1>
             <p className="mt-3 max-w-2xl text-[0.95rem] leading-[1.65] text-cream/72 sm:text-base">
-              Chauffeur-driven Maybach vans and executive ground transport,
-              plus exotic cars, villas, yachts, jet skis, private aviation, VIP
-              nightlife, and professional security — coordinated through one
-              trusted Miami concierge team.
+              {t("home.heroBody")}
             </p>
             <div className="hero-cta-in mt-9 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
               <Link href={CONTACT_TRIP_BUILDER_HREF} className={cn(btnPrimary, "sm:min-w-[220px]")}>
-                Book Your Experience
+                {t("common.bookYourExperience")}
               </Link>
               <Link href="/services" className={btnGhost}>
-                View Services
+                {t("common.viewServices")}
               </Link>
             </div>
             <div className="mt-7 border-t border-gold/18 pt-4 sm:mt-8 sm:pt-5">
               <p className="text-[0.62rem] font-semibold uppercase tracking-[0.3em] text-gold/88">
-                Trusted by luxury travelers
+                {t("home.trustedBy")}
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-[0.62rem] font-medium uppercase tracking-[0.2em] text-cream/58 sm:gap-x-4 sm:text-[0.64rem]">
                 {heroStats.map((stat, idx) => (
@@ -398,19 +133,19 @@ export default function HomePage() {
               </div>
             </div>
             <p className="mt-8 text-[0.7rem] font-medium uppercase tracking-[0.28em] text-cream/45 sm:mt-10">
-              Airport pickup{" "}
+              {t("home.tickerAirport")}{" "}
               <span className="text-gold/35" aria-hidden>
                 •
               </span>{" "}
-              Exotic fleet{" "}
+              {t("home.tickerExotic")}{" "}
               <span className="text-gold/35" aria-hidden>
                 •
               </span>{" "}
-              Yacht access{" "}
+              {t("home.tickerYacht")}{" "}
               <span className="text-gold/35" aria-hidden>
                 •
               </span>{" "}
-              VIP reservations
+              {t("home.tickerVip")}
             </p>
           </div>
         </div>
@@ -420,7 +155,7 @@ export default function HomePage() {
 
       <section
         className="border-b border-gold/10 bg-[#0a0a0a] py-3"
-        aria-label="Realtime concierge activity"
+        aria-label={t("home.realtimeAria")}
       >
         <div className="relative overflow-hidden">
           <div className="proof-strip-track flex w-max min-w-full items-center gap-2 px-3 sm:gap-3 sm:px-6">
@@ -439,105 +174,38 @@ export default function HomePage() {
 
       <div className="section-gradient-divider" aria-hidden />
 
-      <SectionReveal className="border-b border-gold/10 bg-charcoal py-16 sm:py-20 lg:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-[0.65rem] font-medium uppercase tracking-[0.5em] text-gold/90">
-              Services
-            </p>
-            <div
-              className="mx-auto mt-4 h-px w-14 bg-gold/30"
-              aria-hidden
-            />
-            <h2 className="mt-5 font-serif text-2xl tracking-tight text-cream sm:text-3xl md:text-[2.1rem]">
-              One concierge. Every detail.
-            </h2>
-            <p className="mt-4 text-sm leading-relaxed text-cream/60 sm:text-[0.9375rem]">
-              Start with chauffeur ground transport or self-drive exotics — then
-              layer your stay, days on the water, nights out, and security when
-              you want coverage — without juggling multiple vendors. Tell us
-              your dates and we build the itinerary around you.
-            </p>
-          </div>
-
-          <div className="mt-12 space-y-10 sm:mt-14 sm:space-y-12 lg:space-y-14">
-            {/* Row 1: feature left, two compact right */}
-            <div className="grid gap-6 lg:grid-cols-[minmax(0,1.12fr)_minmax(0,0.88fr)] lg:grid-rows-2 lg:gap-x-6 lg:gap-y-5">
-              <div className="min-h-0 lg:col-start-1 lg:row-span-2 lg:row-start-1">
-                <ServiceEditorialCard
-                  s={services[0]}
-                  variant="feature"
-                />
-              </div>
-              <div className="min-h-0 lg:col-start-2 lg:row-start-1">
-                <ServiceEditorialCard
-                  s={services[1]}
-                  variant="compact"
-                />
-              </div>
-              <div className="min-h-0 lg:col-start-2 lg:row-start-2">
-                <ServiceEditorialCard
-                  s={services[2]}
-                  variant="compact"
-                />
-              </div>
+      <SectionReveal
+        className="border-b border-gold/10 bg-charcoal py-16 sm:py-20 lg:py-24"
+        aria-labelledby="home-services-heading"
+      >
+        <div className="mx-auto max-w-[88rem] px-4 sm:px-6 lg:px-10">
+          <div className="flex flex-col gap-8 border-b border-gold/10 pb-10 sm:pb-12 lg:flex-row lg:items-end lg:justify-between lg:gap-12">
+            <div className="max-w-2xl">
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.48em] text-gold/90">
+                {t("home.servicesEyebrow")}
+              </p>
+              <div className="mt-4 h-px w-12 bg-gold/35" aria-hidden />
+              <h2
+                id="home-services-heading"
+                className="mt-6 font-serif text-[1.7rem] leading-tight tracking-tight text-cream sm:text-3xl md:text-[2.15rem]"
+              >
+                {t("home.servicesHeadline")}
+              </h2>
+              <p className="mt-4 max-w-xl text-sm leading-relaxed text-cream/55 sm:text-[0.9375rem]">
+                {t("home.servicesBody")}
+              </p>
             </div>
-
-            {/* Row 2: two compact left, feature right (feature first on small screens) */}
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:grid-rows-2 lg:gap-x-6 lg:gap-y-5">
-              <div className="order-2 min-h-0 lg:order-none lg:col-start-1 lg:row-start-1">
-                <ServiceEditorialCard
-                  s={services[3]}
-                  variant="compact"
-                />
-              </div>
-              <div className="order-3 min-h-0 lg:order-none lg:col-start-1 lg:row-start-2">
-                <ServiceEditorialCard
-                  s={services[4]}
-                  variant="compact"
-                />
-              </div>
-              <div className="order-1 min-h-0 lg:order-none lg:col-start-2 lg:row-span-2 lg:row-start-1">
-                <ServiceEditorialCard
-                  s={services[5]}
-                  variant="feature"
-                />
-              </div>
-            </div>
-
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-6 lg:gap-y-5">
-              <div className="min-h-0">
-                <ServiceEditorialCard
-                  s={services[6]}
-                  variant="compact"
-                />
-              </div>
-              <div className="min-h-0">
-                <ServiceEditorialCard
-                  s={services[7]}
-                  variant="compact"
-                />
-              </div>
-              <div className="min-h-0">
-                <ServiceEditorialCard
-                  s={services[8]}
-                  variant="compact"
-                />
-              </div>
-              <div className="min-h-0">
-                <ServiceEditorialCard
-                  s={services[9]}
-                  variant="compact"
-                />
-              </div>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center lg:flex-col lg:items-end">
+              <p className="text-[0.62rem] font-medium uppercase tracking-[0.24em] text-cream/40 lg:text-right">
+                {t("home.servicesCategories")}
+              </p>
+              <Link href="/services" className={btnGhost}>
+                {t("common.viewAllServices")}
+              </Link>
             </div>
           </div>
 
-          <div className="mt-12 border-t border-gold/10 pt-10 text-center sm:mt-14 sm:pt-12">
-            <Link href="/services" className={linkSubtle}>
-              View all services
-            </Link>
-          </div>
+          <HomeServicesShowcase />
         </div>
       </SectionReveal>
 
@@ -550,15 +218,12 @@ export default function HomePage() {
         <div className="relative min-h-[min(78vh,900px)] w-full overflow-hidden">
           <Image
             src="https://images.unsplash.com/photo-1669815503102-7c417112b3eb?auto=format&fit=crop&q=88&w=2800"
-            alt="Downtown Miami skyline and bay at night from the water"
+            alt={t("home.skylineAlt")}
             fill
             sizes="100vw"
             className="object-cover object-[center_42%] brightness-[0.78] contrast-[1.1] saturate-[0.92] transition-[transform,filter] duration-[1.15s] ease-out group-hover:scale-[1.04]"
           />
-          <div
-            className="absolute inset-0 bg-[#0b0b0b]/55"
-            aria-hidden
-          />
+          <div className="absolute inset-0 bg-[#0b0b0b]/55" aria-hidden />
           <div
             className="absolute inset-0 bg-gradient-to-t from-[#0b0b0b] via-[#0b0b0b]/25 to-[#0b0b0b]/20"
             aria-hidden
@@ -571,14 +236,14 @@ export default function HomePage() {
           <div className="relative z-10 mx-auto flex min-h-[min(78vh,900px)] max-w-7xl flex-col justify-end px-5 pb-14 pt-28 sm:px-8 sm:pb-16 sm:pt-32 lg:px-10 lg:pb-20 lg:pt-36">
             <div className="max-w-xl lg:max-w-2xl">
               <p className="text-[0.62rem] font-semibold uppercase tracking-[0.48em] text-gold/95">
-                Featured experience
+                {t("home.featuredEyebrow")}
               </p>
               <div className="mt-5 h-px w-12 bg-gold/40" aria-hidden />
               <h2
                 id="featured-experience-heading"
                 className="mt-7 font-serif text-[2.1rem] leading-[1.08] tracking-tight text-cream sm:text-5xl md:text-[3.1rem] lg:text-[3.45rem]"
               >
-                Miami Weekend Experience
+                {t("home.featuredTitle")}
               </h2>
               <ul className="mt-9 list-none space-y-3 border-l border-gold/25 pl-5 text-[0.78rem] font-medium uppercase tracking-[0.26em] text-cream/65 sm:pl-6 sm:text-[0.76rem]">
                 {featuredExperienceItems.map((item) => (
@@ -590,7 +255,7 @@ export default function HomePage() {
                   href={CONTACT_TRIP_BUILDER_HREF}
                   className={cn(btnPrimary, "px-9 tracking-[0.2em]")}
                 >
-                  Plan This Experience
+                  {t("common.planThisExperience")}
                 </Link>
               </div>
             </div>
@@ -607,18 +272,17 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
           <div className="max-w-2xl">
             <p className="text-[0.62rem] font-semibold uppercase tracking-[0.48em] text-gold/90">
-              Client moments
+              {t("home.clientMoments")}
             </p>
             <div className="mt-4 h-px w-12 bg-gold/35" aria-hidden />
             <h2
               id="social-proof-heading"
               className="mt-6 font-serif text-[1.65rem] leading-snug tracking-tight text-cream sm:text-3xl md:text-[2.1rem]"
             >
-              Trusted by guests visiting Miami
+              {t("home.socialHeadline")}
             </h2>
             <p className="mt-4 max-w-lg text-sm leading-relaxed text-cream/48">
-              A glimpse of the nights, stays, and miles we coordinate — so you
-              can move through the city without the noise.
+              {t("home.socialBody")}
             </p>
           </div>
         </div>
@@ -632,16 +296,16 @@ export default function HomePage() {
 
         <div className="mx-auto mt-16 max-w-7xl px-4 sm:mt-20 sm:px-6 lg:px-10">
           <div className="grid gap-10 border-t border-gold/10 pt-14 sm:grid-cols-2 sm:gap-12 sm:pt-16 lg:gap-16">
-            {socialProofQuotes.map((t) => (
+            {socialProofQuotes.map((entry) => (
               <blockquote
-                key={t.attribution}
+                key={entry.attribution}
                 className="border-l border-gold/25 pl-6 sm:pl-7"
               >
                 <p className="font-serif text-lg leading-relaxed text-cream/88 sm:text-[1.15rem]">
-                  &ldquo;{t.quote}&rdquo;
+                  &ldquo;{entry.quote}&rdquo;
                 </p>
                 <footer className="mt-5 text-[0.7rem] font-medium uppercase tracking-[0.22em] text-cream/38">
-                  {t.attribution}
+                  {entry.attribution}
                 </footer>
               </blockquote>
             ))}
@@ -655,11 +319,11 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
           <div className="max-w-2xl">
             <p className="text-[0.62rem] font-semibold uppercase tracking-[0.48em] text-gold/92">
-              Before and after
+              {t("home.beforeAfterEyebrow")}
             </p>
             <div className="mt-4 h-px w-12 bg-gold/35" aria-hidden />
             <h2 className="mt-6 font-serif text-[1.7rem] leading-tight tracking-tight text-cream sm:text-3xl md:text-[2.05rem]">
-              Same Miami. Different experience.
+              {t("home.beforeAfterHeadline")}
             </h2>
           </div>
           <div className="mt-10 grid gap-5 sm:mt-12 lg:grid-cols-2">
@@ -680,9 +344,9 @@ export default function HomePage() {
                       <span
                         className={cn(
                           "mt-2 h-1.5 w-1.5 shrink-0 rounded-full",
-                          column.title === "With Blackline"
+                          column.highlight
                             ? "bg-gold-secondary"
-                            : "bg-cream/35"
+                            : "bg-cream/35",
                         )}
                         aria-hidden
                       />
@@ -701,20 +365,16 @@ export default function HomePage() {
       <SectionReveal className="border-t border-gold/15 bg-[#070707] py-28 sm:py-36 lg:py-40">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
-            <div
-              className="mx-auto h-px w-16 bg-gold/45"
-              aria-hidden
-            />
+            <div className="mx-auto h-px w-16 bg-gold/45" aria-hidden />
             <h2 className="mt-10 font-serif text-[1.75rem] leading-[1.12] tracking-tight text-cream sm:text-4xl md:text-[2.5rem]">
-              Tell us what you want. We&apos;ll handle the rest.
+              {t("home.closingHeadline")}
             </h2>
             <p className="mx-auto mt-8 max-w-xl text-[0.95rem] leading-relaxed text-cream/75 sm:text-lg">
-              Share your dates, group size, and what you&apos;re looking for
-              — we&apos;ll build your Miami experience.
+              {t("home.closingBody")}
             </p>
             <div className="mt-12 flex flex-col items-stretch gap-3 sm:mt-14 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-4">
               <a href="tel:+17866840345" className={btnPrimaryLg}>
-                Call Now
+                {t("common.callNow")}
               </a>
               <a
                 href="https://wa.me/17866840345"
@@ -722,7 +382,7 @@ export default function HomePage() {
                 rel="noopener noreferrer"
                 className={btnOutlineStrong}
               >
-                WhatsApp
+                {t("common.whatsapp")}
               </a>
               <a
                 href="https://www.instagram.com/blackline_concierge/"
@@ -730,7 +390,7 @@ export default function HomePage() {
                 rel="noopener noreferrer"
                 className={btnOutlineStrong}
               >
-                Instagram
+                {t("common.instagram")}
               </a>
             </div>
           </div>

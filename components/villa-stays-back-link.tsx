@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
+import { useTranslations } from "@/components/locale-provider";
+
 export function VillaStaysBackLink({
   className,
   villaId,
@@ -10,6 +12,7 @@ export function VillaStaysBackLink({
   className?: string;
   villaId?: string;
 }) {
+  const t = useTranslations();
   const searchParams = useSearchParams();
   const page = searchParams.get("page");
   const baseHref =
@@ -20,7 +23,7 @@ export function VillaStaysBackLink({
 
   return (
     <Link href={href} className={className}>
-      Back to villa listings
+      {t("villasPage.backToListings")}
     </Link>
   );
 }

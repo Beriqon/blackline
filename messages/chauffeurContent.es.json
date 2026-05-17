@@ -1,0 +1,108 @@
+{
+  "chauffeurContent": {
+    "shared": {
+      "requirementChauffeurOnly": "Solo servicio con chófer — la modalidad sin chófer no está disponible.",
+      "requirementSelfDriveList": [
+        "Licencia de conducir válida (aceptamos extranjeros).",
+        "Tarjeta de débito o crédito.",
+        "Depósito de $1000."
+      ]
+    },
+    "dailyPlaceholder": {
+      "description": "Estamos añadiendo las especificaciones completas, fotografías y detalles del alquiler. Contáctenos para disponibilidad: la tarifa mostrada es orientativa y se confirma cuando solicita información."
+    },
+    "maybachVan": {
+      "description": "Van Mercedes-Maybach con chófer profesional — ideal para traslados al aeropuerto (MIA, FLL u OPF), salidas nocturnas y desplazar a un grupo pequeño con privacidad y confort. Amplio espacio interior, equipamiento trasero de confort y un rodar suave hacen que cada tramo de su itinerario en Miami sea tranquilo. Los detalles finales del vehículo y las fotografías se confirman al solicitar información."
+    },
+    "maybach-van-royal-blue": {
+      "description": "Van Mercedes-Maybach con chófer profesional — ideal para traslados al aeropuerto (MIA, FLL u OPF), salidas nocturnas y desplazar a un grupo pequeño con privacidad y confort. Amplio espacio interior, equipamiento trasero de confort y un rodar suave hacen que cada tramo de su itinerario en Miami sea tranquilo. Los detalles finales del vehículo y las fotografías se confirman al solicitar información."
+    },
+    "maybach-van-tiffany-blue": {
+      "description": "Van Mercedes-Maybach con chófer profesional — ideal para traslados al aeropuerto (MIA, FLL u OPF), salidas nocturnas y desplazar a un grupo pequeño con privacidad y confort. Amplio espacio interior, equipamiento trasero de confort y un rodar suave hacen que cada tramo de su itinerario en Miami sea tranquilo. Los detalles finales del vehículo y las fotografías se confirman al solicitar información."
+    },
+    "maybach-van-white": {
+      "description": "Van Mercedes-Maybach con chófer profesional — ideal para traslados al aeropuerto (MIA, FLL u OPF), salidas nocturnas y desplazar a un grupo pequeño con privacidad y confort. Amplio espacio interior, equipamiento trasero de confort y un rodar suave hacen que cada tramo de su itinerario en Miami sea tranquilo. Los detalles finales del vehículo y las fotografías se confirman al solicitar información."
+    },
+    "chevrolet-suburban-chauffeur": {
+      "description": "Solo servicio con chófer a $100 la hora, chófer incluido. Incluye refrigerios de cortesía en cada reserva. Este Chevrolet Suburban tamaño grande desplaza a grupos y equipaje con holgura en Miami: traslados al aeropuerto, noches fuera y desplazamientos a eventos con presencia imponente y marcha muy fluida."
+    },
+    "exclusive-sprinter-chauffeur": {
+      "description": "Solo servicio con chófer a $220 la hora, chófer incluido. Esta sprinter exclusiva está pensada para desplazar grupos VIP en Miami — espacio, discreción y acabados de alto nivel para llegadas, celebraciones e itinerarios con varias paradas, con confort de puerta a puerta."
+    },
+    "tesla-cybertruck": {
+      "description": "Presentamos el Tesla Cybertruck Cyberbeast, el vehículo definitivo si busca aventura, tecnología de vanguardia y una presencia que no pasa inadvertida en la ciudad. Esta pick-up totalmente eléctrica redefine la capacidad todoterreno y la exploración urbana, una opción de alquiler ideal para espíritus aventureros y quienes quieren alto rendimiento con enfoque sostenible. El exterior angular en acero inoxidable sorprende a cualquiera y en la versión Cyberbeast ofrece tracción total con impresionantes prestaciones — aceleración 0‑60 mph en torno a 2,9 s. Un elevado par motor facilita remolque y trabajo con cargas muy pesadas, con capacidad de remolque superior a 14 000 libras según configuración homologada."
+    },
+    "bmw-m5": {
+      "description": "El BMW M5 del 2026 es un sedán deportivo de lujo y altas prestaciones que combina potencia cercana al superdeportivo con la practicidad del día a día. Por primera vez en la historia del M5 incorpora tecnología plug‑in hybrid: motor V8 biturbo de 4,4 litros más motor eléctrico para un rendimiento combinado del orden de 717 hp y par de hasta 738 lb‑ft según especificaciones."
+    },
+    "cadillac-escalade": {
+      "description": "El Cadillac Escalade es un SUV de lujo de gran tamaño que encarna la opulencia y la distinción sin renunciar a espacio ni versatilidad. Esta variante prolongada cuenta con mayor distancia entre ejes para mayor espacio interior, sobre todo atrás — ideal cuando viaja en grupo o con mucho equipaje. Monta motor V8 potente con dinámica segura sobre el firme urbano de Miami y las autopistas. En el habitáculo destacan materiales de primera, tecnología de punta y un confort de categoría alta en recorridos cortos dentro de Miami o rutas más largas."
+    },
+    "maybach-gls-600-unit-a": {
+      "description": "Un Maybach GLS 600 ofrece bienestar tipo salón ejecutivo en formato SUV: marcha muy silenciosa, cabina apenas audible y materiales de primer nivel en cada detalle. Las plazas traseras priorizan el descanso con espacio de sobra y equipo de máximo confort. A pesar de su tamaño se mueve fluido en el tráfico de la ciudad y vuela en autopista — la presencia exterior es sobria y muy representativa, perfecta para llegadas sobrias a restaurantes de primera y grandes hoteles. Elija este Maybach GLS cuando busque confort absoluto junto al rendimiento práctico de un transporte discreto verdaderamente tipo VIP que eleva cualquier transferencia a nivel cinco estrellas."
+    },
+    "mercedes-s580-unit-a": {
+      "description": "Un alquiler del S580 se orienta al confort de nivel ejecutivo: cabina apenas ruidosa, una distancia muy generosa entre asientos traseros y amortiguación fina sobre el adoquín típico de Miami. Luz ambiental y audio premium mejoran noches tranquilas así como reuniones rápidas de negocio tras una recogida. La tecnología mantiene al conductor fresco mientras atrás encuentra sala perfecta tanto para descansar como para trabajo entre paradas — la línea exterior expresa ese lujo disimulado apto desde el lobby del hotel hasta un restaurante muy selecto."
+    },
+    "mercedes-g63-green": {
+      "description": "El Mercedes‑Benz G 63 AMG es un SUV de lujo y altas prestaciones con carácter marcadamente expresivo: silueta de caja icónica y presencia muy exclusiva. Bajo el capó lleva motor V8 biturbo de cuatro litros que entrega unos 577 hp y unos 627 lb‑ft de par según ficha oficial, enlazado a transmisión automática de nueve marchas y tracción integral 4MATIC. Firmado AMG puede acelerar de 0 a 60 mph en unos 3,9 segundos — dato destacable para un volumen tan elevado pero que marca la diferencia en cualquier llegada muy visible por Miami."
+    },
+    "mercedes-s580-unit-b": {
+      "description": "El Mercedes-Benz S580 es un sedán de máximo nivel reconocido por combinar rendimiento, tecnología y confort sin concesiones. Monta un motor V8 biturbo de 4,0 litros con tecnología mild hybrid EQ Boost que aporta potencia muy fluida y ayuda extra de eficiencia en conducción real. Su interior sintetiza el lujo moderno: materiales de primera línea, infotenimiento avanzado y confort de talla ejecutiva como asientos con función de masaje e iluminación ambiental muy matizada. El diseño exterior es elegante y aerodinámico — la sofisticación esperada del emblema Clase S. El S580 es la elección acertada para quien exige lo último en innovación y distinción automotriz."
+    },
+    "maybach-s680": {
+      "description": "El Mercedes‑Maybach S680 representa cúspide de lujo automotriz: la elegancia clásica de la Clase S refinada con detalles exclusivos Maybach. Impulso V8 biturbo cuatro litros con mild hybrid EQ Boost que entrega potencia muy fluida y marcha sumamente serena. El interior es auténtico santuario: tapicería finísima, maderas selectas y pantallas de última generación; las plazas traseras ofrecen experiencia casi de salón privado. El S680 es elección natural para quien en Miami exige máximo confort con distinción absoluta."
+    },
+    "maybach-gls-600-unit-b": {
+      "description": "El Mercedes‑Benz Maybach GLS 600 resume el lujo máximo en categoría SUV: presencia imponente con artesanía Maybach en cada rincón. Motor V8 biturbo cuatro litros con EQ Boost entrega empuje continuo y refinado. El habitáculo combina cuero de altísima calidad, molduras de madera y sistemas multimedia de vanguardia; los pasajeros traseros disfrutan asientos reclinables, climatización multizona y entretenimiento dedicado. Es la síntesis de prestigio, tecnología y rendimiento para quienes no aceptan concesiones en la movilidad de lujo."
+    },
+    "rolls-royce-ghost-black-badge": {
+      "description": "Un Ghost Black Badge combina la serenidad Rolls‑Royce con un carácter más afilado y deportivo: acentos oscuros y una postura más firme marcan el tono. En marcha el sedán se siente compacto y sorprendentemente vivo bajo el pie derecho. Interior minimalista, silencioso y de acabados sumamente refinados; las plazas traseras invitan tanto al trabajo concentrado como al ocio nocturno sin prisas. Elija Black Badge para una declaración contemporánea y segura — agenda ejecutiva o cena especial cruzando la ciudad al máximo nivel."
+    },
+    "rolls-royce-cullinan-white-unit-a": {
+      "description": "El Cullinan blanco enfatiza pureza y distinción clásica: fotografía espectacular de día o de noche y encaja en bodas, grandes eventos e itinerarios premium. El rodar sigue siendo de calma absoluta y el interior combina acabados artesanales con habitabilidad generosa en la parte posterior. Es un vehículo de impacto que nunca pierde compostura. Alquile este Cullinan blanco para unir el emblema Rolls‑Royce a una estética limpia y muy actual — cada plan en Miami pasa a experiencia de primera clase."
+    },
+    "rolls-royce-cullinan-black-unit-a": {
+      "description": "Un Rolls‑Royce Cullinan eleva cualquier estadía en Miami con una tranquilidad difícil de igualar: el acabado negro proyecta autoridad y la cabina aísla el ruido de la carretera para un trayecto pausado. Las puertas se abren ampliamente a un interior artesanal donde los ocupantes disfrutan de asientos mullidos, audio premium y un desplazamiento casi ingrávido sobre calles y causeways. Cada superficie comunica la artesanía y el cuidado de la marca. Elija este Cullinan negro para transporte VIP y llegadas impactantes que combinan distinción y un confort supremo."
+    },
+    "rolls-royce-cullinan-white-unit-b": {
+      "description": "El Rolls‑Royce Cullinan es el primer SUV de lujo de la marca — toma nombre del diamante Cullinan, el mayor jamás descubierto — y encarna la cúspide de la opulencia y el desempeño. Ofrece presencia imponente con líneas audaces y elegantes. Bajo el capó, un potente V12 de 6,75 litros proporciona una marcha sedosa y casi silenciosa. El interior deslumbra con los mejores materiales: cuero cosido a mano, chapa de madera selecta y opciones personalizadas. Tecnología avanzada, plazas amplias y sistemas de seguridad de primer nivel aseguran una combinación difícil de igualar de lujo, confort y versatilidad en la ciudad y en escapadas fuera de Miami."
+    },
+    "rolls-royce-cullinan-black-unit-b": {
+      "description": "El Rolls‑Royce Cullinan es el primer SUV de lujo de la marca — toma nombre del diamante Cullinan, el mayor jamás descubierto — y encarna la cúspide de la opulencia y el desempeño. Ofrece presencia imponente con líneas audaces y elegantes. Bajo el capó, un potente V12 de 6,75 litros proporciona una marcha sedosa y casi silenciosa. El interior deslumbra con los mejores materiales: cuero cosido a mano, chapa de madera selecta y opciones personalizadas. Tecnología avanzada, plazas amplias y sistemas de seguridad de primer nivel aseguran una combinación difícil de igualar de lujo, confort y versatilidad en la ciudad y en escapadas fuera de Miami."
+    },
+    "rolls-royce-cullinan-black-unit-c": {
+      "description": "Un alquiler de Rolls‑Royce Cullinan eleva cualquier estadía en Miami con una tranquilidad muy difícil de igualar. El acabado negro proyecta autoridad y la cabina aísla el ruido de la carretera para un trayecto pausado. El Cullinan es el primer SUV de la marca — el nombre honra el diamante Cullinan — con una presencia contundente y líneas sobrias pero impactantes. Bajo el capó, un V12 de 6,75 litros ofrece empuje sedoso de sobra. Las puertas se abren a un habitáculo artesanal con cuero cosido a mano, chapas finas de madera y ribetes personalizados. Tecnología avanzada, plazas amplias y sistemas de seguridad refinados se combinan con un confort extraordinario y un audio premium. Es una mezcla de lujo y versatilidad impecable dentro y fuera de la ciudad — la elección adecuada para transporte VIP y llegadas contundentes, con una sofisticación que no renuncia al confort máximo."
+    },
+    "lamborghini-urus-s-gray": {
+      "description": "El Urus S afina línea exterior y comportamiento del chasis para una sensación más nítida y compuesta. El acabado en gris resalta una carrocería esculpida y fotografía muy bien en distintos tipos de luz. Los ajustes de dirección y suspensión apoyan una conducción ágil sin sacrificar bienestar sobre el firme irregular. Dentro cuenta con materiales de alto nivel, pantallas intuitivas y cinco plazas. Cuando necesita tanto espacio como rendimiento dentro de planes de alta gama, el Urus S es el equilibrio indicado — una interpretación muy pulida del super‑SUV con la firma Lamborghini, presente día y noche por Miami."
+    },
+    "lamborghini-urus-black": {
+      "description": "En negro, el Urus adquiere un estilo sobrio premium: el tono oscuro enfatiza su postura musculosa y los detalles fotogénicos. El comportamiento dinámico sigue siendo inmediato gracias a modos de conducción que van del rodaje reposado hasta el ritmo enérgico. La cabina combina ergonomía intuitiva con asientos de soporte efectivo y espacio real para acompañantes. Encaja bien en agendas muy intensas de mañana a noche sin renunciar a nada. Elija el Urus negro para presencia contundente y practicidad diaria — combinación muy acertada en los lugares más exclusivos de Miami."
+    },
+    "lamborghini-urus-m-black": {
+      "description": "El Lamborghini Urus une estética exótica con utilidad muy cotidiana. En azul, sus líneas angulosas y el techo con perfil de cupé contrastan con el skyline de Miami. La aceleración es viva, la dirección rápida y el frenado contundente. En el interior, cinco plazas, materiales de alto nivel y tecnología moderna. Maletero y altura libre al suelo facilitan el día a día sin perder el dramatismo de un super‑SUV deportivo — la elección adecuada si busca un impacto visual fuerte pero flexibilidad real para día de playa, compras en Brickell u eventos hasta altas horas."
+    },
+    "lamborghini-urus-s-white": {
+      "description": "El Lamborghini Urus S representa la síntesis entre lujo y rendimiento máximo — una mezcla singular de dinamismo deportivo y solidez de SUV. Como uno de los Urus más potentes de Lamborghini, fusiona tecnología de vanguardia, artesanía italiana esmerada y una sensación de conducción vivida desde el primer metro. En su núcleo late un motor V8 biturbo de 4,0 litros con unos 657 hp según ficha."
+    },
+    "lamborghini-urus-se-black": {
+      "description": "El Lamborghini Urus SE 2025 marca un hito en la gama como primer super‑SUV híbrido enchufable de Lamborghini. Una electrificación exigente se integra en el perfil habitual de rendimiento y diseño de la marca. La configuración técnica aparea un motor V8 biturbo de 4,0 litros con un motor eléctrico de unos 189 hp integrado en la transmisión automática de ocho velocidades — un conjunto híbrido que alcanza en torno a 789 hp y 701 lb‑ft de par para una experiencia de conducción arrolladora."
+    },
+    "lamborghini-urus-s-lightblue": {
+      "description": "El Urus S en tonalidad Blu Cepheus conecta el legado deportivo de Lamborghini con un color de carrocería que capta todas las miradas. Blu Cepheus es un azul llamativo que subraya el diseño atrevido del Urus y refuerza su carácter exclusivo sobre el asfalto de Miami. Bajo ese acabado distintivo se mantiene el V8 biturbo de 4,0 litros y las prestaciones superiores características de la variante Urus S."
+    },
+    "ferrari-purosangue-suv": {
+      "description": "Disfrute del Ferrari Purosangue en Miami — la interpretación de la marca Ferrari en formato cuatro plazas y tracción integral, donde confluye el ADN de rendimiento con un diseño inconfundiblemente Ferrari. Pensado para estancias memorables conjuga equipamiento de alto nivel con presentación impecable. Blackline coordina el alquiler de punta a punta — planeación de entrega, puntualidad y rutas opcionales — para que cada detalle responda a lo que espera."
+    },
+    "lamborghini-urus-red": {
+      "description": "Disfrute en Miami este Lamborghini Urus en un rojo muy llamativo — presencia de super‑SUV, equipamiento de primer nivel y presentación impecable. Blackline coordina el proceso de punta a punta — entrega, puntualidad y, si tiene sentido para su día, rutas recomendadas — para que cada detalle quede alineado durante su estadía."
+    },
+    "lamborghini-urus-widebody": {
+      "description": "Disfrute del Lamborghini Urus Widebody en Miami — silueta de carrocería ensanchada, detalles de cabina muy personalizados y la versatilidad habitual del super‑SUV. Blackline acompaña la reserva desde la consulta inicial hasta la devolución — alquiler en modalidad autoconducida cuando licencia y seguro están en regla u opción de servicio con chófer, coordinado con el resto de su viaje por la ciudad."
+    },
+    "mercedes-maybach-gls-600-unit-c": {
+      "description": "Disfrute en Miami este Mercedes-Maybach GLS 600 — Unidad C ofrece un confort muy marcado en la segunda fila, presencia serena sobre la calzada y una cabina meticulosamente acabada. Ideal para estadías memorables donde importa cada matiz junto con amenidades premium. Blackline lleva todo el proceso de punta a punta — bien sea alquiler con conducción propia (licencia y seguro indispensables) o servicio opcional con chófer — alineado con el itinerario más amplio de su estancia por Miami."
+    }
+  }
+}

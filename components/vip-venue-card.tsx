@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useId, useState } from "react";
 
+import { useTranslations } from "@/components/locale-provider";
 import type { FeaturedVenue } from "@/lib/vip-nightlife-data";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +25,7 @@ function ChevronIcon({ className }: { className?: string }) {
 }
 
 export function VipVenueCard({ venue }: { venue: FeaturedVenue }) {
+  const t = useTranslations();
   const [open, setOpen] = useState(false);
   const panelId = useId();
 
@@ -78,10 +80,12 @@ export function VipVenueCard({ venue }: { venue: FeaturedVenue }) {
           >
             <span className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-gold/95">
               {open
-                ? "Show less"
+                ? t("vipNightlifePage.card.showLess")
                 : venue.gallery.length > 0
-                  ? `More photos & info (${venue.gallery.length} more)`
-                  : "Read full description"}
+                  ? t("vipNightlifePage.card.morePhotos", {
+                      count: venue.gallery.length,
+                    })
+                  : t("vipNightlifePage.card.readFull")}
             </span>
             <ChevronIcon
               className={cn(
@@ -95,11 +99,13 @@ export function VipVenueCard({ venue }: { venue: FeaturedVenue }) {
             <div
               id={`${panelId}-panel`}
               role="region"
-              aria-label={`${venue.name} photo gallery`}
+              aria-label={t("vipNightlifePage.card.galleryAria", {
+                name: venue.name,
+              })}
               className="mt-4 border-t border-gold/[0.08] pt-4"
             >
               <p className="mb-3 text-[0.62rem] font-medium uppercase tracking-[0.2em] text-gold/55">
-                Additional photos
+                {t("vipNightlifePage.card.additionalPhotos")}
               </p>
               <ul
                 className="grid list-none grid-cols-2 gap-2 sm:gap-3"

@@ -14,12 +14,16 @@ import {
 } from "react";
 
 import { ChauffeurServiceCrosslink } from "@/components/chauffeur-service-crosslink";
+import { useLocale } from "@/components/locale-provider";
 import { ScrollRevealItem } from "@/components/scroll-reveal-item";
 import { SectionReveal } from "@/components/section-reveal";
 import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import {
-  PRIVATE_JET_CATEGORY_FILTERS,
-  PRIVATE_JETS,
+  getLocalizedPrivateJets,
+  getPrivateJetCategoryFilters,
+} from "@/lib/i18n/private-jets-page";
+import type { Translator } from "@/lib/i18n/translate";
+import {
   type PrivateJet,
   type PrivateJetCategory,
 } from "@/lib/private-jets-data";
@@ -29,7 +33,13 @@ import { cn } from "@/lib/utils";
 const btnPrimary =
   "inline-flex min-h-11 items-center justify-center border border-gold/40 bg-gold px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-[#0b0b0b] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold-secondary hover:bg-gold-secondary hover:shadow-[0_0_0_1px_rgba(224,195,138,0.4),0_14px_48px_rgba(198,164,108,0.2)] active:translate-y-0";
 
-function JetImagePlaceholder({ className }: { className?: string }) {
+function JetImagePlaceholder({
+  className,
+  label,
+}: {
+  className?: string;
+  label: string;
+}) {
   return (
     <div
       className={cn(
@@ -39,7 +49,7 @@ function JetImagePlaceholder({ className }: { className?: string }) {
     >
       <Plane className="h-8 w-8 text-gold/22 sm:h-10 sm:w-10" aria-hidden />
       <span className="px-2 text-[0.65rem] font-medium uppercase tracking-[0.2em] text-cream/35">
-        Aircraft photo
+        {label}
       </span>
     </div>
   );
@@ -72,9 +82,13 @@ function SpecCell({
 function JetCard({
   jet,
   onOpen,
+  tapForSpecs,
+  aircraftPhoto,
 }: {
   jet: PrivateJet;
   onOpen: (j: PrivateJet) => void;
+  tapForSpecs: string;
+  aircraftPhoto: string;
 }) {
   const cover = jet.galleryPaths?.[0];
 
@@ -94,7 +108,10 @@ function JetCard({
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         ) : (
-          <JetImagePlaceholder className="absolute inset-0 h-full w-full" />
+          <JetImagePlaceholder
+            className="absolute inset-0 h-full w-full"
+            label={aircraftPhoto}
+          />
         )}
         <div
           className="absolute inset-0 bg-gradient-to-t from-[#0b0b0b]/92 via-[#0b0b0b]/25 to-transparent opacity-95"
@@ -113,7 +130,7 @@ function JetCard({
         </div>
       </div>
       <p className="mt-3 text-[0.7rem] font-medium uppercase tracking-[0.22em] text-cream/40">
-        Tap for full specs
+        {tapForSpecs}
       </p>
     </button>
   );
@@ -122,9 +139,11 @@ function JetCard({
 function JetDetailGallery({
   jetName,
   paths,
+  t,
 }: {
   jetName: string;
   paths: readonly string[];
+  t: Translator;
 }) {
   const galleryLen = paths.length;
   const [photoIndex, setPhotoIndex] = useState(0);
@@ -161,7 +180,11 @@ function JetDetailGallery({
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#0b0b0b] sm:aspect-[16/9] lg:aspect-[16/10]">
         <Image
           src={paths[photoIndex]}
-          alt={`${jetName} — photo ${photoIndex + 1} of ${galleryLen}`}
+          alt={t("privateJetsPage.photoOf", {
+            name: jetName,
+            current: String(photoIndex + 1),
+            total: String(galleryLen),
+          })}
           fill
           className="object-cover"
           sizes="(max-width: 1024px) 100vw, 55vw"
@@ -176,7 +199,7 @@ function JetDetailGallery({
               type="button"
               onClick={goPrev}
               className="absolute left-2 top-1/2 z-[1] flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gold/20 bg-[#0b0b0b]/80 text-cream/90 backdrop-blur-sm transition-colors hover:border-gold/40"
-              aria-label="Previous photo"
+              aria-label={t("privateJetsPage.previousPhoto")}
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -184,7 +207,7 @@ function JetDetailGallery({
               type="button"
               onClick={goNext}
               className="absolute right-2 top-1/2 z-[1] flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gold/20 bg-[#0b0b0b]/80 text-cream/90 backdrop-blur-sm transition-colors hover:border-gold/40"
-              aria-label="Next photo"
+              aria-label={t("privateJetsPage.nextPhoto")}
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -207,7 +230,7 @@ function JetDetailGallery({
                   ? "border-gold/45"
                   : "border-gold/12 hover:border-gold/25",
               )}
-              aria-label={`Show photo ${i + 1}`}
+              aria-label={t("privateJetsPage.showPhoto", { n: String(i + 1) })}
               aria-current={i === photoIndex}
             >
               <Image
@@ -228,9 +251,13 @@ function JetDetailGallery({
 function JetDetailDialog({
   jet,
   onClose,
+  t,
+  aircraftPhoto,
 }: {
   jet: PrivateJet | null;
   onClose: () => void;
+  t: Translator;
+  aircraftPhoto: string;
 }) {
   const titleId = useId();
 
@@ -255,7 +282,7 @@ function JetDetailDialog({
   if (!jet) return null;
 
   const wa = whatsAppUrlWithText(
-    `Hi Blackline — I'd like to inquire about chartering a ${jet.name}.`,
+    t("privateJetsPage.whatsappInquiry", { name: jet.name }),
   );
 
   return (
@@ -264,7 +291,7 @@ function JetDetailDialog({
         type="button"
         className="absolute inset-0 bg-[#0b0b0b]/82 backdrop-blur-[2px]"
         onClick={onClose}
-        aria-label="Close"
+        aria-label={t("privateJetsPage.close")}
       />
       <div
         role="dialog"
@@ -288,91 +315,109 @@ function JetDetailDialog({
             type="button"
             onClick={onClose}
             className="flex h-10 w-10 shrink-0 items-center justify-center border border-gold/15 text-cream/70 transition-colors hover:border-gold/35 hover:text-gold-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold/50"
-            aria-label="Close details"
+            aria-label={t("privateJetsPage.closeDetails")}
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
-            <div className="shrink-0 border-b border-gold/12 lg:flex-[1.05] lg:min-w-0 lg:border-b-0 lg:border-r">
-              {jet.galleryPaths && jet.galleryPaths.length > 0 ? (
-                <JetDetailGallery
-                  key={jet.id}
-                  jetName={jet.name}
-                  paths={jet.galleryPaths}
-                />
-              ) : (
-                <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#0b0b0b] sm:aspect-[16/9] lg:aspect-[16/10]">
-                  <JetImagePlaceholder className="absolute inset-0 h-full w-full" />
-                </div>
-              )}
-            </div>
-
-            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain p-5 sm:p-7">
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.38em] text-gold/90">
-                Specifications
-              </p>
-              <div className="mt-4 grid grid-cols-2 gap-2 sm:gap-2.5">
-                <SpecCell label="Passengers" value={jet.passengers} />
-                <SpecCell
-                  label="Beds"
-                  value={jet.beds === 0 ? "—" : String(jet.beds)}
-                />
-                <SpecCell label="Range" value={jet.range} />
-                <SpecCell label="Cruising speed" value={jet.cruisingSpeed} />
-                <SpecCell label="Baggage" value={jet.baggage} />
-                <SpecCell label="Interior width" value={jet.interiorWidth} />
-                <SpecCell
-                  label="Interior height"
-                  value={jet.interiorHeight}
-                  className="col-span-2"
+          <div className="shrink-0 border-b border-gold/12 lg:flex-[1.05] lg:min-w-0 lg:border-b-0 lg:border-r">
+            {jet.galleryPaths && jet.galleryPaths.length > 0 ? (
+              <JetDetailGallery
+                key={jet.id}
+                jetName={jet.name}
+                paths={jet.galleryPaths}
+                t={t}
+              />
+            ) : (
+              <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#0b0b0b] sm:aspect-[16/9] lg:aspect-[16/10]">
+                <JetImagePlaceholder
+                  className="absolute inset-0 h-full w-full"
+                  label={aircraftPhoto}
                 />
               </div>
+            )}
+          </div>
 
-              <p className="mt-8 text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-                Overview
-              </p>
-              <p className="mt-3 text-[0.9375rem] leading-relaxed text-cream/72">
-                {jet.overview}
-              </p>
+          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain p-5 sm:p-7">
+            <p className="text-[0.62rem] font-semibold uppercase tracking-[0.38em] text-gold/90">
+              {t("privateJetsPage.specifications")}
+            </p>
+            <div className="mt-4 grid grid-cols-2 gap-2 sm:gap-2.5">
+              <SpecCell
+                label={t("privateJetsPage.passengers")}
+                value={jet.passengers}
+              />
+              <SpecCell
+                label={t("privateJetsPage.beds")}
+                value={jet.beds === 0 ? "—" : String(jet.beds)}
+              />
+              <SpecCell label={t("privateJetsPage.range")} value={jet.range} />
+              <SpecCell
+                label={t("privateJetsPage.cruisingSpeed")}
+                value={jet.cruisingSpeed}
+              />
+              <SpecCell
+                label={t("privateJetsPage.baggage")}
+                value={jet.baggage}
+              />
+              <SpecCell
+                label={t("privateJetsPage.interiorWidth")}
+                value={jet.interiorWidth}
+              />
+              <SpecCell
+                label={t("privateJetsPage.interiorHeight")}
+                value={jet.interiorHeight}
+                className="col-span-2"
+              />
+            </div>
 
-              <p className="mt-8 text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-                Key amenities
-              </p>
-              <ul className="mt-4 space-y-2.5" role="list">
-                {jet.amenities.map((a) => (
-                  <li
-                    key={a}
-                    className="flex gap-3 text-[0.9rem] leading-snug text-cream/78"
-                  >
-                    <span
-                      className="mt-[0.4em] h-1 w-1 shrink-0 rounded-full bg-gold/45"
-                      aria-hidden
-                    />
-                    {a}
-                  </li>
-                ))}
-              </ul>
+            <p className="mt-8 text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
+              {t("privateJetsPage.overview")}
+            </p>
+            <p className="mt-3 text-[0.9375rem] leading-relaxed text-cream/72">
+              {jet.overview}
+            </p>
 
-              <div className="mt-10 flex flex-col gap-3 border-t border-gold/10 pt-8 sm:flex-row sm:flex-wrap">
-                <Link href={CONTACT_TRIP_BUILDER_HREF} className={cn(btnPrimary, "w-full sm:w-auto")}>
-                  Request this aircraft
-                </Link>
-                <a
-                  href={wa}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-11 w-full items-center justify-center border border-gold/30 bg-transparent px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-gold transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold/55 hover:text-gold-secondary sm:w-auto"
+            <p className="mt-8 text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
+              {t("privateJetsPage.keyAmenities")}
+            </p>
+            <ul className="mt-4 space-y-2.5" role="list">
+              {jet.amenities.map((a) => (
+                <li
+                  key={a}
+                  className="flex gap-3 text-[0.9rem] leading-snug text-cream/78"
                 >
-                  WhatsApp
-                </a>
-              </div>
-              <p className="mt-4 text-[0.7rem] leading-relaxed text-cream/38">
-                Aircraft availability is subject to routing and schedule. Final
-                details are confirmed when you inquire.
-              </p>
+                  <span
+                    className="mt-[0.4em] h-1 w-1 shrink-0 rounded-full bg-gold/45"
+                    aria-hidden
+                  />
+                  {a}
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-10 flex flex-col gap-3 border-t border-gold/10 pt-8 sm:flex-row sm:flex-wrap">
+              <Link
+                href={CONTACT_TRIP_BUILDER_HREF}
+                className={cn(btnPrimary, "w-full sm:w-auto")}
+              >
+                {t("privateJetsPage.requestAircraft")}
+              </Link>
+              <a
+                href={wa}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-11 w-full items-center justify-center border border-gold/30 bg-transparent px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-gold transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold/55 hover:text-gold-secondary sm:w-auto"
+              >
+                {t("common.whatsapp")}
+              </a>
             </div>
+            <p className="mt-4 text-[0.7rem] leading-relaxed text-cream/38">
+              {t("privateJetsPage.availabilityNote")}
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -380,13 +425,28 @@ function JetDetailDialog({
 }
 
 export function PrivateJetsCatalog() {
+  const { locale, t } = useLocale();
   const [filter, setFilter] = useState<"all" | PrivateJetCategory>("all");
   const [selected, setSelected] = useState<PrivateJet | null>(null);
 
+  const jets = useMemo(
+    () => getLocalizedPrivateJets(locale, t),
+    [locale, t],
+  );
+  const categoryFilters = useMemo(
+    () => getPrivateJetCategoryFilters(t),
+    [t],
+  );
+
   const visible = useMemo(() => {
-    if (filter === "all") return PRIVATE_JETS;
-    return PRIVATE_JETS.filter((j) => j.category === filter);
-  }, [filter]);
+    if (filter === "all") return jets;
+    return jets.filter((j) => j.category === filter);
+  }, [filter, jets]);
+
+  const selectedLocalized = useMemo(() => {
+    if (!selected) return null;
+    return jets.find((j) => j.id === selected.id) ?? selected;
+  }, [selected, jets]);
 
   return (
     <>
@@ -394,16 +454,14 @@ export function PrivateJetsCatalog() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(198,164,108,0.06),transparent)]" />
         <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-10">
           <p className="text-[0.65rem] font-medium uppercase tracking-[0.48em] text-gold/90">
-            Aviation
+            {t("privateJetsPage.eyebrow")}
           </p>
           <div className="mt-4 h-px w-14 bg-gold/30" aria-hidden />
           <h1 className="mt-6 max-w-3xl font-serif text-[2.1rem] leading-[1.12] tracking-tight text-cream sm:text-4xl md:text-[2.65rem]">
-            Private jets
+            {t("nav.privateJets")}
           </h1>
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-cream/58 sm:text-[0.9375rem]">
-            Charter coordination across cabin classes — tap an aircraft for
-            specifications, amenities, and to request availability for your
-            route.
+            {t("privateJetsPage.heroBody")}
           </p>
           <ChauffeurServiceCrosslink variant="jet" />
         </div>
@@ -416,11 +474,10 @@ export function PrivateJetsCatalog() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 className="font-serif text-xl tracking-tight text-cream sm:text-2xl">
-                Available aircraft
+                {t("privateJetsPage.availableHeadline")}
               </h2>
               <p className="mt-3 max-w-2xl text-sm leading-relaxed text-cream/52">
-                Filter by cabin class. Figures are typical for planning —
-                final aircraft and routing are confirmed on inquiry.
+                {t("privateJetsPage.availableBody")}
               </p>
             </div>
           </div>
@@ -428,9 +485,9 @@ export function PrivateJetsCatalog() {
           <div
             className="mt-8 flex flex-wrap gap-2"
             role="tablist"
-            aria-label="Filter by aircraft category"
+            aria-label={t("privateJetsPage.filterAria")}
           >
-            {PRIVATE_JET_CATEGORY_FILTERS.map((f) => {
+            {categoryFilters.map((f) => {
               const isActive = filter === f.id;
               return (
                 <button
@@ -459,20 +516,30 @@ export function PrivateJetsCatalog() {
           <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
             {visible.map((jet, index) => (
               <ScrollRevealItem key={jet.id} index={index}>
-                <JetCard jet={jet} onOpen={setSelected} />
+                <JetCard
+                  jet={jet}
+                  onOpen={setSelected}
+                  tapForSpecs={t("privateJetsPage.tapForSpecs")}
+                  aircraftPhoto={t("privateJetsPage.aircraftPhoto")}
+                />
               </ScrollRevealItem>
             ))}
           </div>
 
           {visible.length === 0 ? (
             <p className="mt-10 text-sm text-cream/45">
-              No aircraft in this category.
+              {t("privateJetsPage.noAircraft")}
             </p>
           ) : null}
         </div>
       </SectionReveal>
 
-      <JetDetailDialog jet={selected} onClose={() => setSelected(null)} />
+      <JetDetailDialog
+        jet={selectedLocalized}
+        onClose={() => setSelected(null)}
+        t={t}
+        aircraftPhoto={t("privateJetsPage.aircraftPhoto")}
+      />
     </>
   );
 }

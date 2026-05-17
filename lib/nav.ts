@@ -6,6 +6,7 @@ export const SERVICE_LINKS = [
   { href: "/services/atv", label: "ATV" },
   { href: "/services/private-jets", label: "Private jets" },
   { href: "/services/villas", label: "Villas" },
+  { href: "/services/private-chefs", label: "Private chefs" },
   { href: "/services/vip-nightlife", label: "VIP nightlife" },
   { href: "/services/photographer", label: "Photo & video shoots" },
   { href: "/services/security-guards", label: "Security guards" },

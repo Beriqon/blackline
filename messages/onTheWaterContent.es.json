@@ -1,0 +1,632 @@
+{
+  "onTheWater": {
+    "meta": {
+      "description": "Actividades acuáticas en Miami: jet skis desde $150+/h, jetcars desde $250+/h, además de parasailing, kayak, SUP, banana boat y pesca deportiva — coordinado por Blackline."
+    },
+    "hero": {
+      "eyebrow": "En el agua",
+      "title": "Actividades acuáticas, parasailing y pesca",
+      "body": "Jet skis, jetcars, paddle craft, parasailing con FlySOBE y pesca — reservados y programados con Blackline junto a socios de confianza en Miami.",
+      "hint": "Usa la barra de categorías abajo. Empieza en ",
+      "hintStrong": "Vista general",
+      "hintSuffix": " para una instantánea, o abre una actividad para ir directo a detalles y tarifas.",
+      "cta": "Planifica un día en el agua",
+      "overviewImageAlt": "Costa y océano de Miami Beach"
+    },
+    "pageCta": {
+      "headline": "¿Listo para salir al agua?",
+      "body": "Comparte tus fechas y lo que quieres probar — coordinamos motos acuáticas, ventanas de parasail o pesca en una sola respuesta.",
+      "button": "Contáctanos"
+    },
+    "photography": {
+      "headline": "Agrega sesiones de foto o video",
+      "description": "Reserva sesión de fotos, de video o ambas para tu día en el agua — la misma coordinación y entrega de imágenes fijas y/o video editado cuando ya estés en tierra.",
+      "marqueeImageAlts": [
+        "Jet ski en el agua — fotograma de sesión",
+        "Banana boat en aguas abiertas",
+        "Sesión de jet ski — fotograma de sesión",
+        "Kayak en aguas de Miami Beach",
+        "Moto acuática personal — fotograma de sesión",
+        "Parasailing sobre Miami Beach",
+        "Jet ski surcando el agua",
+        "Sesión de paddleboard cerca de la costa",
+        "Jet ski en acción sobre aguas claras",
+        "Aventura en banana boat en grupo",
+        "Jet ski en movimiento",
+        "Ruta de kayak con vistas escénicas",
+        "Jet ski navegando aguas de Miami",
+        "Banana boat girando sobre aguas moderadas",
+        "Jet ski de cerca en marcha",
+        "Grupo de kayak en aguas tranquilas",
+        "Spray y velocidad de jet ski en la bahía",
+        "Momento de alquiler de jet ski en Miami Beach"
+      ]
+    },
+    "tabs": {
+      "overview": "Vista general",
+      "pwc": "Jet skis y jetcars",
+      "kayak": "Kayak",
+      "sup": "Paddle board",
+      "banana": "Banana boat",
+      "parasailing": "Parasailing",
+      "fishing": "Pesca"
+    },
+    "shared": {
+      "category": "Categoría",
+      "viewDetails": "Ver detalles",
+      "estimatedTotal": "Total estimado",
+      "numberOfPeople": "Número de personas",
+      "tripType": "Tipo de salida",
+      "selectDuration": "Selecciona la duración",
+      "from": "Desde",
+      "departureAreas": "Zonas de salida",
+      "targetSpecies": "Especies objetivo:",
+      "whatsIncluded": "Qué incluye",
+      "eyebrowOnTheWater": "En el agua",
+      "perPersonSessionNote": "por persona · 60 minutos cada uno.",
+      "faqHeading": "Preguntas frecuentes"
+    },
+    "overview": {
+      "eyebrow": "En el agua",
+      "headline": "Elige cómo quieres salir al mar",
+      "body": "Elige una categoría para ver detalles y precios — o usa la barra de arriba para cambiar cuando quieras. Cada sección de actividad está organizada con información clara, precios y datos de reserva para planificar tu día en el agua en un solo lugar.",
+      "cards": {
+        "pwc": {
+          "title": "Jet skis y jetcars",
+          "description": "Motos acuáticas y sesiones de jet car anfibio en Miami Beach y Fort Lauderdale — con horarios acordes a tu estadía, precios desde claros y opciones para añadir a la reserva.",
+          "imageAlt": "Jet ski en el agua en Miami"
+        },
+        "kayak": {
+          "title": "Kayak",
+          "description": "Remadas tranquilas y escénicas en el área de Miami Beach con bloques de tiempo flexibles, check-in sencillo y rutas que encajan con tu día.",
+          "priceLabel": "$40 / persona · 60 min",
+          "imageAlt": "Kayak en aguas tranquilas de Miami Beach"
+        },
+        "sup": {
+          "title": "Paddle board (SUP)",
+          "description": "Sesiones de paddle de pie para vistas del skyline y un ritmo relajado en la bahía — encajadas en tu estadía con la misma coordinación centralizada de Blackline.",
+          "priceLabel": "$40 / persona · 60 min",
+          "imageAlt": "Tabla de paddle de pie sobre agua clara"
+        },
+        "banana": {
+          "title": "Banana boat",
+          "description": "Rodadas remolcadas de alta energía y en grupo para quienes buscan diversión acuática en la misma ventana frente al mar — nosotros gestionamos tiempos y el traspaso con el socio.",
+          "imageAlt": "Grupo en aventura de banana boat en el agua"
+        },
+        "parasailing": {
+          "title": "Parasailing",
+          "description": "Vuelos dobles y triples sobre la Bahía Biscayne con coordinación de hora de encuentro, complementos fotográficos opcionales y detalles claros previos al vuelo.",
+          "priceLabel": "Compartido o privado — desde $120 / persona en vuelo",
+          "imageAlt": "Parasailing sobre la Bahía Biscayne frente a Miami Beach"
+        },
+        "fishing": {
+          "title": "Salidas de pesca",
+          "description": "Crucero de paseo, Skimmer Skiff costero y Boston Whaler / Sea Pro mar adentro con equipo listo para torneo, carnada y seguridad USCG — tarifas y niveles abajo.",
+          "imageAlt": "Pesca deportiva desde embarcación charter"
+        }
+      }
+    },
+    "pwc": {
+      "experience": {
+        "threeWaysHeadline": "Tres formas de pasar el día",
+        "lookFeelEyebrow": "Look & feel",
+        "startingRates": "Tarifas desde",
+        "addToSelectionTitle": "Añade a tu selección",
+        "addToSelectionBody": "Elige cuántas jet skis o jetcars quieres; el promedio horario combinado se actualiza según nuestras tarifas base. Marina, duración de la sesión y fechas se confirman al reservar.",
+        "faqHeading": "Preguntas frecuentes sobre jet ski",
+        "lookImageAlts": [
+          "Jet ski en el agua",
+          "Jet ski en el agua"
+        ]
+      },
+      "section": {
+        "headline": "Jet skis y jetcars",
+        "intro": {
+          "0": "Motos acuáticas en la bahía y frente a la costa, más recorridos en jet car anfibio con mucha adrenalina — programados y enrutados con tu estadía. El briefing de seguridad, combustible típico y la coordinación de la puesta al agua quedan cubiertos una vez confirmada tu sesión.",
+          "1": "Las tarifas horarias iniciales están abajo. El muelle o rampa exactos, duración, tamaño del grupo y complementos se cotizan cuando compartes tus fechas — respondemos con una propuesta clara y a tu medida."
+        },
+        "locationsLabel": "Zonas de servicio",
+        "locations": {
+          "0": "Miami Beach",
+          "1": "Fort Lauderdale"
+        },
+        "rates": {
+          "0": {
+            "label": "Jet ski — por hora (desde)"
+          },
+          "1": {
+            "label": "Jetcar — por hora (desde)"
+          }
+        },
+        "footnote": "Las zonas permitidas, datos del marina y cualquier ajuste por temporada se confirman en tu reserva. Contáctanos para disponibilidad y una cotización firme."
+      },
+      "offerings": {
+        "0": {
+          "title": "Jet skis",
+          "description": "Sesiones en la bahía y frente a la costa en motos acuáticas — zonas de Miami Beach y Fort Lauderdale, a tiempo con tu estadía; seguridad y combustible aclarados desde el inicio.",
+          "imageAlt": "Jet ski en el agua",
+          "ctaLabel": "Tarifas y detalles"
+        },
+        "1": {
+          "title": "Jetcars",
+          "description": "Recorridos en jet car anfibio sobre el agua — Miami Beach o Fort Lauderdale; opción alta energía para grupos que buscan más que un alquiler estándar.",
+          "imageAlt": "Jet car en el agua",
+          "ctaLabel": "Tarifas y detalles"
+        },
+        "2": {
+          "title": "Salidas de pesca",
+          "description": "Crucero, planicies costeras y pesca deportiva mar adentro — equipo listo para torneo, carnada y embarcaciones certificadas por la Guardia Costera. Opciones de charter y tarifas abajo.",
+          "imageAlt": "Pesca deportiva desde embarcación charter",
+          "ctaLabel": "Opciones de charter y tarifas"
+        }
+      },
+      "faq": {
+        "0": {
+          "q": "¿Cuál es la edad mínima para conducir la jet ski?",
+          "a": "18 años."
+        },
+        "1": {
+          "q": "¿Cuál es la edad mínima para firmar las renuncias y el contrato de alquiler?",
+          "a": "18 años."
+        },
+        "2": {
+          "q": "¿Hay un peso máximo por jet ski?",
+          "a": "Sí. Por seguridad, el peso máximo total es 350 libras por jet ski."
+        },
+        "3": {
+          "q": "¿Puede ir un niño pequeño como pasajero con un adulto?",
+          "a": "Sí. Los niños mayores de 6 años pueden ir como pasajeros con un adulto."
+        },
+        "4": {
+          "q": "¿Qué pasa si el clima es malo?",
+          "a": "Si el paseo no puede realizarse por el clima, puedes reprogramar o recibir un reembolso completo."
+        },
+        "5": {
+          "q": "¿Es obligatorio un traje de neopreno o zapatos para el agua?",
+          "a": "No. Ropa de playa está bien, y descalzo también."
+        },
+        "6": {
+          "q": "¿Proveen chalecos salvavidas?",
+          "a": "Sí. Hay chalecos en todas las tallas."
+        },
+        "7": {
+          "q": "¿Qué debo traer para el alquiler de jet ski?",
+          "a": "Identificación con foto vigente y la documentación requerida, traje de baño y ropa de cambio, protector solar, toalla y snacks o bebidas que quieras durante la aventura."
+        }
+      },
+      "configurators": {
+        "jetski": {
+          "label": "Número de jet skis",
+          "shortLabel": "Jet skis",
+          "helperCompact": "+ / unidad / h (desde).",
+          "helperFull": "+ por unidad por hora (desde). La cotización final depende del marina, la duración y la temporada.",
+          "estimatedCompact": "Promedio por hora (desde)",
+          "estimatedFull": "Promedio horario combinado (desde)",
+          "breakdownPattern": "{units} × {rate}+ / h = {combined}+ / h combinado",
+          "cartTitle": "Sesión de jet ski",
+          "cartSubtitlePattern": "Miami Beach · Fort Lauderdale · {units} jet ski(s)",
+          "cartPriceHintPattern": "Desde {amount}+ / h combinado",
+          "addButton": "Agregar sesión de jet ski"
+        },
+        "jetcar": {
+          "label": "Número de jetcars",
+          "shortLabel": "Jetcars",
+          "helperCompact": "+ / unidad / h (desde).",
+          "helperFull": "+ por unidad por hora (desde). La cotización final depende del marina, la duración y la temporada.",
+          "estimatedCompact": "Promedio por hora (desde)",
+          "estimatedFull": "Promedio horario combinado (desde)",
+          "breakdownPattern": "{units} × {rate}+ / h = {combined}+ / h combinado",
+          "cartTitle": "Sesión de jetcar",
+          "cartSubtitlePattern": "Miami Beach · Fort Lauderdale · {units} jetcar(s)",
+          "cartPriceHintPattern": "Desde {amount}+ / h combinado",
+          "addButton": "Agregar sesión de jetcar"
+        }
+      }
+    },
+    "kayak": {
+      "headline": "Tu destino de referencia para alquiler de kayak en Miami Beach",
+      "body": "Sumérgete en la belleza natural de los canales de Miami con sesiones de kayak pensadas tanto para quienes reman por primera vez como para expertos. Es una de las mejores formas de explorar el agua a tu ritmo.",
+      "priceLine": "Precio: $40 por persona durante 60 minutos.",
+      "whyChooseTitle": "¿Por qué elegir nuestros alquileres de kayak?",
+      "whyChooseItems": [
+        "Acceso privilegiado en Miami Beach a canales escénicos y rutas poco transitadas.",
+        "Kayaks de calidad con mantenimiento regular y preparación orientada al confort.",
+        "Equipo conocedor con orientación práctica local.",
+        "Opciones flexibles: sesiones cortas, medio día, día completo y reservas de grupo.",
+        "Rutas ideales para fotos, descanso y naturaleza."
+      ],
+      "howToRentTitle": "Cómo alquilar un kayak",
+      "howToRentItems": [
+        {
+          "strong": "Reserva en línea:",
+          "rest": "elige la opción de alquiler que encaje con tu plan."
+        },
+        {
+          "strong": "Contacta a soporte:",
+          "rest": "haz cualquier pregunta antes de finalizar la reserva."
+        },
+        {
+          "strong": "Briefing de seguridad:",
+          "rest": "al llegar, recibes consejos rápidos y el equipo necesario."
+        }
+      ],
+      "imageAlts": {
+        "hero": "Experiencia de kayak en aguas de Miami Beach",
+        "secondary1": "Ruta escénica en kayak cerca de Miami Beach",
+        "secondary2": "Aventura en kayak en grupo en Miami"
+      },
+      "faq": {
+        "0": {
+          "q": "¿Qué tipos de kayak ofrecen en alquiler?",
+          "a": "Hay kayak individual y tándem para remar solo, en pareja o compartiendo."
+        },
+        "1": {
+          "q": "¿Qué incluye el alquiler de kayak?",
+          "a": "Incluye chalecos, remos y un briefing de seguridad para una experiencia segura y agradable."
+        },
+        "2": {
+          "q": "¿Puedo llevar el kayak a donde quiera?",
+          "a": "Los kayak se usan en zonas designadas. Recibirás orientación de ruta e instrucciones de seguridad antes de salir."
+        },
+        "3": {
+          "q": "¿Hay límite de edad para alquilar un kayak?",
+          "a": "En general el alquiler es para huéspedes de 18 años o más. Los menores deben ir acompañados por un adulto."
+        },
+        "4": {
+          "q": "¿Por cuánto tiempo puedo alquilar?",
+          "a": "Las duraciones son flexibles y disponibles por horas según tus planes."
+        },
+        "5": {
+          "q": "¿Puedo alquilar kayak para un grupo o evento especial?",
+          "a": "Sí, hay reservas de grupo y arreglos para eventos especiales bajo pedido."
+        },
+        "6": {
+          "q": "¿Se permiten mascotas en los kayak?",
+          "a": "Por norma general no se permiten mascotas en los kayak por seguridad e higiene."
+        },
+        "7": {
+          "q": "¿Puedo pescar desde los kayak de alquiler?",
+          "a": "Sí, está permitido, pero debes cumplir la normativa local de pesca."
+        }
+      },
+      "configurator": {
+        "cartTitle": "Alquiler de kayak",
+        "cartSubtitlePattern": "Miami Beach · {peopleLabel} · sesión de 60 min",
+        "peopleOne": "1 persona",
+        "peopleMany": "{n} personas",
+        "breakdownPattern": "{n} × {rate} = {total}"
+      }
+    },
+    "sup": {
+      "headline": "Paddle board en Miami Beach",
+      "body": "Empieza una aventura tranquila y fascinante en las aguas de Miami Beach. El paddle board te deja deslizarte sobre la superficie, disfrutar el sol y reconectar con la naturaleza a tu ritmo.",
+      "specs": {
+        "price": "Precio:",
+        "priceValue": "$40 por persona",
+        "duration": "Duración:",
+        "durationValue": "60 minutos",
+        "pace": "Ritmo:",
+        "paceValue": "Relajado o activo, según tu ruta.",
+        "skill": "Nivel:",
+        "skillValue": "Ideal para principiantes."
+      },
+      "whyChooseTitle": "¿Por qué elegir paddle board?",
+      "whyChooseItems": [
+        "Guía experta con instrucciones con prioridad en seguridad antes de lanzarte.",
+        "Costa espectacular y momentos de agua calma perfectos para fotos.",
+        "Actividad serena que ayuda a desconectarte del ritmo diario."
+      ],
+      "rentalOptionsTitle": "Opciones de alquiler",
+      "rentalOptionsItems": [
+        {
+          "strong": "Alquiler de tablas:",
+          "rest": "por hora o sesión más larga, según tus planes."
+        },
+        {
+          "strong": "Tours guiados:",
+          "rest": "únete a una sesión guiada para explorar los mejores puntos de Miami Beach."
+        },
+        {
+          "strong": "Aventuras en grupo:",
+          "rest": "ideales para amigos y familia, con opciones flexibles para grupos."
+        }
+      ],
+      "heroImageAlt": "Experiencia de paddle board en Miami Beach",
+      "faq": {
+        "0": {
+          "q": "¿Qué es el paddle board?",
+          "a": "Es un deporte acuático en el que te paras sobre una tabla grande y te impulsas con un remo."
+        },
+        "1": {
+          "q": "¿Necesito experiencia previa?",
+          "a": "No; es adecuado para todos los niveles, incluidos principiantes. Se ofrecen instrucciones básicas y orientación de seguridad antes de comenzar."
+        },
+        "2": {
+          "q": "¿Qué equipo incluye el alquiler?",
+          "a": "Incluye tabla, remo, chaleco y leash de seguridad."
+        },
+        "3": {
+          "q": "¿Por cuánto tiempo puedo alquilar?",
+          "a": "Puedes elegir duración por hora o por día, según tus planes."
+        },
+        "4": {
+          "q": "¿Puedo ir solo o en grupo?",
+          "a": "Ambas opciones: solo o con amigos y familia."
+        },
+        "5": {
+          "q": "¿Hay restricción de edad?",
+          "a": "Es apto para la mayoría de edades. Los menores suelen requerir autorización de padre o tutor."
+        },
+        "6": {
+          "q": "¿Dónde puedo hacer paddle board?",
+          "a": "En aguas tranquilas y escénicas cerca de Miami Beach."
+        },
+        "7": {
+          "q": "¿Es seguro el paddle board?",
+          "a": "Sí. Es de bajo impacto cuando se usa el equipo adecuado y el briefing correcto."
+        },
+        "8": {
+          "q": "¿Qué debo vestir?",
+          "a": "Traje de baño o ropa deportiva, y lleva bloqueador, lentes y gorra para el sol."
+        }
+      },
+      "configurator": {
+        "cartTitle": "Alquiler de paddle board (SUP)",
+        "cartSubtitlePattern": "Miami Beach · {peopleLabel} · sesión de 60 min",
+        "peopleOne": "1 persona",
+        "peopleMany": "{n} personas",
+        "breakdownPattern": "{n} × {rate} = {total}"
+      }
+    },
+    "banana": {
+      "headline": "Banana boat en Miami Beach",
+      "body": "¿Quieres más adrenalina en tu día en Miami Beach? Los banana boat son perfectos para fiestas, familias y grupos de amigos que buscan pura emoción en el agua en una sesión corta y cargada de acción.",
+      "quickFacts": {
+        "duration": "Duración:",
+        "durationValue": "15-20 minutos de diversión rápida y con muchas salpicaduras.",
+        "age": "Edad:",
+        "ageValue": "A partir de 6 años.",
+        "group": "Tamaño del grupo:",
+        "groupValue": "Mínimo 2 y máximo 6 pasajeros por rodada.",
+        "vibe": "Ambiente:",
+        "vibeValue": "Social, enérgico e ideal para momentos memorables en grupo."
+      },
+      "imageAlts": {
+        "wide": "Paseo en banana boat en Miami Beach",
+        "grid1": "Grupo disfrutando una sesión de banana boat",
+        "grid2": "Actividad de banana boat en aguas abiertas"
+      },
+      "whyChooseTitle": "¿Por qué elegir un banana boat?",
+      "whyChooseItems": [
+        "Seguro y supervisado, con briefing completo antes de salir.",
+        "Equipo en buen estado, asas seguras y chalecos.",
+        "Vistas a la costa de Miami Beach durante el paseo.",
+        "Accesible para principiantes, familias y grupos de edades mixtas."
+      ],
+      "whatToExpectTitle": "Qué esperar",
+      "whatToExpectItems": [
+        "Check-in en el punto de encuentro en la playa e instrucciones de seguridad.",
+        "Te pones el chaleco y abordas con tu grupo.",
+        "Agárrate mientras el capitán remolca con giros, cambios de velocidad y olas.",
+        "Regreso a la orilla tras unos 15-20 minutos con muchas risas."
+      ],
+      "faq": {
+        "0": {
+          "q": "¿Qué es un paseo en banana boat?",
+          "a": "Es una embarcación inflable larga y amarilla en forma de banano, remolcada por una lancha. Lleva a varios pasajeros y ofrece un paseo emocionante sobre las olas."
+        },
+        "1": {
+          "q": "¿Cuántos pasajeros caben en un paseo?",
+          "a": "Por lo general hasta 6 pasajeros por rodada, con mínimo de 2 participantes."
+        },
+        "2": {
+          "q": "¿Necesito habilidades especiales o experiencia previa?",
+          "a": "No; son aptos para principiantes y para casi todas las edades y niveles, con briefing de seguridad adecuado."
+        },
+        "3": {
+          "q": "¿Son seguros los banana boat?",
+          "a": "Sí. Están supervisados por profesionales capacitados, se usan chalecos y se dan instrucciones antes de partir."
+        },
+        "4": {
+          "q": "¿Qué debo vestir?",
+          "a": "Traje de baño o ropa cómoda para el agua. Lleva bloqueador, gorra y lentes para el sol."
+        },
+        "5": {
+          "q": "¿Cuánto dura el paseo?",
+          "a": "Lo habitual son unos 15-20 minutos: acción intensa sin exagerar."
+        },
+        "6": {
+          "q": "¿Se puede reservar un banana boat privado?",
+          "a": "Sí; hay salidas privadas para familia, amigos o celebraciones según disponibilidad."
+        },
+        "7": {
+          "q": "¿Cuál es el requisito de edad?",
+          "a": "En general a partir de 6 años. Los menores pueden requerir consentimiento de los padres."
+        },
+        "8": {
+          "q": "¿Puedo llevar objetos personales o una cámara?",
+          "a": "Lo mejor es asegurar tus cosas porque siempre puede haber salpicaduras. Algunos operadores permiten cámara en zonas seguras."
+        },
+        "9": {
+          "q": "¿Cuál es la política de cancelación?",
+          "a": "Los términos varían; muchos operadores piden aviso de 24 a 48 horas. Los términos finales se confirman al reservar."
+        },
+        "10": {
+          "q": "¿Qué se siente en la experiencia?",
+          "a": "Planeas sobre el agua a buen ritmo, te salpica el agua cálida del sur de Florida y alternas adrenalina con momentos de crucero escénico."
+        },
+        "11": {
+          "q": "¿Cómo funciona un banana boat?",
+          "a": "Los pasajeros montan la pieza inflable a horcajadas, usan chaleco y sujetan las asas laterales mientras una lancha los remolca. El capitán ajusta velocidad y giros según comodidad y seguridad."
+        },
+        "12": {
+          "q": "¿Son seguros los banana boat para niños?",
+          "a": "Sí, cuando se cumplen precauciones: chaleco bien ajustado, operación supervisada, velocidad adecuada y supervisión parental con niños pequeños."
+        }
+      }
+    },
+    "parasailing": {
+      "headline": "Parasailing en Miami Beach",
+      "body": "Vive un vuelo deluxe en parasail hasta unos 350 pies sobre el mar con vistas impresionantes de Miami Beach. Puedes volar doble o triple, y cada vuelo incluye unos 8-10 minutos en el aire.",
+      "meetingPointLabel": "Punto de encuentro:",
+      "meetingPoint": "300 Alton Rd, Dock A, Miami Beach, FL 33139",
+      "rates": {
+        "passengers": "Pasajeros en vuelo (6+ años):",
+        "observers": "Observadores (sin vuelo):",
+        "privateTrip": "Salida privada (hasta 10):",
+        "privateTripNote": "(propina no incluida)",
+        "duration": "Duración:",
+        "durationValue": "8-10 minutos en el aire por vuelo"
+      },
+      "activityDetailsTitle": "Detalles de la actividad",
+      "activityDetailsItems": [
+        "Vuelo doble (2 huéspedes) o triple (3 huéspedes) por paracaídas.",
+        "Inmersión opcional al agua al final, sin costo extra.",
+        "Las salidas suelen ofrecerse cada 90 minutos.",
+        "En el trayecto en lancha puedes ver fauna como delfines, rayas, medusas y tortugas marinas."
+      ],
+      "includedTitle": "Qué incluye",
+      "includedItems": [
+        "Briefing de seguridad",
+        "Chaleco salvavidas",
+        "Vuelo en parasail",
+        "Paseo en lancha",
+        "Agua embotellada",
+        "Momentos memorables para fotos"
+      ],
+      "requirementsTitle": "Requisitos y restricciones",
+      "requirementsItems": [
+        "Edad mínima: 6 años.",
+        "Menores de 12 años deben ir acompañados por un adulto.",
+        "Se requieren al menos 2 pasajeros por vuelo.",
+        "Peso máximo combinado en vuelo: 500 libras.",
+        "Los límites de peso pueden cambiar por viento y condiciones del agua.",
+        "Huéspedes menores de 18 años requieren firma de padre o tutor.",
+        "No pueden abordar huéspedes embarazadas, con lesiones de cuello/espalda o bajo efectos del alcohol o drogas."
+      ],
+      "cancellationTitle": "Política de cancelación",
+      "cancellationItems": [
+        "Aviso con 24 horas: reembolso completo.",
+        "Cancelaciones el mismo día: 50% de reembolso si se cancela al menos 1 hora antes del check-in.",
+        "Sin reembolso por cancelaciones dentro de la hora previa al check-in.",
+        "Cancelaciones por clima: 100% reembolsables cuando la operación determine condiciones inseguras.",
+        "El procesamiento del reembolso puede tardar unos 5-7 días hábiles."
+      ],
+      "extrasTitle": "Extras",
+      "extrasBody": "Paquete de fotos HD: $45 por grupo. Las fotos se entregan después del tour.",
+      "heroImageAlt": "Parasailing sobre el agua en Miami Beach",
+      "faq": {
+        "0": {
+          "q": "¿Cuánto cuesta el parasailing?",
+          "a": "Pasajeros en vuelo (6+ años): $120. Observadores (sin vuelo): $85. Salidas privadas (hasta 10 pasajeros en vuelo, propina no incluida): $1,000."
+        },
+        "1": {
+          "q": "¿Cuánto dura cada vuelo?",
+          "a": "El tiempo en el aire suele ser de 8 a 10 minutos por vuelo."
+        },
+        "2": {
+          "q": "¿Podemos volar en doble o triple?",
+          "a": "Sí. Normalmente puedes volar en doble (2 personas) o triple (3), según condiciones y peso combinado."
+        },
+        "3": {
+          "q": "¿Incluyen toques al agua?",
+          "a": "Sí; al final del vuelo hay inmersión opcional al agua, incluida."
+        },
+        "4": {
+          "q": "¿Qué incluye la actividad?",
+          "a": "Incluye briefing de seguridad, chaleco, vuelo en parasail, paseo en lancha, agua embotellada y vistas dignas de foto."
+        },
+        "5": {
+          "q": "¿Cuáles son los requisitos de edad y peso?",
+          "a": "Edad mínima para volar: 6 años. Menores de 12 deben ir con un adulto. Peso máximo combinado en vuelo: 500 libras; los límites pueden variar según viento y agua."
+        },
+        "6": {
+          "q": "¿Puede reservar una sola persona?",
+          "a": "Se requieren mínimo 2 pasajeros por vuelo en parasail. Reservas individuales pueden cancelarse si no hay pareja."
+        },
+        "7": {
+          "q": "¿Pueden subir espectadores a la lancha?",
+          "a": "Sí, cuando hay asientos disponibles por un cargo adicional. La disponibilidad es limitada y no se reserva con anticipación."
+        },
+        "8": {
+          "q": "¿Cuáles son las condiciones de cancelación?",
+          "a": "Aviso de 24 horas: reembolso completo. Cancelaciones el mismo día: 50% si se cancela al menos 1 hora antes del check-in. Sin reembolso dentro de la hora previa al check-in. Cancelaciones por clima: reembolso completo."
+        },
+        "9": {
+          "q": "¿Hay fotos disponibles?",
+          "a": "Sí; paquetes de fotos HD a $45 por grupo, entregadas después del tour."
+        }
+      },
+      "configurator": {
+        "sharedTripLabel": "Salida compartida",
+        "sharedTripDescription": "{passengerRate} por pasajero en vuelo (6+); observadores opcionales {observerRate} cada uno.",
+        "privateTripLabel": "Salida privada",
+        "privateTripDescription": "Hasta 10 huéspedes en vuelo, {privatePrice} (propina no incluida).",
+        "flyingPassengersLabel": "Pasajeros en vuelo (6+ años)",
+        "addObserversLead": "Agregar observadores",
+        "addObserversRest": "(solo lancha, sin vuelo) — {observerRate} por persona cuando hay asientos disponibles.",
+        "observersLabel": "Número de observadores",
+        "breakdownPrivate": "Salida privada (hasta 10 en vuelo): {amount}",
+        "breakdownFlying": "{n} × {rate} (en vuelo) = {subtotal}",
+        "breakdownObservers": "{n} × {rate} (observadores) = {subtotal}",
+        "flyingPassengersOne": "1 pasajero en vuelo",
+        "flyingPassengersMany": "{n} pasajeros en vuelo",
+        "observersOne": "1 observador",
+        "observersMany": "{n} observadores",
+        "cartPrivateTitle": "Parasailing — salida privada",
+        "cartPrivateSubtitle": "Miami Beach · hasta 10 huéspedes en vuelo · propina no incluida",
+        "cartSharedTitle": "Parasailing — salida compartida",
+        "cartSharedSubtitlePattern": "Miami Beach · 300 Alton Rd, Dock A · {details}"
+      }
+    },
+    "fishing": {
+      "sectionEyebrow": "Salidas de pesca",
+      "headline": "Opciones de charter y tarifas",
+      "intro": "Paseo costero, costa adentro y mar adentro: elige el día que encaje con tu grupo. Coordinamos salida, horarios y tripulación con el resto de tu estadía en Miami.",
+      "cruising": {
+        "title": "Charter de crucero / paseo",
+        "rate": "$250/hora",
+        "locations": {
+          "0": "Miami Beach",
+          "1": "Key Biscayne",
+          "2": "Miami River"
+        },
+        "tiers": {
+          "0": { "duration": "2 horas" },
+          "1": { "duration": "3 horas" },
+          "2": { "duration": "4 horas" },
+          "3": { "duration": "5 horas" },
+          "4": { "duration": "6 horas" }
+        }
+      },
+      "inshore": {
+        "title": "Charter de pesca inshore",
+        "vessel": "Skimmer Skiff 165",
+        "targets": "Tarpon, Snook, Redfish, Bonefish, Snapper, Jack",
+        "tiers": {
+          "0": { "duration": "4 horas" },
+          "1": { "duration": "6 horas" },
+          "2": { "duration": "8–10 horas" }
+        }
+      },
+      "offshore": {
+        "title": "Charter de pesca offshore",
+        "vessels": {
+          "0": "24′ Boston Whaler Outrage",
+          "1": "27′ Sea Pro"
+        },
+        "targets": "Atún, macarela, jack, pez vela y variedad de peces de fondo como snapper, mero y tilefish",
+        "tiers": {
+          "0": { "duration": "4 horas" },
+          "1": { "duration": "6 horas" },
+          "2": { "duration": "8–10 horas" }
+        }
+      },
+      "inclusions": {
+        "0": "Equipo listo para torneo con cañas y carretes Shimano, Penn y Daiwa.",
+        "1": "Embarcación totalmente preparada con carnada, agua, hielo y equipo de seguridad certificado por la Guardia Costera.",
+        "2": "Bloqueador y lentes de sol disponibles si los necesitas."
+      }
+    }
+  }
+}

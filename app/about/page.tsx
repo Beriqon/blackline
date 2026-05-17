@@ -4,14 +4,17 @@ import Link from "next/link";
 
 import { SectionReveal } from "@/components/section-reveal";
 import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
-import { SERVICE_LINKS } from "@/lib/nav";
+import { getI18n } from "@/lib/i18n/server";
+import { getServiceLinks } from "@/lib/i18n/nav";
 import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = {
-  title: "About",
-  description:
-    "Blackline Concierge — Miami luxury coordination with chauffeur ground transport at the core: professional drivers, Maybach vans, SUVs, and executive vehicles. Plus yachts, jets, villas, and VIP nightlife.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return {
+    title: t("common.about"),
+    description: t("aboutPage.metaDescription"),
+  };
+}
 
 const btnPrimary =
   "inline-flex min-h-12 items-center justify-center border border-gold/40 bg-gold px-8 py-3.5 text-center text-xs font-semibold uppercase tracking-[0.18em] text-[#0b0b0b] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold-secondary hover:bg-gold-secondary hover:shadow-[0_0_0_1px_rgba(224,195,138,0.4),0_14px_48px_rgba(198,164,108,0.2)] active:translate-y-0";
@@ -19,22 +22,16 @@ const btnPrimary =
 const btnGhost =
   "inline-flex min-h-12 items-center justify-center border border-gold/25 bg-transparent px-8 py-3.5 text-center text-xs font-semibold uppercase tracking-[0.18em] text-cream transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold/55 hover:text-gold-secondary hover:shadow-[0_0_36px_rgba(198,164,108,0.12)] active:translate-y-0";
 
-const principles = [
-  {
-    title: "One team on comms",
-    body: "Ground, water, air, and nights out — we route everything through a single concierge thread so you are not chasing five different vendors mid-trip.",
-  },
-  {
-    title: "Built around your dates",
-    body: "Share when you land, how many guests, and what matters most. We shape the itinerary and swap elements until it fits — nothing is one-size-fits-all.",
-  },
-  {
-    title: "Discretion by default",
-    body: "From chauffeured transfers to table reservations, we keep coordination tight and professional — so you can focus on the experience, not the logistics.",
-  },
-] as const;
+export default async function AboutPage() {
+  const { t } = await getI18n();
+  const serviceLinks = getServiceLinks(t);
 
-export default function AboutPage() {
+  const principles = [
+    { title: t("aboutPage.principle1Title"), body: t("aboutPage.principle1Body") },
+    { title: t("aboutPage.principle2Title"), body: t("aboutPage.principle2Body") },
+    { title: t("aboutPage.principle3Title"), body: t("aboutPage.principle3Body") },
+  ];
+
   return (
     <>
       <section className="relative min-h-[min(52vh,560px)] overflow-hidden border-b border-gold/10 bg-background">
@@ -60,22 +57,18 @@ export default function AboutPage() {
         <div className="relative z-10 mx-auto flex min-h-[min(52vh,560px)] max-w-7xl items-center px-4 py-14 sm:px-6 sm:py-16 lg:px-10">
           <div className="w-full max-w-[min(40rem,100%)] text-left">
             <p className="text-[0.65rem] font-semibold uppercase tracking-[0.42em] text-gold">
-              About
+              {t("aboutPage.eyebrow")}
             </p>
             <div className="mt-5 h-px w-14 bg-gold/35" aria-hidden />
             <h1 className="hero-headline-in mt-6 font-serif text-[2.2rem] leading-[1.12] tracking-tight text-cream sm:text-5xl md:text-[3rem] lg:text-[3.35rem]">
-              Miami luxury, coordinated end to end.
+              {t("aboutPage.headline")}
             </h1>
             <p className="mt-4 max-w-2xl text-[0.95rem] leading-[1.65] text-cream/72 sm:text-base">
-              Blackline Concierge is a Miami-based team that plans and runs
-              high-touch trips.{" "}
+              {t("aboutPage.heroBodyBefore")}{" "}
               <span className="text-cream/82">
-                Chauffeur-driven ground transport is at the center of how we
-                operate
+                {t("aboutPage.heroBodyHighlight")}
               </span>{" "}
-              — airport runs, nights out, and multi-stop days — layered with
-              yachts, stays, aviation, and VIP access when you want the full
-              arc.
+              {t("aboutPage.heroBodyAfter")}
             </p>
           </div>
         </div>
@@ -90,42 +83,32 @@ export default function AboutPage() {
         <div className="mx-auto max-w-7xl px-4 text-left sm:px-6 lg:px-10">
           <div className="max-w-3xl">
             <p className="text-[0.62rem] font-semibold uppercase tracking-[0.48em] text-gold/90">
-              Who we are
+              {t("aboutPage.whoWeAre")}
             </p>
             <div className="mt-4 h-px w-12 bg-gold/30" aria-hidden />
             <h2
               id="about-story-heading"
               className="mt-6 font-serif text-2xl tracking-tight text-cream sm:text-3xl md:text-[2.1rem]"
             >
-              One concierge. Every moving part.
+              {t("aboutPage.storyHeadline")}
             </h2>
             <div className="mt-8 space-y-5 text-sm leading-relaxed text-cream/58 sm:text-[0.9375rem]">
               <p>
-                Visitors come to Miami for the cars, the yachts, the villas, and
-                the nights out — but pulling it together usually means juggling
-                separate contacts, timing, and last-minute changes. We built
-                Blackline around the opposite idea:{" "}
+                {t("aboutPage.storyP1")}
                 <span className="text-cream/78">
-                  one trusted team that speaks to everyone on your behalf
+                  {t("aboutPage.storyP1Highlight")}
                 </span>
-                , keeps the plan coherent, and adjusts when your group does.
+                {t("aboutPage.storyP1After")}
               </p>
               <p>
-                Day to day,{" "}
+                {t("aboutPage.storyP2Before")}
                 <span className="text-cream/78">
-                  chauffeur services are the backbone of what we do
+                  {t("aboutPage.storyP2Highlight")}
                 </span>
-                : professional drivers, curated vehicles from executive SUVs and
-                Mercedes-Maybach vans to high-spec sedans and VIP vans — timed to
-                your flights, reservations, and dockside pickups. When the ground
-                leg is locked in, everything else — yachts, villas, jets, clubs —
-                snaps into place around it.
+                {t("aboutPage.storyP2After")}
               </p>
               <p>
-                Whether you need a self-drive exotic, a crewed charter, a private
-                residence, aviation, or a table when the room is hard to book, we
-                route requests through a single line — text or call — so you
-                always know who is handling what.
+                {t("aboutPage.storyP3")}
               </p>
             </div>
           </div>
@@ -143,7 +126,7 @@ export default function AboutPage() {
             <div className="relative aspect-[4/3] w-full overflow-hidden border border-gold/12 bg-[#050505] shadow-[inset_0_1px_0_0_rgba(198,164,108,0.06)] lg:order-2">
               <Image
                 src="/exoticcar/chauffeur/exclusivesprinter/exclusivesprinter1.jpg"
-                alt="VIP chauffeur sprinter — executive group transport"
+                alt={t("aboutPage.chauffeurImageAlt")}
                 fill
                 sizes="(max-width: 1024px) 100vw, 42vw"
                 className="object-cover object-center brightness-[0.92] contrast-[1.05]"
@@ -155,33 +138,24 @@ export default function AboutPage() {
             </div>
             <div className="lg:order-1">
               <p className="text-[0.62rem] font-semibold uppercase tracking-[0.48em] text-gold/90">
-                Chauffeur services
+                {t("aboutPage.chauffeurEyebrow")}
               </p>
               <div className="mt-4 h-px w-12 bg-gold/30" aria-hidden />
               <h2
                 id="about-chauffeur-heading"
                 className="mt-6 font-serif text-2xl tracking-tight text-cream sm:text-3xl md:text-[2.1rem]"
               >
-                Ground transport at the heart of the itinerary
+                {t("aboutPage.chauffeurHeadline")}
               </h2>
               <div className="mt-6 space-y-4 text-sm leading-relaxed text-cream/58 sm:text-[0.9375rem]">
                 <p>
-                  Most trips don&apos;t start on a yacht — they start at the
-                  airport, the hotel, or a curb downtown.{" "}
+                  {t("aboutPage.chauffeurP1Before")}
                   <span className="text-cream/78">
-                    Our chauffeur desk is where Blackline spends the most focused
-                    energy day to day:
+                    {t("aboutPage.chauffeurP1Highlight")}
                   </span>{" "}
-                  pairing your group with the right vehicle class, driver, and
-                  timing so every leg feels effortless.
+                  {t("aboutPage.chauffeurP1After")}
                 </p>
-                <p>
-                  From Mercedes-Maybach vans and executive SUVs to Rolls-Royce and
-                  curated sedans, each booking is matched to the occasion —
-                  airport transfers (MIA / FLL / OPF), multi-stop nights out,
-                  event arrivals, and dockside yacht pickups — always with the same
-                  discreet, professional standard.
-                </p>
+                <p>{t("aboutPage.chauffeurP2")}</p>
               </div>
               <ul
                 className="mt-8 space-y-3 border-l border-gold/22 pl-6 text-sm leading-relaxed text-cream/62 sm:text-[0.9375rem]"
@@ -192,32 +166,29 @@ export default function AboutPage() {
                     className="absolute -left-6 top-[0.45em] h-1 w-1 rounded-full bg-gold/45"
                     aria-hidden
                   />
-                  Scheduled pickups aligned with flights and reservation times —
-                  not generic “window” quotes that slip.
+                  {t("aboutPage.chauffeurBullet1")}
                 </li>
                 <li className="relative">
                   <span
                     className="absolute -left-6 top-[0.45em] h-1 w-1 rounded-full bg-gold/45"
                     aria-hidden
                   />
-                  Fleet breadth for solo travelers through large VIP groups — one
-                  team coordinating vehicles across your whole stay.
+                  {t("aboutPage.chauffeurBullet2")}
                 </li>
                 <li className="relative">
                   <span
                     className="absolute -left-6 top-[0.45em] h-1 w-1 rounded-full bg-gold/45"
                     aria-hidden
                   />
-                  Natural handoff to yachts, villas, and nightlife when you want the
-                  full Miami arc — same concierge thread start to finish.
+                  {t("aboutPage.chauffeurBullet3")}
                 </li>
               </ul>
               <div className="mt-10 flex flex-wrap gap-4">
                 <Link href="/services/chauffeur-services" className={btnPrimary}>
-                  Chauffeur fleet &amp; rates
+                  {t("aboutPage.chauffeurFleetRates")}
                 </Link>
                 <Link href={CONTACT_TRIP_BUILDER_HREF} className={btnGhost}>
-                  Book chauffeur
+                  {t("aboutPage.bookChauffeur")}
                 </Link>
               </div>
             </div>
@@ -233,26 +204,24 @@ export default function AboutPage() {
       >
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <p className="text-[0.62rem] font-semibold uppercase tracking-[0.48em] text-gold/90">
-            What we coordinate
+            {t("aboutPage.coordinateEyebrow")}
           </p>
           <div className="mt-4 h-px w-12 bg-gold/30" aria-hidden />
           <h2
             id="about-services-heading"
             className="mt-6 max-w-2xl font-serif text-2xl tracking-tight text-cream sm:text-3xl md:text-[2.1rem]"
           >
-            Services under one roof
+            {t("aboutPage.servicesHeadline")}
           </h2>
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-cream/52 sm:text-[0.9375rem]">
-            Chauffeur ground transport ties everything together — start there or
-            browse each offering in detail. Tell us your occasion and we&apos;ll
-            propose the right mix.
+            {t("aboutPage.servicesBody")}
           </p>
 
           <ul
             className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4"
             role="list"
           >
-            {SERVICE_LINKS.map((item) => (
+            {serviceLinks.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
@@ -263,7 +232,7 @@ export default function AboutPage() {
                     className="text-gold/45 transition-colors group-hover:text-gold-secondary"
                     aria-hidden
                   >
-                    →
+                    ÔåÆ
                   </span>
                 </Link>
               </li>
@@ -272,10 +241,10 @@ export default function AboutPage() {
 
           <div className="mt-10 flex flex-wrap gap-4 border-t border-gold/10 pt-10">
             <Link href="/services" className={btnGhost}>
-              All services
+              {t("aboutPage.allServices")}
             </Link>
             <Link href="/packages" className={btnGhost}>
-              View packages
+              {t("aboutPage.viewPackages")}
             </Link>
           </div>
         </div>
@@ -286,11 +255,11 @@ export default function AboutPage() {
       <SectionReveal className="border-b border-gold/10 bg-charcoal py-14 sm:py-16 lg:py-20">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <p className="text-[0.62rem] font-semibold uppercase tracking-[0.48em] text-gold/90">
-            How we work
+            {t("aboutPage.howWeWorkEyebrow")}
           </p>
           <div className="mt-4 h-px w-12 bg-gold/30" aria-hidden />
           <h2 className="mt-6 font-serif text-2xl tracking-tight text-cream sm:text-3xl md:text-[2.1rem]">
-            Principles that shape every itinerary
+            {t("aboutPage.howWeWorkHeadline")}
           </h2>
 
           <div className="mt-12 grid gap-8 sm:grid-cols-2 sm:gap-10 lg:grid-cols-3 lg:gap-12">
@@ -316,17 +285,14 @@ export default function AboutPage() {
       <SectionReveal className="border-b border-gold/10 bg-background py-14 sm:py-16 lg:py-20">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <p className="text-[0.62rem] font-semibold uppercase tracking-[0.48em] text-gold/90">
-            Miami
+            {t("aboutPage.miamiEyebrow")}
           </p>
           <div className="mt-4 h-px w-12 bg-gold/30" aria-hidden />
           <h2 className="mt-6 font-serif text-2xl tracking-tight text-cream sm:text-3xl md:text-[2.1rem]">
-            Rooted in the city we operate in
+            {t("aboutPage.miamiHeadline")}
           </h2>
           <p className="mt-6 text-sm leading-relaxed text-cream/58 sm:text-[0.9375rem]">
-            We focus on Miami and South Florida — the marinas, airports, venues,
-            and seasonal rhythms — so routing, timing, and backup plans reflect
-            how the city actually moves. When plans shift, we&apos;re already
-            thinking about the next best option on the ground.
+            {t("aboutPage.miamiBody")}
           </p>
         </div>
       </SectionReveal>
@@ -340,18 +306,17 @@ export default function AboutPage() {
         />
         <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
           <h2 className="font-serif text-[1.65rem] leading-snug tracking-tight text-cream sm:text-3xl md:text-[2.1rem]">
-            Ready to plan your stay?
+            {t("aboutPage.ctaHeadline")}
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-cream/55 sm:text-[0.9375rem]">
-            Share your dates and what you want to experience — we&apos;ll reply
-            with next steps and a tailored outline.
+            {t("aboutPage.ctaBody")}
           </p>
           <div className="mt-10 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:flex-wrap sm:items-center">
             <Link href={CONTACT_TRIP_BUILDER_HREF} className={cn(btnPrimary, "sm:min-w-[220px]")}>
-              Contact us
+              {t("aboutPage.contactUs")}
             </Link>
             <Link href="/experiences" className={btnGhost}>
-              Experiences gallery
+              {t("aboutPage.experiencesGallery")}
             </Link>
           </div>
         </div>

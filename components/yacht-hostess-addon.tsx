@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 
+import { useLocale } from "@/components/locale-provider";
 import { SectionReveal } from "@/components/section-reveal";
 import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import { YACHT_HOSTESS_ADDON } from "@/lib/yacht-hostess-addon";
@@ -13,8 +16,19 @@ export type YachtHostessAddonProps = {
 };
 
 export function YachtHostessAddon({ className }: YachtHostessAddonProps) {
-  const { headline, body, startingPrice, maxCapacityLabel, policyNote } =
-    YACHT_HOSTESS_ADDON;
+  const { locale, t } = useLocale();
+  const { startingPrice, maxCapacityLabel } = YACHT_HOSTESS_ADDON;
+
+  const headline =
+    locale === "es"
+      ? t("yachtsPage.addons.hostessHeadline")
+      : YACHT_HOSTESS_ADDON.headline;
+  const body =
+    locale === "es" ? t("yachtsPage.addons.hostessBody") : YACHT_HOSTESS_ADDON.body;
+  const policyNote =
+    locale === "es"
+      ? t("yachtsPage.addons.hostessPolicy")
+      : YACHT_HOSTESS_ADDON.policyNote;
 
   return (
     <SectionReveal
@@ -26,7 +40,7 @@ export function YachtHostessAddon({ className }: YachtHostessAddonProps) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="max-w-2xl">
           <p className="text-[0.6rem] font-semibold uppercase tracking-[0.42em] text-gold/75">
-            Add-on
+            {t("yachtsPage.addons.hostessEyebrow")}
           </p>
           <h2 className="mt-2 font-serif text-lg leading-snug tracking-tight text-cream sm:text-xl">
             {headline}
@@ -35,18 +49,17 @@ export function YachtHostessAddon({ className }: YachtHostessAddonProps) {
             {body}
           </p>
           <p className="mt-3 text-[0.8125rem] text-cream/45 sm:text-sm">
-            From {startingPrice} · Up to {maxCapacityLabel} women when
-            available
+            {t("yachtsPage.addons.hostessFrom", {
+              price: startingPrice,
+              capacity: maxCapacityLabel,
+            })}
           </p>
           <p className="mt-2 text-[0.7rem] leading-relaxed text-cream/38">
             {policyNote}
           </p>
           <p className="mt-4">
-            <Link
-              href={CONTACT_TRIP_BUILDER_HREF}
-              className={linkSubtle}
-            >
-              Add this in the custom package builder
+            <Link href={CONTACT_TRIP_BUILDER_HREF} className={linkSubtle}>
+              {t("yachtsPage.addons.hostessPackageLink")}
             </Link>
           </p>
         </div>

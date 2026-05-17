@@ -28,8 +28,8 @@ export const WATER_OVERVIEW_CARDS: readonly WaterOverviewCard[] = [
     description:
       "Calm, scenic paddles in the Miami Beach area with flexible time blocks, easy check-in, and routes that fit your day.",
     priceLabel: "$40 / person · 60 min",
-    image: "/sitephotos/miamibeach.jpg",
-    imageAlt: "Calm water kayak scene in Miami",
+    image: "/onthewater/kayak/kayak1.jpeg",
+    imageAlt: "Kayak on calm Miami Beach waters",
     tab: "kayak",
   },
   {
@@ -38,8 +38,8 @@ export const WATER_OVERVIEW_CARDS: readonly WaterOverviewCard[] = [
     description:
       "Stand-up paddle sessions for skyline views and a relaxed pace on the bay — slotted into your stay with the same single-thread Blackline coordination.",
     priceLabel: "$40 / person · 60 min",
-    image: "/sitephotos/miamibeach.jpg",
-    imageAlt: "Paddle board on clear water",
+    image: "/onthewater/paddleboard/paddleboard.jpg",
+    imageAlt: "Stand-up paddle board on clear water",
     tab: "sup",
   },
   {
@@ -47,8 +47,8 @@ export const WATER_OVERVIEW_CARDS: readonly WaterOverviewCard[] = [
     title: "Banana boat",
     description:
       "High-energy, social tow rides for groups that want a splash of fun in the same waterfront window — we handle timing and partner handoff.",
-    image: "/sitephotos/miamibeach.jpg",
-    imageAlt: "Tropical water surface for water sports",
+    image: "/onthewater/bananaboats/bananaboat3.avif",
+    imageAlt: "Group banana boat adventure on the water",
     tab: "banana",
   },
   {
@@ -57,8 +57,8 @@ export const WATER_OVERVIEW_CARDS: readonly WaterOverviewCard[] = [
     description:
       "Tandem and triple flights over Biscayne Bay with meeting-time coordination, optional photo add-ons, and clear pre-ride details.",
     priceLabel: "Shared or private — from $120 / flyer",
-    image: "/sitephotos/miamibeach.jpg",
-    imageAlt: "Open water off Miami suitable for parasailing",
+    image: "/onthewater/parasailling/parasailling1.webp",
+    imageAlt: "Parasailing over Biscayne Bay off Miami Beach",
     tab: "parasailing",
   },
   {
@@ -71,6 +71,22 @@ export const WATER_OVERVIEW_CARDS: readonly WaterOverviewCard[] = [
     tab: "fishing",
   },
 ] as const;
+
+export const WATER_HERO_OVERVIEW = {
+  src: "/sitephotos/miamibeach.jpg",
+  alt: "Miami Beach shoreline and ocean",
+} as const;
+
+export function getWaterActivityHero(tab: WaterActivityTab): {
+  src: string;
+  alt: string;
+} {
+  if (tab === "overview") return WATER_HERO_OVERVIEW;
+  const card = WATER_OVERVIEW_CARDS.find((c) => c.tab === tab);
+  return card
+    ? { src: card.image, alt: card.imageAlt }
+    : WATER_HERO_OVERVIEW;
+}
 
 export const FLYSOBE_PARASAIL_URL = "https://flysobe.com/parasailing" as const;
 export const FLYSOBE_HOME_URL = "https://flysobe.com/" as const;

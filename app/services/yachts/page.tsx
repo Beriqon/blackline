@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 
 import { YachtsCatalog } from "@/components/yachts-catalog";
+import { getI18n } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Yacht charters",
-  description:
-    "Motor yacht day charters in Miami — browse vessels, duration-based rates, and inclusions. Optional female hosts add-on (partner agency) available; request a tailored quote through Blackline.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return {
+    title: t("nav.yachts"),
+    description: t("yachtsPage.metaDescription"),
+  };
+}
 
 export default function YachtsPage() {
   return <YachtsCatalog />;
