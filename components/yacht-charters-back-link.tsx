@@ -14,11 +14,11 @@ function YachtChartersBackLinkInner({ className }: { className?: string }) {
   const { t } = useLocale();
   const searchParams = useSearchParams();
   const href = useMemo(() => {
-    const p = searchParams.get("page");
-    if (!p) return "/services/yachts";
-    const n = parseInt(p, 10);
-    if (!Number.isFinite(n) || n < 2) return "/services/yachts";
-    return `/services/yachts?page=${n}`;
+    const params = new URLSearchParams();
+    for (const key of ["page", "q", "region", "size", "budget", "guests", "sort", "featured"]) {
+      const value = searchParams.get(key); if (value) params.set(key, value);
+    }
+    return "/services/yachts" + (params.size ? "?" + params : "") + "#yacht-collection";
   }, [searchParams]);
 
   return (

@@ -1,0 +1,50 @@
+{
+  "eyebrow": "THE BLACKLINE PACKAGES",
+  "hero1": "Your people. Your pace.",
+  "hero2": "Your Miami, together.",
+  "intro": "A place to stay, a way to arrive, and something to look forward to. Bring the pieces of your trip together with a signature package or a plan of your own.",
+  "heroAlt": "Waterfront Miami villa with a rooftop pool",
+  "yachtAlt": "White superyacht on the water at sunset",
+  "discover": "Explore the packages",
+  "build": "Create your own",
+  "signature": "One plan. Every detail connected.",
+  "collection1": "A starting point.",
+  "collection2": "Never a fixed formula.",
+  "collectionBody": "Choose a format that feels right, then make it yours. Dates, group size, preferences, and confirmed availability shape the final arrangements and quote.",
+  "processEyebrow": "FROM AN IDEA TO YOUR ITINERARY",
+  "process1": "Thoughtfully planned.",
+  "process2": "Personally yours.",
+  "steps": [
+    {
+      "title": "Find your starting point.",
+      "body": "Choose a signature format or select the individual services you have in mind."
+    },
+    {
+      "title": "Refine it together.",
+      "body": "Share your dates and group. Your concierge helps align the options, timing, and quote."
+    },
+    {
+      "title": "Enjoy the bigger picture.",
+      "body": "Once arrangements are confirmed, your concierge coordinates the details across your stay."
+    }
+  ],
+  "builder1": "Build the stay",
+  "builder2": "you have in mind.",
+  "builderBody": "Choose specific vehicles, stays, yachts, and experiences, or simply tell us what interests you. Your selection becomes a ready-to-send WhatsApp enquiry.",
+  "guide": [
+    "Add your dates and group size.",
+    "Select the services you’d like quoted.",
+    "Review your request and open WhatsApp."
+  ],
+  "builderNote": "This is a planning request. Availability, final pricing, and arrangements are confirmed with your concierge before booking.",
+  "formTitle": "YOUR CUSTOM PACKAGE",
+  "shootEyebrow": "PHOTO / VIDEO SHOOT ADD-ON",
+  "shoot1": "Be in the moment.",
+  "shoot2": "Keep it with you.",
+  "shootBody": "Add a photo or video shoot to your package. On the yacht, out in the city, or alongside your favourite car — explore a few moments from previous shoots.",
+  "shootLink": "Explore photo & video shoots",
+  "shootGallery": "Photo and video shoots gallery",
+  "previousPhoto": "Previous shoot photos",
+  "nextPhoto": "Next shoot photos",
+  "shootAdd": "Include a shoot in your custom request"
+}

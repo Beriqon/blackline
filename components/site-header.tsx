@@ -4,6 +4,7 @@ import { CartHeaderButton } from "@/components/cart-header-button";
 import { LanguageToggle } from "@/components/language-toggle";
 import { MobileNav } from "@/components/mobile-nav";
 import { ServicesNavDropdown } from "@/components/services-nav-dropdown";
+import { SiteHeaderShell } from "@/components/site-header-shell";
 import { getI18n } from "@/lib/i18n/server";
 import { getMainNavLinks } from "@/lib/i18n/nav";
 
@@ -18,7 +19,7 @@ export async function SiteHeader() {
   const navAfterServices = getMainNavLinks(t);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gold/10 bg-[#0b0b0b]/92 backdrop-blur-md">
+    <SiteHeaderShell>
       <div className="relative mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:h-[4.25rem] sm:px-6 lg:px-8">
         <Link
           href="/"
@@ -48,6 +49,7 @@ export async function SiteHeader() {
           <MobileNav />
           <a
             href={`tel:${PHONE_TEL}`}
+            data-header-control
             className="inline-flex items-center gap-1.5 border border-gold/25 bg-charcoal/80 px-3 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-cream transition-colors hover:border-gold/40 hover:text-gold-secondary sm:px-4 sm:text-xs"
           >
             <Phone className="size-3.5 shrink-0 sm:size-4" aria-hidden />
@@ -56,7 +58,7 @@ export async function SiteHeader() {
           </a>
         </div>
       </div>
-    </header>
+    </SiteHeaderShell>
   );
 }
 

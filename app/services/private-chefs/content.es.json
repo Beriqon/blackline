@@ -1,0 +1,47 @@
+{
+  "hero1": "Buena compañía.",
+  "hero2": "Un sabor excepcional.",
+  "intro": "Un almuerzo en el mar. Una cena íntima en tu villa. Un chef privado, un menú a tu medida y tiempo para disfrutar cada plato.",
+  "heroAlt": "Una selección gastronómica en la cubierta de un yate en Miami",
+  "signature": "TU MESA. TU OCASIÓN.",
+  "story1": "La mejor mesa",
+  "story2": "es la tuya.",
+  "storyAlt": "Una selección de platos para una experiencia gastronómica privada",
+  "photoNote": "UNA MUESTRA DE LA EXPERIENCIA BLACKLINE",
+  "roster1": "Las personas",
+  "roster2": "detrás de cada plato.",
+  "rosterCaption": "LA COLECCIÓN DE CHEFS / MIAMI Y MÁS ALLÁ",
+  "previousChef": "Chef anterior",
+  "nextChef": "Siguiente chef",
+  "previousPhoto": "Foto gastronómica anterior",
+  "nextPhoto": "Siguiente foto gastronómica",
+  "formatsEyebrow": "Gastronomía a tu manera",
+  "formats1": "Como en casa.",
+  "formats2": "Dondequiera que vayas.",
+  "gallery1": "Un pequeño adelanto",
+  "gallery2": "de lo que te espera.",
+  "galleryCaption": "DESDE LA COCINA / LA MESA BLACKLINE",
+  "processEyebrow": "Nos encargamos de la cena",
+  "process1": "Tus preferencias.",
+  "process2": "Nuestra atención al detalle.",
+  "steps": [
+    {
+      "title": "Cuéntanos tu idea",
+      "body": "Comparte fechas, ubicación, número de invitados y ocasión. Indica tus cocinas favoritas y cualquier necesidad alimentaria."
+    },
+    {
+      "title": "Diseñamos el menú",
+      "body": "Tu concierge coordina el chef, el menú, el estilo de servicio y la cocina. Confirmamos contigo el precio y la disponibilidad."
+    },
+    {
+      "title": "Disfruta como un invitado más",
+      "body": "Una vez acordados los detalles, tu chef se ocupa de la preparación y el servicio. Tú disfruta de la compañía."
+    }
+  ],
+  "pairEyebrow": "Parte de una gran estancia",
+  "ctaEyebrow": "Tu próxima comida memorable",
+  "cta1": "Tú traes la compañía.",
+  "cta2": "Nosotros, la experiencia.",
+  "ctaBody": "Una cena para dos o una celebración con todo tu grupo. Cuéntanos qué tienes en mente y te ayudamos a encontrar el chef adecuado.",
+  "galleryBody": "Unas imágenes de la experiencia gastronómica privada: de platos cuidados a mesas junto al mar. Desliza o utiliza las flechas para explorar."
+}

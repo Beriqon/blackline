@@ -1,0 +1,39 @@
+{
+  "hero1": "Your moment.",
+  "hero2": "Worth keeping.",
+  "intro": "Be part of the experience. Let our camera crew capture the people, places, and details around it — with photography, video, or both, coordinated with your Miami plans.",
+  "caption": "REAL PEOPLE. MIAMI MOMENTS.",
+  "formats1": "A single frame.",
+  "formats2": "Or the whole feeling.",
+  "photoCta": "Plan a photo shoot",
+  "videoCta": "Plan a video shoot",
+  "gallery1": "The moments behind",
+  "gallery2": "the memories.",
+  "galleryBody": "A selection of existing shoot photographs, from time on the water to nights in the city. Drag or swipe to explore the gallery.",
+  "previous": "Previous shoot photos",
+  "next": "Next shoot photos",
+  "process1": "Less time arranging.",
+  "process2": "More time being there.",
+  "steps": [
+    {
+      "title": "Choose your format.",
+      "body": "Photography, video, or both. Tell us the occasion and what you’d like to take away from the shoot."
+    },
+    {
+      "title": "Shape the brief.",
+      "body": "Agree on the location, coverage, edited deliverables, quote, and delivery timeline before the day."
+    },
+    {
+      "title": "Keep the day connected.",
+      "body": "Your crew and concierge coordinate timing and access around your confirmed plans."
+    }
+  ],
+  "pairEyebrow": "ADD IT TO YOUR EXPERIENCE",
+  "pairTitle": "Your plans. A new perspective.",
+  "ctaEyebrow": "MAKE IT PART OF YOUR STAY",
+  "cta1": "Bring your people.",
+  "cta2": "We’ll capture the moment.",
+  "ctaBody": "Share your dates, plans, and whether you’re looking for photos, video, or both. We’ll help coordinate a shoot around your experience.",
+  "heroAlt": "Portrait inside a turquoise-lit luxury van",
+  "insetAlt": "Lifestyle portrait on a jet ski in Miami"
+}

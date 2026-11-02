@@ -38,6 +38,7 @@ export function LanguageToggle() {
     <div ref={rootRef} className="relative hidden sm:block">
       <button
         type="button"
+        data-header-control
         onClick={() => setOpen((o) => !o)}
         disabled={isPending}
         className={cn(

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Plane, X } from "lucide-react";
+import { ArrowDown, ArrowUpRight, ChevronLeft, ChevronRight, Plane, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -29,9 +29,7 @@ import {
 } from "@/lib/private-jets-data";
 import { whatsAppUrlWithText } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
-
-const btnPrimary =
-  "inline-flex min-h-11 items-center justify-center border border-gold/40 bg-gold px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-[#0b0b0b] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold-secondary hover:bg-gold-secondary hover:shadow-[0_0_0_1px_rgba(224,195,138,0.4),0_14px_48px_rgba(198,164,108,0.2)] active:translate-y-0";
+import styles from "@/app/services/private-jets/jets.module.css";
 
 function JetImagePlaceholder({
   className,
@@ -55,30 +53,6 @@ function JetImagePlaceholder({
   );
 }
 
-function SpecCell({
-  label,
-  value,
-  className,
-}: {
-  label: string;
-  value: string | number;
-  className?: string;
-}) {
-  return (
-    <div
-      className={cn(
-        "border border-gold/[0.09] bg-[#0c0c0c]/90 px-3 py-2.5 sm:px-4 sm:py-3",
-        className,
-      )}
-    >
-      <p className="text-[0.6rem] font-semibold uppercase tracking-[0.28em] text-gold/65">
-        {label}
-      </p>
-      <p className="mt-1 text-[0.875rem] leading-snug text-cream/88">{value}</p>
-    </div>
-  );
-}
-
 function JetCard({
   jet,
   onOpen,
@@ -92,48 +66,12 @@ function JetCard({
 }) {
   const cover = jet.galleryPaths?.[0];
 
-  return (
-    <button
-      type="button"
-      onClick={() => onOpen(jet)}
-      className="group w-full text-left transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold/50"
-    >
-      <div className="relative aspect-[16/10] overflow-hidden border border-gold/12 bg-[#0b0b0b] transition-[border-color] duration-500 group-hover:border-gold/28">
-        {cover ? (
-          <Image
-            src={cover}
-            alt={jet.name}
-            fill
-            className="object-cover transition duration-500 ease-out group-hover:scale-[1.03]"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-        ) : (
-          <JetImagePlaceholder
-            className="absolute inset-0 h-full w-full"
-            label={aircraftPhoto}
-          />
-        )}
-        <div
-          className="absolute inset-0 bg-gradient-to-t from-[#0b0b0b]/92 via-[#0b0b0b]/25 to-transparent opacity-95"
-          aria-hidden
-        />
-        <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5">
-          <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-gold/85">
-            {jet.categoryLabel}
-          </p>
-          <p className="mt-1.5 font-serif text-base leading-snug tracking-tight text-cream sm:text-lg">
-            {jet.name}
-          </p>
-          <p className="mt-2 text-[0.75rem] tabular-nums text-cream/55">
-            {jet.passengers} · {jet.range}
-          </p>
-        </div>
-      </div>
-      <p className="mt-3 text-[0.7rem] font-medium uppercase tracking-[0.22em] text-cream/40">
-        {tapForSpecs}
-      </p>
-    </button>
-  );
+  return <button type="button" onClick={() => onOpen(jet)} className={styles.jetCard}>
+    <div className={styles.cardPhoto}>{cover ? <Image src={cover} alt={jet.name} fill sizes="(max-width: 700px) 100vw, 50vw" className={styles.cover}/> : <JetImagePlaceholder className="absolute inset-0" label={aircraftPhoto}/>}
+      <span className={styles.categoryTag}>{jet.categoryLabel}</span><span className={styles.openIcon} aria-hidden><ArrowUpRight size={21}/></span>
+    </div>
+    <div className={styles.cardBody}><h3>{jet.name}</h3><div className={styles.cardSpecs}><span>{jet.passengers}</span><span>{jet.range}</span><span>{jet.cruisingSpeed}</span></div><p>{tapForSpecs}<ArrowUpRight size={14} aria-hidden/></p></div>
+  </button>;
 }
 
 function JetDetailGallery({
@@ -148,11 +86,12 @@ function JetDetailGallery({
   const galleryLen = paths.length;
   const [photoIndex, setPhotoIndex] = useState(0);
   const thumbRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const swipe = useRef<{ id: number; x: number; y: number } | null>(null);
 
   useLayoutEffect(() => {
     const el = thumbRefs.current[photoIndex];
     el?.scrollIntoView({
-      behavior: "smooth",
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
       inline: "center",
       block: "nearest",
     });
@@ -177,7 +116,10 @@ function JetDetailGallery({
 
   return (
     <>
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#0b0b0b] sm:aspect-[16/9] lg:aspect-[16/10]">
+      <div className={styles.detailPhoto}
+        onPointerDown={event => { if ((event.target as HTMLElement).closest("button") || event.button !== 0) return; swipe.current = { id: event.pointerId, x: event.clientX, y: event.clientY }; event.currentTarget.setPointerCapture(event.pointerId); }}
+        onPointerUp={event => { const start = swipe.current; swipe.current = null; if (!start || start.id !== event.pointerId) return; const dx = event.clientX - start.x; if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(event.clientY - start.y)) { if (dx < 0) goNext(); else goPrev(); } }}
+        onPointerCancel={() => { swipe.current = null; }} onLostPointerCapture={() => { swipe.current = null; }}>
         <Image
           src={paths[photoIndex]}
           alt={t("privateJetsPage.photoOf", {
@@ -186,8 +128,9 @@ function JetDetailGallery({
             total: String(galleryLen),
           })}
           fill
-          className="object-cover"
-          sizes="(max-width: 1024px) 100vw, 55vw"
+          className={styles.detailImage}
+          draggable={false}
+          sizes="(max-width: 800px) 100vw, 65vw"
           priority={photoIndex === 0}
         />
         <span className="pointer-events-none absolute right-3 top-3 z-[1] border border-gold/25 bg-[#0b0b0b]/75 px-2.5 py-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-cream/85 backdrop-blur-sm">
@@ -248,180 +191,47 @@ function JetDetailGallery({
   );
 }
 
-function JetDetailDialog({
-  jet,
-  onClose,
-  t,
-  aircraftPhoto,
-}: {
-  jet: PrivateJet | null;
-  onClose: () => void;
-  t: Translator;
-  aircraftPhoto: string;
-}) {
+function JetDetailDialog({ jet, onClose, t, aircraftPhoto }: { jet: PrivateJet | null; onClose: () => void; t: Translator; aircraftPhoto: string }) {
   const titleId = useId();
-
+  const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
-    if (!jet) return;
-    const prev = document.body.style.overflow;
+    const el = dialog.current;
+    if (!jet || !el) return;
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    el.showModal();
+    const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [jet]);
-
-  useEffect(() => {
-    if (!jet) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [jet, onClose]);
-
+    return () => { el.close(); document.body.style.overflow = previous; previousFocus?.focus({ preventScroll: true }); };
+  }, [jet?.id]);
   if (!jet) return null;
-
-  const wa = whatsAppUrlWithText(
-    t("privateJetsPage.whatsappInquiry", { name: jet.name }),
-  );
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-      <button
-        type="button"
-        className="absolute inset-0 bg-[#0b0b0b]/82 backdrop-blur-[2px]"
-        onClick={onClose}
-        aria-label={t("privateJetsPage.close")}
-      />
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        className="relative z-10 flex max-h-[min(92vh,900px)] w-full max-w-5xl flex-col overflow-hidden border border-gold/18 bg-[#0a0a0a] shadow-[0_32px_120px_rgba(0,0,0,0.75)] sm:mx-4 sm:rounded-sm"
-      >
-        <div className="flex shrink-0 items-center justify-between border-b border-gold/12 px-4 py-3 sm:px-6 sm:py-4">
-          <div className="min-w-0 pr-4">
-            <p className="text-[0.62rem] font-semibold uppercase tracking-[0.32em] text-gold/80">
-              {jet.categoryLabel}
-            </p>
-            <h2
-              id={titleId}
-              className="mt-1 font-serif text-lg leading-snug tracking-tight text-cream sm:text-xl"
-            >
-              {jet.name}
-            </h2>
+  const wa = whatsAppUrlWithText(t("privateJetsPage.whatsappInquiry", { name: jet.name }));
+  const specs = [
+    ["passengers", jet.passengers], ["range", jet.range], ["cruisingSpeed", jet.cruisingSpeed],
+    ["beds", jet.beds === 0 ? "—" : String(jet.beds)], ["baggage", jet.baggage],
+    ["interiorWidth", jet.interiorWidth], ["interiorHeight", jet.interiorHeight],
+  ];
+  return <dialog ref={dialog} className={styles.detailDialog} aria-labelledby={titleId}
+    onCancel={event => { event.preventDefault(); onClose(); }} onClick={event => { if (event.target === event.currentTarget) onClose(); }}>
+    <div className={styles.dialogShell}>
+      <header className={styles.detailHeader}><div><p className={styles.eyebrow}>{jet.categoryLabel} / BLACKLINE</p><h2 id={titleId}>{jet.name}</h2></div><button type="button" onClick={onClose} className={styles.closeDetail} aria-label={t("privateJetsPage.closeDetails")}><X size={21} aria-hidden/></button></header>
+      <div className={styles.detailScroll}>
+        <div className={styles.detailLayout}>
+          <div className={styles.detailMain}>
+            <div className={styles.detailGallery}>{jet.galleryPaths?.length ? <JetDetailGallery key={jet.id} jetName={jet.name} paths={jet.galleryPaths} t={t}/> : <JetImagePlaceholder className="aspect-[16/10] w-full" label={aircraftPhoto}/>}</div>
+            <section className={styles.overviewSection}><p className={styles.eyebrow}>{t("privateJetsPage.overview")}</p><h3>{jet.name}</h3><p>{jet.overview}</p></section>
+            <section className={styles.amenitiesSection}><h3>{t("privateJetsPage.keyAmenities")}</h3><ul>{jet.amenities.map(a=><li key={a}>{a}</li>)}</ul></section>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex h-10 w-10 shrink-0 items-center justify-center border border-gold/15 text-cream/70 transition-colors hover:border-gold/35 hover:text-gold-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold/50"
-            aria-label={t("privateJetsPage.closeDetails")}
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
-          <div className="shrink-0 border-b border-gold/12 lg:flex-[1.05] lg:min-w-0 lg:border-b-0 lg:border-r">
-            {jet.galleryPaths && jet.galleryPaths.length > 0 ? (
-              <JetDetailGallery
-                key={jet.id}
-                jetName={jet.name}
-                paths={jet.galleryPaths}
-                t={t}
-              />
-            ) : (
-              <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#0b0b0b] sm:aspect-[16/9] lg:aspect-[16/10]">
-                <JetImagePlaceholder
-                  className="absolute inset-0 h-full w-full"
-                  label={aircraftPhoto}
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain p-5 sm:p-7">
-            <p className="text-[0.62rem] font-semibold uppercase tracking-[0.38em] text-gold/90">
-              {t("privateJetsPage.specifications")}
-            </p>
-            <div className="mt-4 grid grid-cols-2 gap-2 sm:gap-2.5">
-              <SpecCell
-                label={t("privateJetsPage.passengers")}
-                value={jet.passengers}
-              />
-              <SpecCell
-                label={t("privateJetsPage.beds")}
-                value={jet.beds === 0 ? "—" : String(jet.beds)}
-              />
-              <SpecCell label={t("privateJetsPage.range")} value={jet.range} />
-              <SpecCell
-                label={t("privateJetsPage.cruisingSpeed")}
-                value={jet.cruisingSpeed}
-              />
-              <SpecCell
-                label={t("privateJetsPage.baggage")}
-                value={jet.baggage}
-              />
-              <SpecCell
-                label={t("privateJetsPage.interiorWidth")}
-                value={jet.interiorWidth}
-              />
-              <SpecCell
-                label={t("privateJetsPage.interiorHeight")}
-                value={jet.interiorHeight}
-                className="col-span-2"
-              />
-            </div>
-
-            <p className="mt-8 text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-              {t("privateJetsPage.overview")}
-            </p>
-            <p className="mt-3 text-[0.9375rem] leading-relaxed text-cream/72">
-              {jet.overview}
-            </p>
-
-            <p className="mt-8 text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-              {t("privateJetsPage.keyAmenities")}
-            </p>
-            <ul className="mt-4 space-y-2.5" role="list">
-              {jet.amenities.map((a) => (
-                <li
-                  key={a}
-                  className="flex gap-3 text-[0.9rem] leading-snug text-cream/78"
-                >
-                  <span
-                    className="mt-[0.4em] h-1 w-1 shrink-0 rounded-full bg-gold/45"
-                    aria-hidden
-                  />
-                  {a}
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-10 flex flex-col gap-3 border-t border-gold/10 pt-8 sm:flex-row sm:flex-wrap">
-              <Link
-                href={CONTACT_TRIP_BUILDER_HREF}
-                className={cn(btnPrimary, "w-full sm:w-auto")}
-              >
-                {t("privateJetsPage.requestAircraft")}
-              </Link>
-              <a
-                href={wa}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex min-h-11 w-full items-center justify-center border border-gold/30 bg-transparent px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-gold transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold/55 hover:text-gold-secondary sm:w-auto"
-              >
-                {t("common.whatsapp")}
-              </a>
-            </div>
-            <p className="mt-4 text-[0.7rem] leading-relaxed text-cream/38">
-              {t("privateJetsPage.availabilityNote")}
-            </p>
-          </div>
+          <aside className={styles.detailAside} aria-label={t("privateJetsPage.specifications")}>
+            <p className={styles.eyebrow}>{t("privateJetsPage.specifications")}</p>
+            <div className={styles.keySpecs}><div><span>{t("privateJetsPage.passengers")}</span><strong>{jet.passengers}</strong></div><div><span>{t("privateJetsPage.range")}</span><strong>{jet.range}</strong></div></div>
+            <dl className={styles.specList}>{specs.slice(2).map(([key,value])=><div key={key}><dt>{t("privateJetsPage."+key)}</dt><dd>{value}</dd></div>)}</dl>
+            <div className={styles.detailInquiry}><Link href={CONTACT_TRIP_BUILDER_HREF} className={styles.primaryButton}>{t("privateJetsPage.requestAircraft")}<ArrowUpRight size={16} aria-hidden/></Link><a href={wa} target="_blank" rel="noopener noreferrer" className={styles.whatsappButton}>{t("common.whatsapp")}<ArrowUpRight size={16} aria-hidden/></a><p>{t("privateJetsPage.availabilityNote")}</p></div>
+          </aside>
         </div>
       </div>
+      <footer className={styles.detailFooter}><span>{jet.name}<small>{jet.passengers} · {jet.range}</small></span><Link href={CONTACT_TRIP_BUILDER_HREF} className={styles.primaryButton}>{t("privateJetsPage.requestAircraft")}<ArrowUpRight size={16} aria-hidden/></Link></footer>
     </div>
-  );
+  </dialog>;
 }
 
 export function PrivateJetsCatalog() {
@@ -449,90 +259,19 @@ export function PrivateJetsCatalog() {
   }, [selected, jets]);
 
   return (
-    <>
-      <SectionReveal className="relative overflow-hidden border-b border-gold/10 bg-background">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(198,164,108,0.06),transparent)]" />
-        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-10">
-          <p className="text-[0.65rem] font-medium uppercase tracking-[0.48em] text-gold/90">
-            {t("privateJetsPage.eyebrow")}
-          </p>
-          <div className="mt-4 h-px w-14 bg-gold/30" aria-hidden />
-          <h1 className="mt-6 max-w-3xl font-serif text-[2.1rem] leading-[1.12] tracking-tight text-cream sm:text-4xl md:text-[2.65rem]">
-            {t("nav.privateJets")}
-          </h1>
-          <p className="mt-5 max-w-2xl text-sm leading-relaxed text-cream/58 sm:text-[0.9375rem]">
-            {t("privateJetsPage.heroBody")}
-          </p>
-          <ChauffeurServiceCrosslink variant="jet" />
-        </div>
-      </SectionReveal>
-
-      <div className="section-gradient-divider" aria-hidden />
-
-      <SectionReveal className="border-b border-gold/10 bg-charcoal py-14 sm:py-16 lg:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="font-serif text-xl tracking-tight text-cream sm:text-2xl">
-                {t("privateJetsPage.availableHeadline")}
-              </h2>
-              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-cream/52">
-                {t("privateJetsPage.availableBody")}
-              </p>
-            </div>
-          </div>
-
-          <div
-            className="mt-8 flex flex-wrap gap-2"
-            role="tablist"
-            aria-label={t("privateJetsPage.filterAria")}
-          >
-            {categoryFilters.map((f) => {
-              const isActive = filter === f.id;
-              return (
-                <button
-                  key={f.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() =>
-                    setFilter(
-                      f.id === "all" ? "all" : (f.id as PrivateJetCategory),
-                    )
-                  }
-                  className={cn(
-                    "border px-4 py-2.5 text-[0.65rem] font-semibold uppercase tracking-[0.22em] transition-colors",
-                    isActive
-                      ? "border-gold/45 bg-gold/[0.12] text-gold-secondary"
-                      : "border-gold/15 bg-[#0a0a0a] text-cream/55 hover:border-gold/30 hover:text-cream/75",
-                  )}
-                >
-                  {f.label}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
-            {visible.map((jet, index) => (
-              <ScrollRevealItem key={jet.id} index={index}>
-                <JetCard
-                  jet={jet}
-                  onOpen={setSelected}
-                  tapForSpecs={t("privateJetsPage.tapForSpecs")}
-                  aircraftPhoto={t("privateJetsPage.aircraftPhoto")}
-                />
-              </ScrollRevealItem>
-            ))}
-          </div>
-
-          {visible.length === 0 ? (
-            <p className="mt-10 text-sm text-cream/45">
-              {t("privateJetsPage.noAircraft")}
-            </p>
-          ) : null}
-        </div>
-      </SectionReveal>
+    <div className={styles.page}>
+      <section className={styles.hero} aria-labelledby="jets-title"><div className={styles.container+" "+styles.heroGrid}>
+        <div><p className={styles.eyebrow}>{t("privateJetsPage.eyebrow")}</p><h1 id="jets-title">{locale === "es" ? "Tu viaje." : "Your journey."}<br/><em>{locale === "es" ? "A otra altura." : "Elevated."}</em></h1><p className={styles.intro}>{locale === "es" ? "Explora nuestra selección de jets privados. Compara cabinas, pasajeros y autonomía, y consulta tu ruta con tu concierge." : "Explore our private jet collection. Compare cabins, passenger capacity, and range, then plan your route with your concierge."}</p><div className={styles.heroActions}><a href="#jet-collection" className={styles.primaryButton}>{locale === "es" ? "Ver los jets" : "Explore the jets"}<ArrowDown size={16} aria-hidden/></a><Link href={CONTACT_TRIP_BUILDER_HREF} className={styles.textLink}>{locale === "es" ? "Planifica tu vuelo" : "Plan your flight"}<ArrowUpRight size={15} aria-hidden/></Link></div></div>
+        <div className={styles.heroPhoto}><Image src="/privatejets/globalexpress/globalexpress.webp" alt="Global Express" fill preload sizes="(max-width: 700px) 100vw, 45vw" className={styles.cover}/><span>BLACKLINE / PRIVATE AVIATION</span></div>
+      </div></section>
+      <section id="jet-collection" className={styles.collection} aria-labelledby="fleet-title"><div className={styles.container}>
+        <div className={styles.collectionHead}><div><p className={styles.eyebrow}>{locale === "es" ? "La colección" : "The aircraft collection"}</p><h2 id="fleet-title">{t("privateJetsPage.availableHeadline")}</h2></div><span className={styles.fleetCount} aria-live="polite">{String(visible.length).padStart(2,"0")} / {String(jets.length).padStart(2,"0")} {locale === "es" ? "JETS" : "AIRCRAFT"}</span></div>
+        <div className={styles.filters} role="group" aria-label={t("privateJetsPage.filterAria")}>{categoryFilters.map(f => <button key={f.id} type="button" aria-pressed={filter === f.id} onClick={() => setFilter(f.id === "all" ? "all" : f.id as PrivateJetCategory)}>{f.label}<span>{f.id === "all" ? jets.length : jets.filter(j=>j.category===f.id).length}</span></button>)}</div>
+        <div className={styles.jetGrid}>{visible.map((jet,index)=><ScrollRevealItem key={jet.id} index={index % 2}><JetCard jet={jet} onOpen={setSelected} tapForSpecs={t("privateJetsPage.tapForSpecs")} aircraftPhoto={t("privateJetsPage.aircraftPhoto")}/></ScrollRevealItem>)}</div>
+        {visible.length === 0 && <p className={styles.note}>{t("privateJetsPage.noAircraft")}</p>}
+        <p className={styles.note}>{t("privateJetsPage.availabilityNote")}</p>
+      </div></section>
+      <SectionReveal className={styles.closing}><div className={styles.container+" "+styles.closingGrid}><div><p className={styles.eyebrow}>{locale === "es" ? "De puerta a destino" : "From your door to your destination"}</p><h2>{locale === "es" ? "Cada detalle, coordinado." : "Every detail, connected."}</h2></div><div><ChauffeurServiceCrosslink variant="jet" className={styles.closingBody}/><Link href={CONTACT_TRIP_BUILDER_HREF} className={styles.textLink}>{locale === "es" ? "Planifica tu vuelo" : "Plan your flight"}<ArrowUpRight size={15} aria-hidden/></Link></div></div></SectionReveal>
 
       <JetDetailDialog
         jet={selectedLocalized}
@@ -540,6 +279,6 @@ export function PrivateJetsCatalog() {
         t={t}
         aircraftPhoto={t("privateJetsPage.aircraftPhoto")}
       />
-    </>
+    </div>
   );
 }

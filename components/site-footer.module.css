@@ -1,0 +1,48 @@
+.footer { position: relative; border-top: 1px solid #c6a46c3b; background: #10100f; color: #bcb7ad; }
+.footer::before { content: ""; position: absolute; inset: 0 20% auto; height: 1px; background: linear-gradient(90deg, transparent, #c6a46c80, transparent); }
+.container { width: min(1280px, calc(100% - 112px)); margin-inline: auto; }
+.topline { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-top: 32px; font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: #bda77f; }
+.topline span:first-child { display: flex; align-items: center; gap: 8px; }
+.grid { display: grid; grid-template-columns: 1.4fr .75fr .95fr 1.1fr; gap: 48px; padding-block: 55px 60px; }
+.logo { display: inline-flex; flex-direction: column; align-items: flex-start; }
+.logo span:first-child { font-family: var(--font-playfair), Georgia, serif; color: #f5f1e8; font-size: 28px; line-height: 1.2; letter-spacing: .17em; }
+.logo span:last-child { font-size: 9px; letter-spacing: .45em; color: #c6a46c; margin-top: 8px; }
+.brand > p { max-width: 265px; font-size: 12px; line-height: 1.9; color: #a59f94; margin-top: 23px; }
+.socials { display: flex; gap: 10px; margin-top: 22px; }
+.socials a { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid #c6a46c30; border-radius: 50%; color: #bfb4a1; transition: color .25s, background .25s, border-color .25s; }
+.socials a:hover { background: #c6a46c; border-color: #c6a46c; color: #10100f; }
+.column { display: flex; flex-direction: column; align-items: flex-start; }
+.column h2 { font-family: var(--font-manrope), sans-serif; font-size: 9px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: #c6a46c; line-height: 1.5; margin: 3px 0 20px; }
+.column > a { display: inline-flex; align-items: center; min-height: 35px; font-size: 12px; line-height: 1.6; color: #bcb7ad; transition: color .25s; }
+.column > a:hover, .legal a:hover, .legal button:hover { color: #e0c38a; }
+.contact > a { overflow-wrap: anywhere; }
+.contact > .phone { font-family: var(--font-playfair), Georgia, serif; font-size: 21px; letter-spacing: -.02em; color: #eee4d1; }
+.contact > .whatsapp { gap: 16px; color: #d2bb93; margin-top: 13px; padding-bottom: 3px; border-bottom: 1px solid #c6a46c40; font-size: 10px; }
+.contactNote { font-size: 11px; line-height: 1.9; color: #9e988d; margin-top: 18px; max-width: 210px; }
+.bottom { border-top: 1px solid #c6a46c24; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-block: 24px 28px; padding-right: 72px; font-size: 10px; color: #928c80; line-height: 1.7; }
+.legal { display: flex; flex-wrap: wrap; gap: 22px; }
+.legal a, .legal button { display: inline-flex; align-items: center; min-height: 30px; transition: color .25s; }
+.credit { display: inline-flex; align-items: center; gap: 4px; min-height: 30px; color: #928c80; white-space: nowrap; transition: color .25s; }
+.credit span { color: #b8aa91; }
+.credit svg { margin-left: 3px; }
+.credit:hover, .credit:hover span { color: #e0c38a; }
+.footer a:focus-visible { outline: 2px solid #c6a46c; outline-offset: 5px; }
+@media (max-width: 1100px) {
+  .container { width: calc(100% - 64px); }
+  .grid { grid-template-columns: 1.3fr 1fr; gap: 42px 64px; }
+  .bottom { flex-wrap: wrap; }
+}
+@media (max-width: 600px) {
+  .container { width: calc(100% - 40px); }
+  .topline { font-size: 8px; letter-spacing: .1em; padding-top: 25px; gap: 15px; }
+  .grid { grid-template-columns: 1fr 1fr; gap: 32px 24px; padding-block: 40px; }
+  .brand, .contact { grid-column: 1 / -1; }
+  .brand > p { max-width: 320px; }
+  .column > a { min-height: 40px; font-size: 12px; }
+  .column h2 { margin-bottom: 14px; }
+  .contact { padding-top: 26px; border-top: 1px solid #c6a46c24; }
+  .contactNote { max-width: 300px; }
+  .bottom { flex-direction: column; align-items: flex-start; gap: 10px; padding-block: 22px 30px; padding-right: 0; }
+  .credit { margin-top: 3px; }
+}
+@media (prefers-reduced-motion: reduce) { .footer a { transition: none; } }

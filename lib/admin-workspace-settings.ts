@@ -1,0 +1,5 @@
+export const WORKSPACE_SETTINGS_KEY="blackline-workspace-settings-v1";
+export const DEFAULT_WORKSPACE_SETTINGS={name:"Blackline team",email:"",businessName:"Blackline Concierge",contactEmail:"Blackline235@gmail.com",phone:"+1 (786) 684-0345",instagram:"@blackline_concierge",defaultSource:"WhatsApp"};
+export type WorkspaceSettings=typeof DEFAULT_WORKSPACE_SETTINGS;
+export function readWorkspaceSettings():WorkspaceSettings{try{const raw=JSON.parse(localStorage.getItem(WORKSPACE_SETTINGS_KEY)??"null");const result={...DEFAULT_WORKSPACE_SETTINGS};if(raw&&typeof raw==="object")for(const key of Object.keys(result) as (keyof WorkspaceSettings)[])if(typeof raw[key]==="string")result[key]=raw[key];if(!["Website","WhatsApp","Instagram","Affiliate"].includes(result.defaultSource))result.defaultSource="WhatsApp";return result;}catch{return {...DEFAULT_WORKSPACE_SETTINGS};}}
+export function saveWorkspaceSettings(settings:WorkspaceSettings){localStorage.setItem(WORKSPACE_SETTINGS_KEY,JSON.stringify(settings));}

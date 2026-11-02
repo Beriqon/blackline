@@ -1,6 +1,7 @@
 "use client";
+import { ExternalMapConsent } from "@/components/cookie-preferences";
 
-import { Building2, ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
+import { ArrowUpRight, MapPin, Building2, ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
 import Image from "next/image";
 import {
   useCallback,
@@ -27,6 +28,7 @@ import {
 } from "@/lib/villas-data";
 import { cn } from "@/lib/utils";
 import { whatsAppUrlWithText } from "@/lib/whatsapp";
+import styles from "@/app/services/villas/villas.module.css";
 
 const btnPrimary =
   "inline-flex min-h-11 items-center justify-center border border-gold/40 bg-gold px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-[#0b0b0b] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold-secondary hover:bg-gold-secondary hover:shadow-[0_0_0_1px_rgba(224,195,138,0.4),0_14px_48px_rgba(198,164,108,0.2)] active:translate-y-0";
@@ -114,6 +116,7 @@ export function VillaFleetProduct({ villa: sourceVilla }: { villa: Villa }) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const thumbStripRef = useRef<HTMLDivElement | null>(null);
   const thumbRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const swipe = useRef<{id:number;x:number;y:number}|null>(null);
   const [creatingQuoteRequest, setCreatingQuoteRequest] = useState(false);
   const [quoteRequestError, setQuoteRequestError] = useState<string | null>(
     null,
@@ -127,7 +130,7 @@ export function VillaFleetProduct({ villa: sourceVilla }: { villa: Villa }) {
     // Keep thumbnail scrolling scoped to its own strip so mobile viewport
     // does not shift horizontally.
     const targetLeft = thumb.offsetLeft - (strip.clientWidth - thumb.clientWidth) / 2;
-    strip.scrollTo({ left: Math.max(0, targetLeft), behavior: "smooth" });
+    strip.scrollTo({ left: Math.max(0, targetLeft), behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
   }, [photoIndex, hasPhotos]);
 
   const goPhotoPrev = useCallback(() => {
@@ -163,59 +166,16 @@ export function VillaFleetProduct({ villa: sourceVilla }: { villa: Villa }) {
     window.scrollTo({ top: 0, behavior: "auto" });
   }, [villa.id]);
 
-  return (
-    <>
-      <SectionReveal className="relative overflow-hidden border-b border-gold/10 bg-background">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(198,164,108,0.06),transparent)]" />
-        <div className="relative mx-auto max-w-7xl px-4 pb-10 pt-14 sm:px-6 sm:pb-12 sm:pt-20 lg:px-10">
-          <VillaStaysBackLink
-            villaId={villa.id}
-            className="inline-flex items-center gap-2 text-[0.7rem] font-medium uppercase tracking-[0.22em] text-gold/85 transition-colors hover:text-gold-secondary"
-          />
-          <div className="mt-8 h-px w-14 bg-gold/30" aria-hidden />
-          <p className="mt-6 text-[0.65rem] font-medium uppercase tracking-[0.48em] text-gold/90">
-            {t("villasPage.residencesName", { name: villa.name })}
-          </p>
-          <h1 className="mt-4 max-w-3xl font-serif text-[2.1rem] leading-[1.12] tracking-tight text-cream sm:text-4xl md:text-[2.65rem]">
-            {villa.name}
-          </h1>
-          {nightlyRates ? (
-            <>
-              <p className="mt-4 font-serif text-2xl tabular-nums text-gold-secondary sm:text-[1.75rem]">
-                {t("villasPage.fromPerNight", {
-                  price: formatVillaUsd(nightlyRates.weekdayUsd),
-                })}
-              </p>
-              <p className="mt-2 text-[0.72rem] font-medium uppercase tracking-[0.2em] text-cream/50">
-                {t("villasPage.weekdayWeekendPerNight", {
-                  weekday: formatVillaUsd(nightlyRates.weekdayUsd),
-                  weekend: formatVillaUsd(nightlyRates.weekendUsd),
-                })}
-              </p>
-              <p className="mt-3 text-sm text-cream/55">{villa.cardTagline}</p>
-            </>
-          ) : (
-            <p className="mt-4 font-serif text-2xl tabular-nums text-gold-secondary sm:text-[1.75rem]">
-              {villa.cardTagline}
-            </p>
-          )}
-          <p className="mt-5 max-w-2xl text-sm leading-relaxed text-cream/58 sm:text-[0.9375rem]">
-            {villa.lede}
-          </p>
-          <ChauffeurServiceCrosslink variant="villa" />
-        </div>
-      </SectionReveal>
-
-      <div className="section-gradient-divider" aria-hidden />
-
-      <SectionReveal className="overflow-x-clip border-b border-gold/10 bg-charcoal pb-16 pt-10 sm:pb-20 sm:pt-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-          <div id="photos" className="scroll-mt-24" aria-hidden />
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-14">
-            <div className="min-w-0">
+  return <div className={styles.productPage}>
+    <section className={styles.productHeader}><div className={styles.container}><VillaStaysBackLink villaId={villa.id} className={styles.backLink}/><div className={styles.productTitleRow}><div><p className={styles.eyebrow}><MapPin size={12} aria-hidden/>{villa.neighborhood} / BLACKLINE RESIDENCES</p><h1>{villa.name}</h1><p className={styles.productSubtitle}>{villa.subtitle}</p></div><a href="#stay-inquiry" className={styles.primaryButton}>{t("villasPage.requestStay")}<ArrowUpRight size={16} aria-hidden/></a></div></div></section>
+    <div className={styles.container+" "+styles.productLayout}>
+      <div className={styles.productMain}><div id="photos" className={styles.productGallery}>
               {hasPhotos ? (
                 <>
-                  <div className="relative aspect-[4/3] overflow-hidden border border-gold/12 bg-[#0b0b0b] sm:aspect-[16/10]">
+                  <div className={styles.productPhoto}
+ onPointerDown={e=>{if((e.target as HTMLElement).closest("button")||e.button!==0)return;swipe.current={id:e.pointerId,x:e.clientX,y:e.clientY};e.currentTarget.setPointerCapture(e.pointerId);}}
+ onPointerUp={e=>{const start=swipe.current;swipe.current=null;if(!start||start.id!==e.pointerId)return;const dx=e.clientX-start.x;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(e.clientY-start.y)){if(dx<0)goPhotoNext();else goPhotoPrev();}}}
+ onPointerCancel={()=>{swipe.current=null;}} onLostPointerCapture={()=>{swipe.current=null;}}>
                     <Image
                       src={photos[photoIndex]!}
                       alt={t("villasPage.photoOf", {
@@ -224,8 +184,9 @@ export function VillaFleetProduct({ villa: sourceVilla }: { villa: Villa }) {
                         total: String(galleryLen),
                       })}
                       fill
-                      className="object-contain sm:object-cover"
-                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      className="object-contain pointer-events-none"
+                      draggable={false}
+                      sizes="(max-width: 800px) 100vw, 65vw"
                       priority={photoIndex === 0}
                     />
                     <span className="pointer-events-none absolute right-3 top-3 z-[1] border border-gold/25 bg-[#0b0b0b]/75 px-2.5 py-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-cream/85 backdrop-blur-sm">
@@ -295,112 +256,15 @@ export function VillaFleetProduct({ villa: sourceVilla }: { villa: Villa }) {
                 <PhotoPlaceholder className="overflow-hidden" t={t} />
               )}
 
-              <div className="mt-8 border-t border-gold/10 pt-6">
-                <p className="text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-                  {t("villasPage.description")}
-                </p>
-                <p className="mt-4 text-[0.9375rem] leading-relaxed text-cream/68">
-                  {villa.description}
-                </p>
-              </div>
-            </div>
-
-            <div className="min-w-0">
-              {nightlyRates ? (
-                <VillaRatesPanel rates={nightlyRates} locale={locale} t={t} />
-              ) : null}
-
-              <p
-                className={cn(
-                  "text-[0.62rem] font-semibold uppercase tracking-[0.38em] text-gold/90",
-                  nightlyRates ? "mt-8" : undefined,
-                )}
-              >
-                {t("villasPage.stayDetails")}
-              </p>
-              <ul className="mt-4 space-y-0" role="list">
-                {villa.facts.map((fact) => (
-                  <li
-                    key={`${fact.label}-${fact.value}`}
-                    className="border-t border-gold/[0.09] py-3.5 first:border-t-0 first:pt-0 first:pb-3.5"
-                  >
-                    <div className="flex flex-wrap items-baseline justify-between gap-2">
-                      <span className="text-[0.75rem] font-medium uppercase tracking-[0.14em] text-cream/45">
-                        {fact.label}
-                      </span>
-                      <span className="max-w-[min(100%,14rem)] text-right text-[0.9375rem] leading-snug text-cream/88">
-                        {fact.value}
-                      </span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-
-              {villa.vipNote ? (
-                <div className="mt-8 border border-gold/12 bg-[#0d0d0d]/90 p-4 sm:p-5">
-                  <p className="text-[0.62rem] font-medium uppercase tracking-[0.28em] text-gold/75">
-                    {t("villasPage.arrivalTransport")}
-                  </p>
-                  <p className="mt-3 text-[0.875rem] leading-relaxed text-cream/62">
-                    {villa.vipNote}
-                  </p>
-                </div>
-              ) : null}
-
-              <p className="mt-8 text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-                {t("villasPage.highlights")}
-              </p>
-              <ul className="mt-4 space-y-3" role="list">
-                {villa.highlights.map((h) => (
-                  <li
-                    key={h}
-                    className="flex gap-3 text-[0.9375rem] leading-snug text-cream/78"
-                  >
-                    <span
-                      className="mt-[0.4em] h-1 w-1 shrink-0 rounded-full bg-gold/45"
-                      aria-hidden
-                    />
-                    {h}
-                  </li>
-                ))}
-              </ul>
-
-              {hasInclusions ? (
-                <div className="mt-8 border-t border-gold/10 pt-6">
-                  <p className="text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-                    {t("villasPage.amenities")}
-                  </p>
-                  <ul className="mt-4 grid gap-x-8 gap-y-3 sm:grid-cols-2" role="list">
-                    {villa.inclusions!.map((line) => (
-                      <li
-                        key={line}
-                        className="flex gap-3 text-[0.9375rem] leading-snug text-cream/78"
-                      >
-                        <span
-                          className="mt-[0.4em] h-1 w-1 shrink-0 rounded-full bg-gold/45"
-                          aria-hidden
-                        />
-                        {line}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
-
-              {hasPolicy ? (
-                <div className="mt-8 border-t border-gold/10 pt-6">
-                  {villa.policyNotes!.map((note) => (
-                    <p
-                      key={note}
-                      className="text-[0.7rem] leading-relaxed text-cream/38 [&+&]:mt-3"
-                    >
-                      {note}
-                    </p>
-                  ))}
-                </div>
-              ) : null}
-
-              <div className="mt-10 border-t border-gold/10 pt-8">
+      </div><section className={styles.descriptionSection}><p className={styles.eyebrow}>{t("villasPage.description")}</p><h2>{locale==="es"?"Tu estancia, a tu manera.":"Settle into your Miami."}</h2><p className={styles.lede}>{villa.lede}</p><p>{villa.description}</p></section>
+      <section className={styles.factsSection}><h2>{t("villasPage.stayDetails")}</h2><dl>{villa.facts.map(f=><div key={f.label+f.value}><dt>{f.label}</dt><dd>{f.value}</dd></div>)}</dl></section>
+      <section className={styles.highlightSection}><h2>{t("villasPage.highlights")}</h2><ul>{villa.highlights.map(h=><li key={h}>{h}</li>)}</ul></section>
+      {hasInclusions&&<section className={styles.amenitiesSection}><h2>{t("villasPage.amenities")}</h2><ul>{villa.inclusions!.map(line=><li key={line}>{line}</li>)}</ul></section>}
+      {villa.vipNote&&<section className={styles.arrivalSection}><p className={styles.eyebrow}>{t("villasPage.arrivalTransport")}</p><p>{villa.vipNote}</p><ChauffeurServiceCrosslink variant="villa" className={styles.arrivalCopy}/></section>}
+      {hasPolicy&&<section className={styles.policySection}>{villa.policyNotes!.map(note=><p key={note}>{note}</p>)}</section>}
+      </div>
+      <aside className={styles.inquiryAside} id="stay-inquiry"><p className={styles.eyebrow}>{t("villasPage.residencesName",{name:villa.name})}</p><h2 className={styles.inquiryPrice}>{nightlyRates?t("villasPage.fromPerNight",{price:formatVillaUsd(nightlyRates.weekdayUsd)}):locale==="es"?"Tu estancia privada.":"Your private stay."}</h2><p className={styles.inquiryTagline}>{villa.cardTagline}</p><div className={styles.inquiryFacts}>{sourceVilla.facts.map((f,i)=>({source:f,localized:villa.facts[i]})).filter(f=>["Bedrooms","Bathrooms","Max guests"].includes(f.source.label)).map(f=><div key={f.source.label}><strong>{f.localized.value}</strong><span>{f.localized.label}</span></div>)}</div>
+              <div className={styles.requestPanel}>
                 {quoteRequestError ? (
                   <p className="mb-4 text-center text-[0.75rem] text-red-300/90">
                     {quoteRequestError}
@@ -470,37 +334,9 @@ export function VillaFleetProduct({ villa: sourceVilla }: { villa: Villa }) {
                     : t("villasPage.inquireRatesNote")}
                 </p>
               </div>
-            </div>
-          </div>
-        </div>
-      </SectionReveal>
-
-      <SectionReveal className="border-b border-gold/10 bg-[#070707] pb-14 pt-12 sm:pb-16 sm:pt-14">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-          <p className="text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-            {t("villasPage.neighborhoodSection")}
-          </p>
-          <h2 className="mt-4 font-serif text-[1.4rem] leading-snug tracking-tight text-cream sm:text-[1.7rem]">
-            {locationLabel}
-          </h2>
-          <p className="mt-3 max-w-2xl text-[0.88rem] leading-relaxed text-cream/55">
-            {t("villasPage.mapBody")}
-          </p>
-        </div>
-        <div className="mt-8 w-full border-y border-gold/10">
-          <div className="relative h-[20rem] w-full sm:h-[27rem]">
-            <iframe
-              title={t("villasPage.mapTitle", { name: villa.name })}
-              src={mapEmbedSrc(locationLabel)}
-              className="h-full w-full"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              allowFullScreen
-            />
-          </div>
-        </div>
-      </SectionReveal>
-
+      {nightlyRates&&<VillaRatesPanel rates={nightlyRates} locale={locale} t={t}/>}<div className={styles.inquiryHelp}><MapPin size={15} aria-hidden/><span>{locationLabel}</span></div></aside>
+    </div>
+    <section className={styles.locationSection}><div className={styles.container}><p className={styles.eyebrow}>{t("villasPage.neighborhoodSection")}</p><h2>{locationLabel}</h2><p>{t("villasPage.mapBody")}</p><div className={styles.mapFrame}><ExternalMapConsent><iframe title={t("villasPage.mapTitle",{name:villa.name})} src={mapEmbedSrc(locationLabel)} loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen/></ExternalMapConsent></div></div></section>
       {lightboxOpen && hasPhotos ? (
         <div
           className="fixed inset-0 z-[70] flex flex-col bg-[#050505]/95 backdrop-blur-md"
@@ -558,6 +394,5 @@ export function VillaFleetProduct({ villa: sourceVilla }: { villa: Villa }) {
           </div>
         </div>
       ) : null}
-    </>
-  );
+  </div>;
 }

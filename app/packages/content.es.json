@@ -1,0 +1,50 @@
+{
+  "eyebrow": "LOS PAQUETES BLACKLINE",
+  "hero1": "Tu gente. Tu ritmo.",
+  "hero2": "Tu Miami, conectado.",
+  "intro": "Un lugar donde alojarte, una forma de llegar y algo que esperar con ilusión. Conecta cada parte de tu viaje con un paquete signature o un plan propio.",
+  "heroAlt": "Villa frente al agua en Miami con piscina en la azotea",
+  "yachtAlt": "Superyate blanco en el agua al atardecer",
+  "discover": "Explorar paquetes",
+  "build": "Crea tu propio plan",
+  "signature": "Un plan. Cada detalle conectado.",
+  "collection1": "Un punto de partida.",
+  "collection2": "Nunca una fórmula fija.",
+  "collectionBody": "Elige un formato que encaje contigo y hazlo tuyo. Las fechas, el grupo, tus preferencias y la disponibilidad confirmada definen los detalles y el presupuesto final.",
+  "processEyebrow": "DE UNA IDEA A TU ITINERARIO",
+  "process1": "Planificado con atención.",
+  "process2": "Pensado para ti.",
+  "steps": [
+    {
+      "title": "Encuentra tu punto de partida.",
+      "body": "Elige un formato signature o selecciona los servicios que tienes en mente."
+    },
+    {
+      "title": "Damos forma a los detalles.",
+      "body": "Comparte tus fechas y tu grupo. Tu concierge te ayuda a coordinar opciones, horarios y presupuesto."
+    },
+    {
+      "title": "Disfruta de la experiencia.",
+      "body": "Una vez confirmados los servicios, tu concierge coordina los detalles de tu estancia."
+    }
+  ],
+  "builder1": "Diseña la estancia",
+  "builder2": "que tienes en mente.",
+  "builderBody": "Elige vehículos, alojamientos, yates y experiencias, o cuéntanos qué te interesa. Tu selección se convierte en una consulta lista para enviar por WhatsApp.",
+  "guide": [
+    "Añade tus fechas y el tamaño del grupo.",
+    "Selecciona los servicios para tu presupuesto.",
+    "Revisa tu solicitud y abre WhatsApp."
+  ],
+  "builderNote": "Esta es una solicitud de planificación. Tu concierge confirma la disponibilidad, los precios finales y los detalles antes de reservar.",
+  "formTitle": "TU PAQUETE PERSONALIZADO",
+  "shootEyebrow": "EXTRA DE FOTO / VÍDEO",
+  "shoot1": "Vive el momento.",
+  "shoot2": "Llévalo contigo.",
+  "shootBody": "Añade una sesión de fotos o vídeo a tu paquete. En el yate, en la ciudad o junto a tu coche favorito: descubre algunos momentos de sesiones anteriores.",
+  "shootLink": "Explorar sesiones de foto y vídeo",
+  "shootGallery": "Galería de sesiones de foto y vídeo",
+  "previousPhoto": "Fotos anteriores",
+  "nextPhoto": "Fotos siguientes",
+  "shootAdd": "Incluye una sesión en tu solicitud"
+}

@@ -1,5 +1,8 @@
 "use client";
 
+import { YachtPhotoViewer } from "@/components/yacht-photo-viewer";
+import styles from "@/app/services/yachts/yachts.module.css";
+
 import { ChevronLeft, ChevronRight, Ship } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -107,9 +110,9 @@ export function Yacht88PrincessPfoProduct() {
 
   return (
     <>
-      <SectionReveal className="relative overflow-hidden border-b border-gold/10 bg-background">
+      <SectionReveal className={styles.productHeader}>
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(198,164,108,0.06),transparent)]" />
-        <div className="relative mx-auto max-w-7xl px-4 pb-10 pt-14 sm:px-6 sm:pb-12 sm:pt-20 lg:px-10">
+        <div className={styles.productHeaderInner}>
           <YachtChartersBackLink className="inline-flex items-center gap-2 text-[0.7rem] font-medium uppercase tracking-[0.22em] text-gold/85 transition-colors hover:text-gold-secondary" />
           <div className="mt-8 h-px w-14 bg-gold/30" aria-hidden />
           <p className="mt-6 text-[0.65rem] font-medium uppercase tracking-[0.48em] text-gold/90">
@@ -130,13 +133,15 @@ export function Yacht88PrincessPfoProduct() {
 
       <div className="section-gradient-divider" aria-hidden />
 
-      <SectionReveal className="overflow-x-clip border-b border-gold/10 bg-charcoal pb-16 pt-10 sm:pb-20 sm:pt-12">
+      <SectionReveal className={styles.productSection}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-14">
-            <div className="min-w-0">
+          <div className={styles.productGrid}>
+            <div className={styles.productGallery}>
               {hasPhotos ? (
                 <>
-                  <div className="relative aspect-[16/10] overflow-hidden border border-gold/12 bg-[#0b0b0b]">
+                  <div className={styles.productPhoto} onTouchStart={e=>{e.currentTarget.dataset.touchX=String(e.touches[0].clientX);e.currentTarget.dataset.touchY=String(e.touches[0].clientY);}} onTouchEnd={e=>{const dx=e.changedTouches[0].clientX-Number(e.currentTarget.dataset.touchX);const dy=e.changedTouches[0].clientY-Number(e.currentTarget.dataset.touchY);if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)) {if(dx<0)goPhotoNext();else goPhotoPrev();}}}>
+                  <YachtPhotoViewer src={paths[photoIndex]!} index={photoIndex} count={galleryLen} onPrevious={goPhotoPrev} onNext={goPhotoNext}/>
+
                     <Image
                       src={paths[photoIndex]!}
                       alt={`88 Princess PFO — photo ${photoIndex + 1} of ${galleryLen}`}
@@ -209,7 +214,7 @@ export function Yacht88PrincessPfoProduct() {
               )}
             </div>
 
-            <div className="min-w-0">
+            <div className={styles.ratePanel}>
               <p className="text-[0.62rem] font-semibold uppercase tracking-[0.38em] text-gold/90">
                 Charter & pricing
               </p>

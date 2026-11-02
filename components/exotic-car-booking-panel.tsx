@@ -58,10 +58,11 @@ function formatTimeAmPmEs(time24: string) {
 
 type Props = {
   car: ExoticCar;
+  chauffeurOnly?: boolean;
   className?: string;
 };
 
-export function ExoticCarBookingPanel({ car, className }: Props) {
+export function ExoticCarBookingPanel({ car, className, chauffeurOnly = false }: Props) {
   const { locale, t } = useLocale();
   const { addItem, items } = useCart();
   const config = getExoticCarBookingConfig(car);
@@ -69,7 +70,7 @@ export function ExoticCarBookingPanel({ car, className }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [mode, setMode] = useState<ExoticCarBookingMode>(config.rentalModes[0]!);
+  const [mode, setMode] = useState<ExoticCarBookingMode>(chauffeurOnly ? "chauffeur" : config.rentalModes[0]!);
   const [startDate, setStartDate] = useState(todayPlus(1));
   const [endDate, setEndDate] = useState(todayPlus(1));
   const [startTime, setStartTime] = useState<string>(config.chauffeurSlots[0]!);
@@ -192,7 +193,7 @@ export function ExoticCarBookingPanel({ car, className }: Props) {
         {t("exoticCarsPage.booking.availabilityBody")}
       </p>
 
-      {config.rentalModes.length > 1 ? (
+      {config.rentalModes.length > 1 && !chauffeurOnly ? (
         <div className="mt-5 flex flex-wrap gap-2">
           {config.rentalModes.map((option) => (
             <button

@@ -1,115 +1,25 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-
-import { ExperiencesPhotoHighlights } from "@/components/experiences-photo-highlights";
-import { ScrollRevealItem } from "@/components/scroll-reveal-item";
+import { ArrowDown, ArrowUpRight } from "lucide-react";
+import { SectionReveal } from "@/components/section-reveal";
 import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import { getI18n } from "@/lib/i18n/server";
-import { cn } from "@/lib/utils";
+import { ExperienceGallery } from "./experience-gallery";
+import en from "./content.en.json";
+import es from "./content.es.json";
+import styles from "./experiences.module.css";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { t } = await getI18n();
-  return {
-    title: t("common.experiences"),
-    description: t("experiencesPage.metaDescription"),
-  };
+  const { locale, t } = await getI18n();
+  return { title: t("common.experiences"), description: (locale === "es" ? es : en).intro };
 }
-
-const btnGhost =
-  "inline-flex min-h-11 items-center justify-center border border-gold/25 bg-transparent px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-cream transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold/55 hover:text-gold-secondary hover:shadow-[0_0_36px_rgba(198,164,108,0.12)] active:translate-y-0 sm:min-w-[200px]";
-const btnSolid =
-  "inline-flex min-h-11 items-center justify-center border border-gold/20 bg-gold/90 px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-[#14110b] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-gold-secondary hover:shadow-[0_0_34px_rgba(198,164,108,0.24)] active:translate-y-0 sm:min-w-[200px]";
-
-const SIGNATURE_PHOTOS = [
-  {
-    id: "yacht-day",
-    photos: [
-      { src: "/photography/yachtphotos/yachtphoto1.jpg", alt: "Yacht on open water" },
-      { src: "/yachts/68azimuttheone/68azimuttheone3.jpg", alt: "Yacht deck and horizon" },
-      { src: "/yachts/68azimuttheone/68azimuttheone8.jpg", alt: "Yacht flybridge lounge" },
-    ],
-  },
-  {
-    id: "night-vip",
-    photos: [
-      { src: "/vipvenues/livmiami.jpg", alt: "LIV Miami venue exterior" },
-      { src: "/vipvenues/e11even.jpg", alt: "E11EVEN nightlife venue" },
-      { src: "/vipvenues/m2miami.jpg", alt: "M2 Miami club frontage" },
-    ],
-  },
-  {
-    id: "exotic-drive",
-    photos: [
-      { src: "/photography/carphotos/carphoto1.jpg", alt: "Exotic car lineup" },
-      { src: "/photography/carphotos/carphoto5.jpg", alt: "Luxury car on location" },
-      { src: "/exoticcar/lamborghini/huracanwhite/huracanwhite.webp", alt: "White Lamborghini Huracan" },
-    ],
-  },
-  {
-    id: "jet-entry",
-    photos: [
-      { src: "/privatejets/gulfstreamg550/gulfstreamg550.webp", alt: "Gulfstream private jet" },
-      { src: "/privatejets/falcon2000/falcon2000.webp", alt: "Falcon 2000 aircraft" },
-      { src: "/privatejets/challenger350/challenger350.webp", alt: "Challenger 350 on ramp" },
-    ],
-  },
-] as const;
-
-function getSignatureExperiences(t: (key: string) => string) {
-  const copy = {
-    "yacht-day": {
-      title: t("experiencesPage.expYachtTitle"),
-      blurb: t("experiencesPage.expYachtBlurb"),
-      highlights: [t("experiencesPage.expYachtH1"), t("experiencesPage.expYachtH2")],
-    },
-    "night-vip": {
-      title: t("experiencesPage.expVipTitle"),
-      blurb: t("experiencesPage.expVipBlurb"),
-      highlights: [t("experiencesPage.expVipH1"), t("experiencesPage.expVipH2")],
-    },
-    "exotic-drive": {
-      title: t("experiencesPage.expCarTitle"),
-      blurb: t("experiencesPage.expCarBlurb"),
-      highlights: [t("experiencesPage.expCarH1"), t("experiencesPage.expCarH2")],
-    },
-    "jet-entry": {
-      title: t("experiencesPage.expJetTitle"),
-      blurb: t("experiencesPage.expJetBlurb"),
-      highlights: [t("experiencesPage.expJetH1"), t("experiencesPage.expJetH2")],
-    },
-  } as const;
-
-  return SIGNATURE_PHOTOS.map((item) => ({
-    id: item.id,
-    ...copy[item.id],
-    photos: item.photos,
-  }));
-}
-
-function getItineraryMoments(t: (key: string) => string) {
-  return [
-    {
-      id: "morning",
-      label: t("experiencesPage.momentMorningLabel"),
-      title: t("experiencesPage.momentMorningTitle"),
-      copy: t("experiencesPage.momentMorningCopy"),
-    },
-    {
-      id: "sunset",
-      label: t("experiencesPage.momentSunsetLabel"),
-      title: t("experiencesPage.momentSunsetTitle"),
-      copy: t("experiencesPage.momentSunsetCopy"),
-    },
-    {
-      id: "night",
-      label: t("experiencesPage.momentNightLabel"),
-      title: t("experiencesPage.momentNightTitle"),
-      copy: t("experiencesPage.momentNightCopy"),
-    },
-  ];
-}
-
+const images = [
+  { src: "/yachts/68azimuttheone/68azimuttheone3.jpg", detail: "/yachts/68azimuttheone/68azimuttheone8.jpg", href: "/services/yachts" },
+  { src: "/vipvenues/livmiami.jpg", detail: "/vipvenues/joiabeach3.jpg", href: "/services/vip-nightlife" },
+  { src: "/photography/carphotos/carphoto5.jpg", detail: "/exoticcar/lamborghini/huracanwhite/huracanwhite.webp", href: "/services/exotic-cars" },
+  { src: "/privatejets/gulfstreamg550/gulfstreamg550.webp", detail: "/home/chauffeur-interior.webp", href: "/services/private-jets" },
+];
 const momentsGallery = [
   { src: "/sitephotos/miamibeach.jpg", alt: "Miami beach and skyline" },
   { src: "/sitephotos/fishing1.webp", alt: "Boating on open water" },
@@ -142,161 +52,39 @@ const momentsGallery = [
   { src: "/exoticcar/chauffeur/exclusivesprinter/exclusivesprinter1.jpg", alt: "Executive Sprinter van" },
   { src: "/exoticcar/chauffeur/tiffanyblue/5STAR.jpg", alt: "Premium chauffeur fleet vehicle" },
 ] as const;
-
 export default async function ExperiencesPage() {
-  const { t } = await getI18n();
-  const signatureExperiences = getSignatureExperiences(t);
-  const itineraryMoments = getItineraryMoments(t);
-
-  return (
-    <>
-      <section className="relative isolate overflow-hidden border-b border-gold/10 bg-background">
-        <div
-          className="absolute inset-0 hero-bg-drift bg-[radial-gradient(circle_at_16%_12%,rgba(198,164,108,0.24),transparent_42%),radial-gradient(circle_at_82%_6%,rgba(95,58,122,0.2),transparent_38%),linear-gradient(180deg,#101010_0%,#0b0b0b_76%)]"
-          aria-hidden
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,11,11,0.25),rgba(11,11,11,0.85))]" />
-
-        <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
-          <ScrollRevealItem index={0}>
-            <p className="hero-cta-in text-[0.65rem] font-semibold uppercase tracking-[0.48em] text-gold/90">
-              {t("experiencesPage.eyebrow")}
-            </p>
-            <h1 className="hero-headline-in mt-6 max-w-4xl font-serif text-4xl leading-[1.02] tracking-tight text-cream sm:text-5xl md:text-[3.4rem]">
-              {t("experiencesPage.headline")}
-            </h1>
-            <p className="hero-cta-in mt-5 max-w-2xl text-sm leading-relaxed text-cream/65 sm:text-[0.96rem]">
-              {t("experiencesPage.intro")}
-            </p>
-
-            <div className="hero-cta-in mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row">
-              <Link href={CONTACT_TRIP_BUILDER_HREF} className={btnSolid}>
-                {t("experiencesPage.buildItinerary")}
-              </Link>
-              <Link href="/services" className={btnGhost}>
-                {t("experiencesPage.exploreServices")}
-              </Link>
-            </div>
-          </ScrollRevealItem>
+  const { locale } = await getI18n();
+  const copy = locale === "es" ? es : en;
+  return <div className={styles.page}>
+    <section className={styles.hero} aria-labelledby="experience-title">
+      <Image src="/sitephotos/miamibeach.jpg" alt={copy.heroAlt} fill preload sizes="100vw" className={styles.heroImage} />
+      <div className={styles.shade} />
+      <div className={styles.container + " " + styles.heroContent}>
+        <p className={styles.eyebrow}>{copy.eyebrow}</p>
+        <h1 id="experience-title">{copy.hero1}<br /><em>{copy.hero2}</em></h1>
+        <p className={styles.intro}>{copy.intro}</p>
+        <a href="#signature-experiences" className={styles.textLink}>{copy.discover}<ArrowDown size={15} aria-hidden /></a>
+        <div className={styles.heroFoot}><span>MIAMI / SOUTH FLORIDA</span><span>{copy.signature}</span></div>
+      </div>
+    </section>
+    <section id="signature-experiences" className={styles.container + " " + styles.collection} aria-labelledby="collection-title">
+      <div className={styles.sectionHead}><div><p className={styles.eyebrow}>{copy.collectionEyebrow}</p><h2 id="collection-title" className={styles.heading}>{copy.collection1}<br /><em>{copy.collection2}</em></h2></div><p>{copy.collectionBody}</p></div>
+      <nav className={styles.index} aria-label={copy.indexLabel}>{copy.experiences.map((item,i)=><a key={item.id} href={"#"+item.id}><span>0{i+1}</span>{item.label}<ArrowDown size={13} aria-hidden /></a>)}</nav>
+      {copy.experiences.map((item,i)=><SectionReveal key={item.id} id={item.id} className={styles.experience + " " + (i%2 ? styles.reverse : "")} aria-labelledby={item.id+"-title"}>
+        <div className={styles.visual}>
+          <div className={styles.mainPhoto + " " + (i===3 ? styles.jetPhoto : "")}><Image src={images[i].src} alt={item.alt} fill sizes="(max-width: 800px) 90vw, 50vw" className={styles.cover}/></div>
+          <div className={styles.detailPhoto}><Image src={images[i].detail} alt={item.detailAlt} fill sizes="(max-width: 800px) 32vw, 18vw" className={styles.cover}/></div>
+          <span className={styles.photoCaption}>{item.caption}</span>
         </div>
-      </section>
-
-      <div className="section-gradient-divider" aria-hidden />
-
-      <section className="border-b border-gold/10 bg-charcoal py-14 sm:py-16 lg:py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-5 sm:gap-6 lg:grid-cols-2">
-            {signatureExperiences.map((item, index) => (
-              <ScrollRevealItem key={item.id} index={index + 1}>
-                <article className="group overflow-hidden border border-gold/12 bg-[#0f0f0f] transition-all duration-500 ease-out hover:-translate-y-0.5 hover:border-gold/26">
-                  <div className="grid grid-cols-3 gap-1.5 border-b border-gold/12 bg-[#090909] p-1.5">
-                    {item.photos.map((photo) => (
-                      <div
-                        key={photo.src}
-                        className={cn(
-                          "relative aspect-[3/4] overflow-hidden bg-[#0b0b0b]",
-                          item.id === "jet-entry" && "p-1",
-                        )}
-                      >
-                        <Image
-                          src={photo.src}
-                          alt={photo.alt}
-                          fill
-                          sizes="(max-width: 1024px) 33vw, 20vw"
-                          className={cn(
-                            "brightness-[0.92] transition duration-700 ease-out group-hover:scale-[1.05]",
-                            item.id === "jet-entry"
-                              ? "object-contain"
-                              : "object-cover",
-                          )}
-                        />
-                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0b0b0b]/65 via-transparent to-transparent" />
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="p-5 sm:p-6">
-                    <h2 className="font-serif text-[1.35rem] leading-tight tracking-tight text-cream sm:text-[1.5rem]">
-                      {item.title}
-                    </h2>
-                    <p className="mt-2 text-[0.9rem] leading-relaxed text-cream/56">
-                      {item.blurb}
-                    </p>
-                    <ul className="mt-4 space-y-2 text-[0.72rem] uppercase tracking-[0.2em] text-gold/85">
-                      {item.highlights.map((point) => (
-                        <li key={point}>{point}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </article>
-              </ScrollRevealItem>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="border-b border-gold/10 bg-background py-14 sm:py-16">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.48em] text-gold/90">
-            {t("experiencesPage.oneDayFlow")}
-          </p>
-          <h2 className="mt-5 max-w-2xl font-serif text-3xl leading-[1.08] tracking-tight text-cream sm:text-4xl">
-            {t("experiencesPage.effortless")}
-          </h2>
-          <div className="mt-8 grid gap-4 sm:mt-10 sm:gap-5 md:grid-cols-3">
-            {itineraryMoments.map((moment, index) => (
-              <ScrollRevealItem key={moment.id} index={index + 1}>
-                <article className="border border-gold/12 bg-[#101010] p-5 transition-colors duration-300 hover:border-gold/22">
-                  <p className="text-[0.62rem] font-semibold uppercase tracking-[0.35em] text-gold/88">
-                    {moment.label}
-                  </p>
-                  <h3 className="mt-3 font-serif text-[1.05rem] leading-tight tracking-tight text-cream">
-                    {moment.title}
-                  </h3>
-                  <p className="mt-2 text-[0.84rem] leading-relaxed text-cream/52">
-                    {moment.copy}
-                  </p>
-                </article>
-              </ScrollRevealItem>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="border-b border-gold/10 bg-charcoal py-12 sm:py-14">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <ScrollRevealItem index={0}>
-            <div className="flex items-end justify-between gap-4">
-              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.46em] text-gold/90">
-                {t("experiencesPage.photoHighlights")}
-              </p>
-            </div>
-          </ScrollRevealItem>
-          <ExperiencesPhotoHighlights photos={momentsGallery} />
-        </div>
-      </section>
-
-      <section className="bg-charcoal py-14 sm:py-16 lg:py-18">
-        <ScrollRevealItem index={0}>
-          <div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
-            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.46em] text-gold/90">
-              {t("experiencesPage.readyToBook")}
-            </p>
-            <h2 className="mx-auto mt-5 max-w-2xl font-serif text-3xl leading-[1.08] tracking-tight text-cream sm:text-4xl">
-              {t("experiencesPage.readyHeadline")}
-            </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-cream/58 sm:text-[0.95rem]">
-              {t("experiencesPage.readyBody")}
-            </p>
-            <Link
-              href={CONTACT_TRIP_BUILDER_HREF}
-              className={cn(btnSolid, "mt-8 inline-flex sm:mt-9")}
-            >
-              {t("experiencesPage.startPlanning")}
-            </Link>
-          </div>
-        </ScrollRevealItem>
-      </section>
-    </>
-  );
+        <div className={styles.experienceCopy}><p className={styles.eyebrow}>0{i+1} / {item.label}</p><h3 id={item.id+"-title"}>{item.title1}<br /><em>{item.title2}</em></h3><p>{item.body}</p><ul>{item.details.map(detail=><li key={detail}>{detail}</li>)}</ul><Link href={images[i].href} className={styles.textLink}>{item.link}<ArrowUpRight size={15} aria-hidden /></Link></div>
+      </SectionReveal>)}
+    </section>
+    <SectionReveal className={styles.daySection} aria-labelledby="day-title"><div className={styles.container}>
+      <div className={styles.sectionHead}><div><p className={styles.eyebrow}>{copy.dayEyebrow}</p><h2 id="day-title" className={styles.heading}>{copy.day1}<br /><em>{copy.day2}</em></h2></div><p>{copy.dayBody}</p></div>
+      <div className={styles.timeline}>{copy.moments.map((item,i)=><article key={item.label}><span className={styles.time}>{item.label}</span><span className={styles.rule} aria-hidden/><span className={styles.number}>0{i+1}</span><h3>{item.title}</h3><p>{item.body}</p></article>)}</div>
+      <p className={styles.note}>{copy.dayNote}</p>
+    </div></SectionReveal>
+    <SectionReveal className={styles.container + " " + styles.gallerySection} aria-labelledby="gallery-title"><div className={styles.sectionHead}><div><p className={styles.eyebrow}>{copy.galleryEyebrow}</p><h2 id="gallery-title" className={styles.heading}>{copy.gallery1}{" "}<em>{copy.gallery2}</em></h2></div><p>{copy.galleryBody}</p></div><ExperienceGallery photos={momentsGallery} previousLabel={copy.previous} nextLabel={copy.next} label={copy.galleryEyebrow}/></SectionReveal>
+    <SectionReveal className={styles.closing} aria-labelledby="experience-cta"><div className={styles.container + " " + styles.closingGrid}><div><p className={styles.eyebrow}>{copy.ctaEyebrow}</p><h2 id="experience-cta" className={styles.heading}>{copy.cta1}<br /><em>{copy.cta2}</em></h2></div><div><p>{copy.ctaBody}</p><Link href={CONTACT_TRIP_BUILDER_HREF} className={styles.primaryButton}>{copy.plan}<ArrowUpRight size={17} aria-hidden /></Link><Link href="/services" className={styles.textLink}>{copy.services}<ArrowUpRight size={15} aria-hidden /></Link></div></div></SectionReveal>
+  </div>;
 }

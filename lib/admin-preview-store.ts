@@ -1,0 +1,4 @@
+const DATABASE="blackline-admin-preview";
+function openDatabase():Promise<IDBDatabase>{return new Promise((resolve,reject)=>{const r=indexedDB.open(DATABASE,1);r.onupgradeneeded=()=>r.result.createObjectStore("workspace");r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});}
+export async function loadAdminPreview():Promise<unknown>{const db=await openDatabase();return new Promise((resolve,reject)=>{const tx=db.transaction("workspace","readonly"),r=tx.objectStore("workspace").get("catalog-v2");r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);tx.oncomplete=()=>db.close();});}
+export async function saveAdminPreview(value:unknown):Promise<void>{const db=await openDatabase();return new Promise((resolve,reject)=>{const tx=db.transaction("workspace","readwrite");tx.objectStore("workspace").put(value,"catalog-v2");tx.oncomplete=()=>{db.close();resolve();};tx.onerror=()=>{db.close();reject(tx.error);};});}

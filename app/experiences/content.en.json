@@ -1,0 +1,110 @@
+{
+  "eyebrow": "THE BLACKLINE EXPERIENCES",
+  "hero1": "A city of possibilities.",
+  "hero2": "A stay that’s yours.",
+  "intro": "Open water. Late nights. A different perspective on the city. Discover experiences that make your time in Miami feel entirely your own.",
+  "heroAlt": "Turquoise ocean and white sand at Miami Beach",
+  "discover": "Discover the experiences",
+  "signature": "Considered details. Memorable days.",
+  "collectionEyebrow": "THE SIGNATURE COLLECTION",
+  "collection1": "Choose the feeling.",
+  "collection2": "We’ll connect the details.",
+  "collectionBody": "Start with what moves you. Each experience can stand on its own or become part of a stay planned around your people and your pace.",
+  "indexLabel": "Explore signature experiences",
+  "experiences": [
+    {
+      "id": "yacht-day",
+      "label": "On the water",
+      "title1": "Leave the shore.",
+      "title2": "Keep the moment.",
+      "body": "An afternoon on Biscayne Bay, space to unwind, and Miami from the water. We help you choose a yacht that fits your group and coordinate the charter around your plans.",
+      "details": [
+        "Yacht selection for your group",
+        "Charter timing and onboard requests"
+      ],
+      "link": "Explore yacht charters",
+      "alt": "A white yacht on turquoise water near Miami",
+      "detailAlt": "Dining area inside a yacht",
+      "caption": "THE BAY, AT YOUR PACE"
+    },
+    {
+      "id": "night-vip",
+      "label": "After dark",
+      "title1": "The city changes.",
+      "title2": "So does the mood.",
+      "body": "From a waterfront evening to a late-night table, find your version of Miami after dark. Share the atmosphere you have in mind; we help coordinate venue requests and the transport in between.",
+      "details": [
+        "Venue and table requests",
+        "Chauffeur coordination for the evening"
+      ],
+      "link": "Explore VIP nightlife",
+      "alt": "Colorful lights inside LIV Miami",
+      "detailAlt": "Open-air lounge at Joia Beach Miami",
+      "caption": "FROM GOLDEN HOUR TO AFTER HOURS"
+    },
+    {
+      "id": "exotic-drive",
+      "label": "Behind the wheel",
+      "title1": "Take the scenic way.",
+      "title2": "Make an entrance.",
+      "body": "A coastal drive, a weekend occasion, or simply a car you’ve always wanted to experience. Explore the fleet and let us help match the vehicle and rental arrangements to your stay.",
+      "details": [
+        "Exotic and luxury vehicle selection",
+        "Rental dates and delivery requests"
+      ],
+      "link": "Explore exotic cars",
+      "alt": "Luxury car photographed on location in Miami",
+      "detailAlt": "White Lamborghini Huracan",
+      "caption": "A DIFFERENT WAY TO SEE MIAMI"
+    },
+    {
+      "id": "jet-entry",
+      "label": "Above it all",
+      "title1": "Your journey begins",
+      "title2": "before you land.",
+      "body": "Bring your flight and your time on the ground into one conversation. We help coordinate private aviation requests with onward transport, keeping the arrival connected to the rest of your stay.",
+      "details": [
+        "Private aircraft enquiries",
+        "Onward chauffeur arrangements"
+      ],
+      "link": "Explore private aviation",
+      "alt": "Gulfstream G550 private aircraft",
+      "detailAlt": "Blue leather chauffeur interior",
+      "caption": "FROM THE RUNWAY TO YOUR NEXT CHAPTER"
+    }
+  ],
+  "dayEyebrow": "ONE DAY, MANY POSSIBILITIES",
+  "day1": "From first light",
+  "day2": "to the last reservation.",
+  "dayBody": "A little inspiration for how the day could unfold. Your concierge shapes the arrangements around your dates, preferences, and confirmed availability.",
+  "moments": [
+    {
+      "label": "THE ARRIVAL",
+      "title": "Settle into your own rhythm.",
+      "body": "A chauffeur pickup, time to check in, and space to ease into Miami before the day begins."
+    },
+    {
+      "label": "GOLDEN HOUR",
+      "title": "Trade the city for the bay.",
+      "body": "Time on the water, a skyline view, and an afternoon that leaves room to slow down."
+    },
+    {
+      "label": "AFTER DARK",
+      "title": "Let the evening unfold.",
+      "body": "Dinner, a table request, and a planned ride home. The details connect, so the evening can flow."
+    }
+  ],
+  "dayNote": "An illustrative day, tailored to you. Services and venue arrangements are subject to availability and confirmation.",
+  "galleryEyebrow": "THE MIAMI EDIT",
+  "gallery1": "A glimpse of",
+  "gallery2": "what’s possible.",
+  "galleryBody": "The places, perspectives, and details that make the city worth exploring.",
+  "previous": "Previous photos",
+  "next": "Next photos",
+  "ctaEyebrow": "YOUR EXPERIENCE STARTS HERE",
+  "cta1": "Tell us your plans.",
+  "cta2": "We’ll take it from there.",
+  "ctaBody": "Share your dates, group size, and the experiences you have in mind. Your Blackline concierge will help bring the pieces together.",
+  "plan": "Plan with Blackline",
+  "services": "Explore all services"
+}

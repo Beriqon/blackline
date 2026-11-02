@@ -1,0 +1,39 @@
+{
+  "hero1": "Tu momento.",
+  "hero2": "Para recordar.",
+  "intro": "Vive la experiencia. Nuestro equipo captura las personas, los lugares y los detalles con fotografía, vídeo o ambos, coordinados con tus planes en Miami.",
+  "caption": "PERSONAS REALES. MOMENTOS EN MIAMI.",
+  "formats1": "Una imagen.",
+  "formats2": "O toda la emoción.",
+  "photoCta": "Planificar una sesión de fotos",
+  "videoCta": "Planificar una sesión de vídeo",
+  "gallery1": "Los momentos detrás",
+  "gallery2": "de los recuerdos.",
+  "galleryBody": "Una selección de fotografías de sesiones anteriores, desde el agua hasta las noches en la ciudad. Arrastra o desliza para explorar la galería.",
+  "previous": "Fotos anteriores",
+  "next": "Fotos siguientes",
+  "process1": "Menos tiempo organizando.",
+  "process2": "Más tiempo disfrutando.",
+  "steps": [
+    {
+      "title": "Elige tu formato.",
+      "body": "Fotografía, vídeo o ambos. Cuéntanos la ocasión y qué quieres llevarte de la sesión."
+    },
+    {
+      "title": "Define los detalles.",
+      "body": "Acordamos la ubicación, la cobertura, las entregas editadas, el presupuesto y los plazos antes de la sesión."
+    },
+    {
+      "title": "Conecta cada parte del día.",
+      "body": "El equipo y tu concierge coordinan los horarios y el acceso con tus planes confirmados."
+    }
+  ],
+  "pairEyebrow": "AÑÁDELO A TU EXPERIENCIA",
+  "pairTitle": "Tus planes. Otra perspectiva.",
+  "ctaEyebrow": "HAZLO PARTE DE TU ESTANCIA",
+  "cta1": "Trae a tu gente.",
+  "cta2": "Capturamos el momento.",
+  "ctaBody": "Comparte tus fechas, tus planes y si buscas fotos, vídeo o ambos. Te ayudamos a coordinar la sesión con tu experiencia.",
+  "heroAlt": "Retrato en el interior de una van de lujo con iluminación turquesa",
+  "insetAlt": "Retrato de estilo de vida sobre una moto acuática en Miami"
+}

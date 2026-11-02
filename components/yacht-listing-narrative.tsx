@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocale } from "@/components/locale-provider";
+import styles from "@/app/services/yachts/yachts.module.css";
 import { cn } from "@/lib/utils";
 
 const labelClass =
@@ -26,6 +27,7 @@ export function YachtListingAbout({
     <div
       className={cn(
         "mt-10 border-t border-gold/10 pt-10",
+        styles.aboutYacht,
         className,
       )}
     >
@@ -77,6 +79,7 @@ export function YachtListingSpecsAndIncluded({
     <div
       className={cn(
         "mt-10 border-t border-gold/10 pt-10 lg:mt-12",
+        styles.specsYacht,
         className,
       )}
     >

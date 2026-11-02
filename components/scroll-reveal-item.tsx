@@ -26,7 +26,7 @@ export function ScrollRevealItem({
   const reduceMotion = useReducedMotion();
   const hidden = reduceMotion
     ? { opacity: 1, y: 0, scale: 1 }
-    : { opacity: 0, y: 28, scale: 0.98 };
+    : { opacity: 1, y: 28, scale: 0.98 };
 
   return (
     <motion.div

@@ -1,472 +1,53 @@
 "use client";
-
-import { Building2 } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Building2, Search, SlidersHorizontal, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import {
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-
-import { ChauffeurServiceCrosslink } from "@/components/chauffeur-service-crosslink";
+import { Suspense, useMemo, type FormEvent } from "react";
 import { useLocale } from "@/components/locale-provider";
 import { ScrollRevealItem } from "@/components/scroll-reveal-item";
-import { SectionReveal } from "@/components/section-reveal";
-import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import { localizeVilla } from "@/lib/i18n/villas-page";
-import type { Translator } from "@/lib/i18n/translate";
 import { paginateSlice } from "@/lib/pagination";
-import {
-  formatVillaUsd,
-  VILLA_NEIGHBORHOODS,
-  VILLAS,
-  type Villa,
-  type VillaNeighborhood,
-} from "@/lib/villas-data";
-import { cn } from "@/lib/utils";
+import { VILLAS, VILLA_NEIGHBORHOODS, formatVillaUsd, type Villa } from "@/lib/villas-data";
+import styles from "@/app/services/villas/villas.module.css";
 
-const VILLAS_CATALOG_PAGE_SIZE = 12;
-
-const FEATURED_VILLA_IDS = new Set([
-  "emerald",
-  "fendi",
-  "granada",
-  "bodrum",
-  "casa-blu",
-  "mariola",
-  "perla",
-]);
-
-function ImagePlaceholder({
-  className,
-  label,
-}: {
-  className?: string;
-  label?: string;
-}) {
-  return (
-    <div
-      className={cn(
-        "relative flex flex-col items-center justify-center gap-2 border border-gold/12 bg-[#141414] text-center",
-        className,
-      )}
-    >
-      <Building2 className="h-8 w-8 text-gold/22 sm:h-10 sm:w-10" aria-hidden />
-      {label ? (
-        <span className="px-2 text-[0.65rem] font-medium uppercase tracking-[0.2em] text-cream/35">
-          {label}
-        </span>
-      ) : null}
-    </div>
-  );
+export function villaFactNumber(villa: Villa, label: string) {
+  const value=villa.facts.find(f=>f.label===label)?.value;
+  return value && /^\d/.test(value) ? Number.parseFloat(value) : 0;
 }
-
-function VillaCard({ villa, t }: { villa: Villa; t: Translator }) {
-  const cover = villa.galleryImages[0];
-  const isFeatured = FEATURED_VILLA_IDS.has(villa.id);
-  return (
-    <Link
-      href={`/services/villas/${villa.id}`}
-      className="group block w-full text-left transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold/50"
-    >
-      <div
-        className={cn(
-          "relative aspect-[16/10] overflow-hidden border bg-[#0b0b0b] transition-[border-color,box-shadow] duration-500",
-          isFeatured
-            ? "border-gold/45 shadow-[0_0_0_1px_rgba(198,164,108,0.22),0_12px_40px_rgba(0,0,0,0.45)] group-hover:border-gold/60 group-hover:shadow-[0_0_0_1px_rgba(224,195,138,0.35),0_16px_48px_rgba(198,164,108,0.12)]"
-            : "border-gold/12 group-hover:border-gold/28",
-        )}
-      >
-        {isFeatured ? (
-          <>
-            <div
-              className="pointer-events-none absolute inset-x-0 top-0 z-[3] h-1 bg-gradient-to-r from-transparent via-gold/90 to-transparent"
-              aria-hidden
-            />
-            <div className="absolute left-3 top-3 z-[3] sm:left-4 sm:top-4">
-              <span className="inline-flex items-center justify-center rounded-sm border border-gold/55 bg-[#0b0b0b]/92 px-2.5 py-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-gold shadow-[0_4px_20px_rgba(0,0,0,0.5)] backdrop-blur-sm sm:px-3 sm:py-2 sm:text-[0.65rem]">
-                {t("villasPage.featured")}
-              </span>
-            </div>
-          </>
-        ) : null}
-        {cover ? (
-          <Image
-            src={cover}
-            alt={t("villasPage.exteriorAlt", { name: villa.name })}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover transition duration-500 group-hover:scale-[1.03]"
-          />
-        ) : (
-          <ImagePlaceholder
-            className="absolute inset-0 h-full w-full"
-            label={
-              villa.photosComingSoon
-                ? t("villasPage.photosComingSoon")
-                : t("villasPage.photoPlaceholder")
-            }
-          />
-        )}
-        <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-[min(42%,9.5rem)] bg-gradient-to-t from-[#070707]/92 via-[#0b0b0b]/45 to-transparent"
-          aria-hidden
-        />
-        <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5">
-          <p className="font-serif text-base leading-snug tracking-tight text-cream [text-shadow:0_1px_2px_rgba(0,0,0,1),0_2px_16px_rgba(0,0,0,0.88),0_0_1px_rgba(0,0,0,1)] sm:text-lg">
-            {villa.name}
-          </p>
-          <p className="mt-1 text-[0.72rem] font-semibold uppercase leading-snug tracking-[0.2em] text-cream [text-shadow:0_1px_2px_rgba(0,0,0,1),0_2px_14px_rgba(0,0,0,0.9)]">
-            {villa.subtitle}
-          </p>
-          <p className="mt-2 font-serif text-[1.05rem] tabular-nums text-gold-secondary [text-shadow:0_1px_2px_rgba(0,0,0,1),0_2px_14px_rgba(0,0,0,0.92),0_0_18px_rgba(0,0,0,0.5)] sm:text-[1.125rem]">
-            {villa.nightlyRates
-              ? `From ${formatVillaUsd(villa.nightlyRates.weekdayUsd)}/night`
-              : villa.cardTagline}
-          </p>
-          {villa.nightlyRates ? (
-            <p className="mt-1 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-cream/72 [text-shadow:0_1px_2px_rgba(0,0,0,1),0_2px_12px_rgba(0,0,0,0.88)]">
-              {villa.cardTagline}
-            </p>
-          ) : null}
-        </div>
-      </div>
-      <p className="mt-3 text-[0.7rem] font-medium uppercase tracking-[0.22em] text-cream/40">
-        {t("villasPage.openListing")}
-      </p>
-    </Link>
-  );
-}
-
-type NeighborhoodFilter = "all" | VillaNeighborhood;
-
-function VillaCatalogPagination({
-  page,
-  pageCount,
-  total,
-  pageSize,
-  onPage,
-  t,
-}: {
-  page: number;
-  pageCount: number;
-  total: number;
-  pageSize: number;
-  onPage: (p: number) => void;
-  t: Translator;
-}) {
-  if (pageCount <= 1) return null;
-
-  const from = (page - 1) * pageSize + 1;
-  const to = Math.min(page * pageSize, total);
-
-  return (
-    <nav
-      className="mt-12 flex flex-col items-center gap-5 border-t border-gold/10 pt-10 sm:flex-row sm:justify-between"
-      aria-label={t("villasPage.paginationAria")}
-    >
-      <p className="text-[0.72rem] tabular-nums text-cream/42">
-        {t("villasPage.showingRange", {
-          from: String(from),
-          to: String(to),
-          total: String(total),
-        })}
-      </p>
-      <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
-        <button
-          type="button"
-          onClick={() => onPage(page - 1)}
-          disabled={page <= 1}
-          className={cn(
-            "min-h-9 min-w-[4.5rem] border px-3 text-[0.62rem] font-semibold uppercase tracking-[0.14em] transition-colors disabled:cursor-not-allowed disabled:opacity-35 sm:min-h-10 sm:text-[0.65rem]",
-            page <= 1
-              ? "border-gold/10 text-cream/30"
-              : "border-gold/18 text-cream/65 hover:border-gold/32 hover:text-cream",
-          )}
-        >
-          {t("villasPage.prev")}
-        </button>
-        {Array.from({ length: pageCount }, (_, i) => i + 1).map((p) => (
-          <button
-            key={p}
-            type="button"
-            onClick={() => onPage(p)}
-            aria-current={p === page ? "page" : undefined}
-            className={cn(
-              "flex h-9 min-w-9 items-center justify-center border text-[0.7rem] font-semibold tabular-nums transition-colors sm:h-10 sm:min-w-10 sm:text-[0.75rem]",
-              p === page
-                ? "border-gold/45 bg-gold/[0.08] text-gold-secondary"
-                : "border-gold/12 text-cream/55 hover:border-gold/25 hover:text-cream/80",
-            )}
-          >
-            {p}
-          </button>
-        ))}
-        <button
-          type="button"
-          onClick={() => onPage(page + 1)}
-          disabled={page >= pageCount}
-          className={cn(
-            "min-h-9 min-w-[4.5rem] border px-3 text-[0.62rem] font-semibold uppercase tracking-[0.14em] transition-colors disabled:cursor-not-allowed disabled:opacity-35 sm:min-h-10 sm:text-[0.65rem]",
-            page >= pageCount
-              ? "border-gold/10 text-cream/30"
-              : "border-gold/18 text-cream/65 hover:border-gold/32 hover:text-cream",
-          )}
-        >
-          {t("villasPage.next")}
-        </button>
-      </div>
-    </nav>
-  );
-}
-
 function VillasCatalogInner() {
-  const { locale, t } = useLocale();
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const [neighborhoodFilter, setNeighborhoodFilter] =
-    useState<NeighborhoodFilter>("all");
-
-  const requestedPage = useMemo(() => {
-    const raw = searchParams.get("page");
-    const n = parseInt(raw || "1", 10);
-    return Number.isFinite(n) && n >= 1 ? n : 1;
-  }, [searchParams]);
-
-  const countsByNeighborhood = useMemo(() => {
-    const m = new Map<VillaNeighborhood, number>();
-    for (const n of VILLA_NEIGHBORHOODS) m.set(n, 0);
-    for (const v of VILLAS) {
-      m.set(v.neighborhood, (m.get(v.neighborhood) ?? 0) + 1);
-    }
-    return m;
-  }, []);
-
-  const visibleVillas = useMemo(() => {
-    if (neighborhoodFilter === "all") return [...VILLAS];
-    return VILLAS.filter((v) => v.neighborhood === neighborhoodFilter);
-  }, [neighborhoodFilter]);
-
-  const { slice, pageCount, safePage, total } = useMemo(
-    () =>
-      paginateSlice(visibleVillas, requestedPage, VILLAS_CATALOG_PAGE_SIZE),
-    [visibleVillas, requestedPage],
-  );
-
-  const localizedSlice = useMemo(
-    () => slice.map((villa) => localizeVilla(villa, locale, t)),
-    [slice, locale, t],
-  );
-
-  const prevNeighborhood = useRef<NeighborhoodFilter | null>(null);
-  useEffect(() => {
-    const cur = neighborhoodFilter;
-    const prev = prevNeighborhood.current;
-    if (prev === null) {
-      prevNeighborhood.current = cur;
-      return;
-    }
-    if (prev === cur) return;
-    prevNeighborhood.current = cur;
-    router.replace(pathname, { scroll: false });
-  }, [neighborhoodFilter, pathname, router]);
-
-  useEffect(() => {
-    if (safePage === requestedPage) return;
-    router.replace(
-      safePage > 1 ? `${pathname}?page=${safePage}` : pathname,
-      { scroll: false },
-    );
-  }, [safePage, requestedPage, pathname, router]);
-
-  const prevCatalogPageRef = useRef<number | null>(null);
-  useEffect(() => {
-    if (prevCatalogPageRef.current === null) {
-      prevCatalogPageRef.current = requestedPage;
-      return;
-    }
-    if (prevCatalogPageRef.current === requestedPage) return;
-    prevCatalogPageRef.current = requestedPage;
-    document.getElementById("villas-properties")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }, [requestedPage]);
-
-  const goToCatalogPage = useCallback(
-    (p: number) => {
-      router.replace(p > 1 ? `${pathname}?page=${p}` : pathname, {
-        scroll: false,
-      });
-    },
-    [pathname, router],
-  );
-
-  const filterChipClass = (active: boolean) =>
-    cn(
-      "inline-flex items-center gap-1 rounded-sm border px-3 py-2 text-left text-[0.7rem] font-medium uppercase tracking-[0.14em] transition-colors sm:px-3.5 sm:py-2.5 sm:tracking-[0.16em]",
-      active
-        ? "border-gold/55 bg-gold/[0.12] text-gold-secondary"
-        : "border-gold/15 bg-[#141414]/80 text-cream/55 hover:border-gold/28 hover:text-cream/75",
-    );
-
-  return (
-    <>
-      <SectionReveal className="relative overflow-hidden border-b border-gold/10 bg-background">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(198,164,108,0.06),transparent)]" />
-        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-10">
-          <p className="text-[0.65rem] font-medium uppercase tracking-[0.48em] text-gold/90">
-            {t("villasPage.eyebrow")}
-          </p>
-          <div className="mt-4 h-px w-14 bg-gold/30" aria-hidden />
-          <h1 className="mt-6 max-w-3xl font-serif text-[2.1rem] leading-[1.12] tracking-tight text-cream sm:text-4xl md:text-[2.65rem]">
-            {t("villasPage.headline")}
-          </h1>
-          <p className="mt-5 max-w-2xl text-sm leading-relaxed text-cream/58 sm:text-[0.9375rem]">
-            {t("villasPage.heroBody")}
-          </p>
-          <ChauffeurServiceCrosslink variant="villa" />
-        </div>
-      </SectionReveal>
-
-      <div className="section-gradient-divider" aria-hidden />
-
-      <SectionReveal
-        id="villas-properties"
-        className="scroll-mt-[calc(4rem+0.75rem)] border-b border-gold/10 bg-charcoal py-14 sm:scroll-mt-[calc(4.25rem+0.75rem)] sm:py-16 lg:py-20"
-      >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-          <h2 className="font-serif text-xl tracking-tight text-cream sm:text-2xl">
-            {t("villasPage.propertiesHeadline")}
-          </h2>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-cream/52">
-            {t("villasPage.propertiesBody")}
-          </p>
-
-          {VILLAS.length > 0 ? (
-            <div
-              className="mt-8"
-              role="group"
-              aria-label="Filter properties by neighborhood"
-            >
-              <p className="text-[0.62rem] font-medium uppercase tracking-[0.32em] text-gold/70">
-                {t("villasPage.neighborhood")}
-              </p>
-              <div className="mt-3 sm:hidden">
-                <label
-                  htmlFor="neighborhood-filter-mobile"
-                  className="sr-only"
-                >
-                  {t("villasPage.selectNeighborhood")}
-                </label>
-                <select
-                  id="neighborhood-filter-mobile"
-                  value={neighborhoodFilter}
-                  onChange={(event) =>
-                    setNeighborhoodFilter(event.target.value as NeighborhoodFilter)
-                  }
-                  className="w-full border border-gold/20 bg-[#141414] px-3 py-3 text-[0.75rem] font-medium uppercase tracking-[0.14em] text-cream/80 outline-none transition-colors focus:border-gold/55"
-                >
-                  <option value="all">All areas ({VILLAS.length})</option>
-                  {VILLA_NEIGHBORHOODS.map((n) => {
-                    const count = countsByNeighborhood.get(n) ?? 0;
-                    return (
-                      <option key={n} value={n}>
-                        {n}
-                        {count > 0 ? ` (${count})` : ""}
-                      </option>
-                    );
-                  })}
-                </select>
-              </div>
-              <div className="mt-3 hidden flex-wrap gap-2 sm:flex sm:gap-2.5">
-                <button
-                  type="button"
-                  onClick={() => setNeighborhoodFilter("all")}
-                  className={filterChipClass(neighborhoodFilter === "all")}
-                  aria-pressed={neighborhoodFilter === "all"}
-                >
-                  {t("villasPage.allAreas")}
-                  <span className="tabular-nums text-cream/35">
-                    ({VILLAS.length})
-                  </span>
-                </button>
-                {VILLA_NEIGHBORHOODS.map((n) => {
-                  const count = countsByNeighborhood.get(n) ?? 0;
-                  const active = neighborhoodFilter === n;
-                  return (
-                    <button
-                      key={n}
-                      type="button"
-                      onClick={() => setNeighborhoodFilter(n)}
-                      className={filterChipClass(active)}
-                      aria-pressed={active}
-                    >
-                      {n}
-                      {count > 0 ? (
-                        <span className="tabular-nums text-cream/35">
-                          ({count})
-                        </span>
-                      ) : null}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ) : null}
-
-          {VILLAS.length === 0 ? (
-            <p className="mt-10 max-w-xl text-sm leading-relaxed text-cream/48">
-              {t("villasPage.emptyDirectory").split("{contactLink}")[0]}
-              <Link
-                href={CONTACT_TRIP_BUILDER_HREF}
-                className="font-medium text-gold-secondary/95 underline decoration-gold/25 underline-offset-4 transition-colors hover:text-gold hover:decoration-gold/45"
-              >
-                {t("villasPage.contact")}
-              </Link>
-              {t("villasPage.emptyDirectory").split("{contactLink}")[1] ?? ""}
-            </p>
-          ) : visibleVillas.length === 0 ? (
-            <p className="mt-10 text-sm leading-relaxed text-cream/48">
-              {t("villasPage.emptyFilter")}
-            </p>
-          ) : (
-            <>
-              <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
-                {localizedSlice.map((villa, index) => (
-                  <ScrollRevealItem key={villa.id} index={index}>
-                    <div id={`villa-${villa.id}`}>
-                      <VillaCard villa={villa} t={t} />
-                    </div>
-                  </ScrollRevealItem>
-                ))}
-              </div>
-              <VillaCatalogPagination
-                page={safePage}
-                pageCount={pageCount}
-                total={total}
-                pageSize={VILLAS_CATALOG_PAGE_SIZE}
-                onPage={goToCatalogPage}
-                t={t}
-              />
-            </>
-          )}
-        </div>
-      </SectionReveal>
-    </>
-  );
+  const {locale,t}=useLocale(); const es=locale==="es";
+  const router=useRouter(),pathname=usePathname(),params=useSearchParams();
+  const q=params.get("q")??"",area=params.get("area")??"all",guests=Number(params.get("guests"))||0,beds=Number(params.get("beds"))||0,photosOnly=params.get("photos")==="1",sort=params.get("sort")??"recommended";
+  const requestedPage=Math.max(1,Number.parseInt(params.get("page")??"1")||1);
+  const active=Boolean(q||area!=="all"||guests||beds||photosOnly||sort!=="recommended");
+  const filtered=useMemo(()=>{
+    const query=q.toLocaleLowerCase().trim();
+    const list=VILLAS.filter(v=>(area==="all"||v.neighborhood===area)&&(!query||`${v.name} ${v.neighborhood} ${v.subtitle}`.toLocaleLowerCase().includes(query))&&(!guests||villaFactNumber(v,"Max guests")>=guests)&&(!beds||villaFactNumber(v,"Bedrooms")>=beds)&&(!photosOnly||v.galleryImages.length>0));
+    if(sort==="name")list.sort((a,b)=>a.name.localeCompare(b.name));
+    if(sort==="price")list.sort((a,b)=>(a.nightlyRates?.weekdayUsd??Infinity)-(b.nightlyRates?.weekdayUsd??Infinity));
+    if(sort==="bedrooms")list.sort((a,b)=>villaFactNumber(b,"Bedrooms")-villaFactNumber(a,"Bedrooms"));
+    return list;
+  },[q,area,guests,beds,photosOnly,sort]);
+  const {slice,pageCount,safePage,total}=paginateSlice(filtered,requestedPage,12);
+  function submit(event:FormEvent<HTMLFormElement>){event.preventDefault();const form=new FormData(event.currentTarget),next=new URLSearchParams();for(const key of ["q","area","guests","beds","sort","photos"]){const value=String(form.get(key)??"").trim();if(value&&value!=="all"&&value!=="0"&&value!=="recommended")next.set(key,value);}router.replace(`${pathname}${next.size?"?"+next:""}`,{scroll:false});}
+  function pageTo(page:number){const next=new URLSearchParams(params.toString());if(page>1)next.set("page",String(page));else next.delete("page");router.replace(`${pathname}${next.size?"?"+next:""}`,{scroll:false});document.getElementById("villas-properties")?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});}
+  const heroVilla=VILLAS.find(v=>v.id==="aria")??VILLAS[0];
+  return <div className={styles.page}>
+    <section className={styles.hero} aria-labelledby="villas-title"><div className={`${styles.container} ${styles.heroGrid}`}><div><p className={styles.eyebrow}>{t("villasPage.eyebrow")}</p><h1 id="villas-title">{es?"Tu lugar":"Somewhere"}<br/><em>{es?"en Miami.":"entirely yours."}</em></h1><p className={styles.intro}>{es?"Villas frente al mar, casas con piscina y estancias privadas. Encuentra el espacio que encaje con tu grupo y tu Miami.":"Waterfront villas, poolside homes, and private stays. Find the space that fits your people and your Miami."}</p><a href="#villas-properties" className={styles.textLink}>{es?"Explorar las villas":"Explore the villas"}<ArrowDown size={15} aria-hidden/></a></div><div className={styles.heroPhoto}>{heroVilla?.galleryImages[0]&&<Image src={heroVilla.galleryImages[0]} alt={heroVilla.name} fill preload sizes="(max-width:700px) 100vw, 45vw" className={styles.cover}/>}<span>BLACKLINE / PRIVATE RESIDENCES</span></div></div></section>
+    <section id="villas-properties" className={`${styles.container} ${styles.catalog}`} aria-labelledby="properties-title"><div className={styles.catalogHead}><div><p className={styles.eyebrow}>{es?"La colección":"The residence collection"}</p><h2 id="properties-title">{t("villasPage.propertiesHeadline")}</h2></div><p aria-live="polite">{total} {es?"estancias encontradas":"stays found"}</p></div>
+    <form key={params.toString()} className={styles.filters} onSubmit={submit} aria-label={es?"Filtrar villas":"Filter villas"}>
+      <div className={styles.search}><Search size={16} aria-hidden/><input name="q" defaultValue={q} placeholder={es?"Nombre o zona":"Villa name or area"} aria-label={es?"Buscar villas":"Search villas"}/><button type="submit">{es?"Buscar":"Search"}</button></div>
+      <label>{t("villasPage.neighborhood")}<select name="area" defaultValue={area} onChange={e=>e.currentTarget.form?.requestSubmit()}><option value="all">{t("villasPage.allAreas")}</option>{VILLA_NEIGHBORHOODS.filter(n=>VILLAS.some(v=>v.neighborhood===n)).map(n=><option key={n} value={n}>{n} ({VILLAS.filter(v=>v.neighborhood===n).length})</option>)}</select></label>
+      <label>{t("villasPage.facts.maxGuests")}<select name="guests" defaultValue={guests} onChange={e=>e.currentTarget.form?.requestSubmit()}><option value="0">{es?"Cualquier grupo":"Any group size"}</option>{[2,4,6,8,10,12,16,20].map(n=><option value={n} key={n}>{n}+ {es?"huéspedes":"guests"}</option>)}</select></label>
+      <label>{t("villasPage.facts.bedrooms")}<select name="beds" defaultValue={beds} onChange={e=>e.currentTarget.form?.requestSubmit()}><option value="0">{es?"Cualquier tamaño":"Any size"}</option>{[1,2,3,4,5,6,8,10].map(n=><option value={n} key={n}>{n}+</option>)}</select></label>
+      <label>{es?"Ordenar":"Sort by"}<select name="sort" defaultValue={sort} onChange={e=>e.currentTarget.form?.requestSubmit()}><option value="recommended">{es?"Orden de la colección":"Collection order"}</option><option value="name">{es?"Nombre A–Z":"Name A–Z"}</option><option value="price">{es?"Precio publicado: menor primero":"Published price: low first"}</option><option value="bedrooms">{es?"Más dormitorios":"Most bedrooms"}</option></select></label>
+      <div className={styles.filterBottom}><span><SlidersHorizontal size={13} aria-hidden/>{es?"Afina tu estancia":"Refine your stay"}</span><label><input type="checkbox" name="photos" value="1" defaultChecked={photosOnly} onChange={e=>e.currentTarget.form?.requestSubmit()}/>{es?"Solo con fotos":"Only with photos"}</label>{active&&<button type="button" onClick={()=>router.replace(pathname,{scroll:false})}>{es?"Borrar filtros":"Clear filters"}<X size={13} aria-hidden/></button>}</div>
+    </form>
+    {sort==="price"&&<p className={styles.note}>{es?"Las propiedades sin precio publicado aparecen al final. El precio final se confirma al consultar.":"Stays without a published rate appear last. Final pricing is confirmed on inquiry."}</p>}
+    {total===0?<div className={styles.empty}><Building2 size={30} aria-hidden/><h3>{es?"Probemos otra búsqueda":"Let’s try another search"}</h3><p>{es?"Ninguna estancia coincide con estos filtros. Prueba otra zona o reduce los requisitos.":"No stays match these filters. Try another area or relax your requirements."}</p><button type="button" onClick={()=>router.replace(pathname,{scroll:false})} className={styles.primaryButton}>{es?"Ver todas las villas":"Show all villas"}</button></div>:<div className={styles.villaGrid}>{slice.map((source,i)=>{const villa=localizeVilla(source,locale,t),cover=villa.galleryImages[0],bedrooms=villaFactNumber(source,"Bedrooms"),capacity=villaFactNumber(source,"Max guests");const query=params.toString();return <ScrollRevealItem key={villa.id} index={i%3}><Link id={`villa-${villa.id}`} href={`/services/villas/${villa.id}${query?"?"+query:""}`} className={styles.villaCard}><div className={styles.cardPhoto}>{cover?<Image src={cover} alt={t("villasPage.exteriorAlt",{name:villa.name})} fill sizes="(max-width:700px) 100vw, (max-width:1050px) 50vw, 33vw" className={styles.cover}/>:<div className={styles.placeholder}><Building2 size={32} aria-hidden/><span>{t("villasPage.photosComingSoon")}</span></div>}<span className={styles.areaTag}>{villa.neighborhood}</span>{villa.galleryImages.length>0&&<span className={styles.photoCount}>{villa.galleryImages.length} {es?"fotos":"photos"}</span>}<span className={styles.openIcon} aria-hidden><ArrowUpRight size={20}/></span></div><div className={styles.cardBody}><div className={styles.cardTitle}><h3>{villa.name}</h3><span>{villa.nightlyRates?t("villasPage.fromPerNight",{price:formatVillaUsd(villa.nightlyRates.weekdayUsd)}):es?"Consultar precio":"Price on inquiry"}</span></div><p>{villa.subtitle}</p><div className={styles.cardFacts}>{bedrooms>0&&<span>{bedrooms} {es?"dormitorios":"bedrooms"}</span>}{capacity>0&&<span>{capacity} {es?"huéspedes":"guests"}</span>}{!bedrooms&&!capacity&&<span>{villa.cardTagline}</span>}</div><span className={styles.cardLink}>{t("villasPage.openListing")}<ArrowUpRight size={14} aria-hidden/></span></div></Link></ScrollRevealItem>;})}</div>}
+    {pageCount>1&&<nav className={styles.pagination} aria-label={t("villasPage.paginationAria")}><button disabled={safePage===1} onClick={()=>pageTo(safePage-1)}>{t("villasPage.prev")}</button>{Array.from({length:pageCount},(_,i)=>i+1).map(n=><button key={n} aria-current={n===safePage?"page":undefined} onClick={()=>pageTo(n)}>{n}</button>)}<button disabled={safePage===pageCount} onClick={()=>pageTo(safePage+1)}>{t("villasPage.next")}</button></nav>}
+    </section>
+  </div>;
 }
-
-export function VillasCatalog() {
-  return (
-    <Suspense fallback={null}>
-      <VillasCatalogInner />
-    </Suspense>
-  );
-}
+export function VillasCatalog(){return <Suspense fallback={null}><VillasCatalogInner/></Suspense>;}

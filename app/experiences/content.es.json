@@ -1,0 +1,110 @@
+{
+  "eyebrow": "LAS EXPERIENCIAS BLACKLINE",
+  "hero1": "Una ciudad de posibilidades.",
+  "hero2": "Una estancia a tu medida.",
+  "intro": "Mar abierto. Noches inolvidables. Otra perspectiva de la ciudad. Descubre experiencias que hacen que tu tiempo en Miami sea verdaderamente tuyo.",
+  "heroAlt": "Agua turquesa y arena blanca en Miami Beach",
+  "discover": "Descubre las experiencias",
+  "signature": "Cada detalle cuenta. Cada día se recuerda.",
+  "collectionEyebrow": "LA COLECCIÓN SIGNATURE",
+  "collection1": "Elige cómo vivirlo.",
+  "collection2": "Conectamos los detalles.",
+  "collectionBody": "Empieza por lo que te inspira. Cada experiencia puede disfrutarse por separado o formar parte de una estancia organizada para tu grupo y a tu ritmo.",
+  "indexLabel": "Explorar experiencias signature",
+  "experiences": [
+    {
+      "id": "yacht-day",
+      "label": "En el agua",
+      "title1": "Deja atrás la costa.",
+      "title2": "Quédate con el momento.",
+      "body": "Una tarde en Biscayne Bay, espacio para desconectar y Miami desde el agua. Te ayudamos a elegir un yate para tu grupo y a coordinar el chárter según tus planes.",
+      "details": [
+        "Selección de yates para tu grupo",
+        "Horarios y peticiones a bordo"
+      ],
+      "link": "Explorar yates",
+      "alt": "Un yate blanco en las aguas turquesas de Miami",
+      "detailAlt": "Comedor en el interior de un yate",
+      "caption": "LA BAHÍA, A TU RITMO"
+    },
+    {
+      "id": "night-vip",
+      "label": "Al caer la noche",
+      "title1": "La ciudad cambia.",
+      "title2": "El ambiente también.",
+      "body": "De una velada frente al mar a una mesa en un club, encuentra tu versión de Miami de noche. Cuéntanos qué ambiente buscas y te ayudamos a coordinar las solicitudes y los traslados.",
+      "details": [
+        "Solicitudes de locales y mesas",
+        "Coordinación de chófer para la noche"
+      ],
+      "link": "Explorar vida nocturna VIP",
+      "alt": "Luces de colores en el interior de LIV Miami",
+      "detailAlt": "Zona de descanso al aire libre en Joia Beach Miami",
+      "caption": "DE LA HORA DORADA A LA MADRUGADA"
+    },
+    {
+      "id": "exotic-drive",
+      "label": "Al volante",
+      "title1": "Elige la ruta con vistas.",
+      "title2": "Llega con estilo.",
+      "body": "Un paseo por la costa, una ocasión especial o ese coche que siempre has querido conducir. Explora la flota y te ayudamos a coordinar el vehículo y el alquiler para tu estancia.",
+      "details": [
+        "Selección de coches exóticos y de lujo",
+        "Fechas de alquiler y solicitudes de entrega"
+      ],
+      "link": "Explorar coches exóticos",
+      "alt": "Coche de lujo fotografiado en Miami",
+      "detailAlt": "Lamborghini Huracan blanco",
+      "caption": "OTRA FORMA DE DESCUBRIR MIAMI"
+    },
+    {
+      "id": "jet-entry",
+      "label": "Desde las alturas",
+      "title1": "Tu viaje comienza",
+      "title2": "antes de aterrizar.",
+      "body": "Conecta tu vuelo y tus planes en tierra en una sola conversación. Te ayudamos a coordinar las solicitudes de aviación privada y el transporte para integrar la llegada con el resto de tu estancia.",
+      "details": [
+        "Consultas de aviación privada",
+        "Coordinación de traslados con chófer"
+      ],
+      "link": "Explorar aviación privada",
+      "alt": "Avión privado Gulfstream G550",
+      "detailAlt": "Interior de lujo con asientos de cuero azul",
+      "caption": "DE LA PISTA A TU PRÓXIMO DESTINO"
+    }
+  ],
+  "dayEyebrow": "UN DÍA, MUCHAS POSIBILIDADES",
+  "day1": "Desde el amanecer",
+  "day2": "hasta la última reserva.",
+  "dayBody": "Un poco de inspiración para tu día. Tu concierge adapta los detalles a tus fechas, preferencias y disponibilidad confirmada.",
+  "moments": [
+    {
+      "label": "LA LLEGADA",
+      "title": "Encuentra tu propio ritmo.",
+      "body": "Recogida con chófer, tiempo para instalarte y espacio para empezar a disfrutar de Miami."
+    },
+    {
+      "label": "LA HORA DORADA",
+      "title": "Cambia la ciudad por la bahía.",
+      "body": "Tiempo en el agua, vistas al skyline y una tarde para bajar el ritmo."
+    },
+    {
+      "label": "AL CAER LA NOCHE",
+      "title": "Deja que la noche fluya.",
+      "body": "Cena, una solicitud de mesa y el regreso previsto. Los detalles se conectan para disfrutar la velada."
+    }
+  ],
+  "dayNote": "Un día ilustrativo, adaptado a ti. Los servicios y las reservas están sujetos a disponibilidad y confirmación.",
+  "galleryEyebrow": "INSTANTES DE MIAMI",
+  "gallery1": "Un vistazo a",
+  "gallery2": "lo que te espera.",
+  "galleryBody": "Los lugares, las perspectivas y los detalles que hacen que valga la pena explorar la ciudad.",
+  "previous": "Fotos anteriores",
+  "next": "Fotos siguientes",
+  "ctaEyebrow": "TU EXPERIENCIA EMPIEZA AQUÍ",
+  "cta1": "Cuéntanos tus planes.",
+  "cta2": "Nos ocupamos de los detalles.",
+  "ctaBody": "Comparte tus fechas, el tamaño de tu grupo y las experiencias que tienes en mente. Tu concierge Blackline te ayudará a conectar cada parte.",
+  "plan": "Planifica con Blackline",
+  "services": "Explorar todos los servicios"
+}

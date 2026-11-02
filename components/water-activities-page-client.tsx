@@ -4,6 +4,8 @@ import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { ActivityPicker } from "@/app/services/jetskis-jetcars/activity-picker";
+import styles from "@/app/services/jetskis-jetcars/water.module.css";
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import { FishingChartersSection } from "@/components/fishing-charters-section";
 import { JetskisJetcarsExperience } from "@/components/jetskis-jetcars-experience";
@@ -12,10 +14,8 @@ import { SectionReveal } from "@/components/section-reveal";
 import type { Locale } from "@/lib/i18n/config";
 import type { Translator } from "@/lib/i18n/translate";
 import {
-  getWaterActivityTabs,
   getWaterBulletList,
   getWaterFaqItems,
-  getWaterOverviewCards,
   localizeWaterText,
   tWater,
   tWaterParams,
@@ -23,8 +23,6 @@ import {
 import { parseWaterActivityTab, type WaterActivityTab } from "@/lib/water-activities-tabs";
 import { cn } from "@/lib/utils";
 
-const tabBtnBase =
-  "shrink-0 rounded-sm border px-3.5 py-2 text-center text-[0.65rem] font-semibold uppercase tracking-[0.12em] transition-[background-color,border-color,color] duration-200 sm:px-4 sm:py-2.5 sm:text-[0.68rem] sm:tracking-[0.14em]";
 
 const parasailFieldClass =
   "mt-1.5 w-full max-w-[8rem] border border-gold/20 bg-[#0b0b0b] px-3 py-2 text-sm tabular-nums text-cream outline-none focus-visible:border-gold/45";
@@ -669,139 +667,6 @@ function KayakSupRentalConfigurator({
 
       <AddToCartButton item={cartItem} className="w-full sm:w-auto" />
     </div>
-  );
-}
-
-function WaterActivitiesTabBar({
-  active,
-  onSelect,
-  t,
-}: {
-  active: WaterActivityTab;
-  onSelect: (tab: WaterActivityTab) => void;
-  t: Translator;
-}) {
-  const tabs = useMemo(() => getWaterActivityTabs(t), [t]);
-  return (
-    <div className="sticky top-16 z-40 border-b border-gold/10 bg-[#0b0b0b]/96 backdrop-blur-md sm:top-[4.25rem]">
-      <div className="mx-auto max-w-7xl px-3 py-3 sm:px-5 lg:px-10">
-        <p
-          className="mb-2.5 text-center text-[0.55rem] font-medium uppercase tracking-[0.4em] text-cream/38 sm:mb-3"
-          id="water-activity-filter-label"
-        >
-          {tWater(t, "onTheWater.shared.category", "Category")}
-        </p>
-        <nav
-          className="flex max-w-full flex-wrap justify-center gap-1.5 overflow-x-auto overflow-y-hidden pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] sm:overflow-visible [&::-webkit-scrollbar]:hidden"
-          aria-labelledby="water-activity-filter-label"
-        >
-          {tabs.map((tab) => {
-            const isActive = active === tab.id;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => onSelect(tab.id)}
-                className={cn(
-                  tabBtnBase,
-                  isActive
-                    ? "border-gold/45 bg-gold/[0.12] text-cream"
-                    : "border-gold/15 bg-[#101010] text-cream/65 hover:border-gold/28 hover:text-cream/88",
-                )}
-                aria-pressed={isActive}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
-        </nav>
-      </div>
-    </div>
-  );
-}
-
-function OverviewGrid({
-  onSelect,
-  t,
-  locale,
-}: {
-  onSelect: (tab: WaterActivityTab) => void;
-  t: Translator;
-  locale: Locale;
-}) {
-  const cards = useMemo(() => getWaterOverviewCards(t, locale), [t, locale]);
-  return (
-    <SectionReveal
-      className="border-b border-gold/10 bg-[#0d0d0d] py-16 sm:py-20 lg:py-24"
-      aria-labelledby="water-overview-heading"
-    >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-        <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:max-w-xl lg:text-left">
-          <p className="text-[0.65rem] font-medium uppercase tracking-[0.5em] text-gold/90">
-            {tWater(t, "onTheWater.overview.eyebrow", "On the water")}
-          </p>
-          <div className="mx-auto mt-4 h-px w-14 bg-gold/30 lg:mx-0" aria-hidden />
-          <h2
-            id="water-overview-heading"
-            className="mt-5 font-serif text-2xl tracking-tight text-cream sm:text-3xl md:text-[2.1rem]"
-          >
-            {tWater(t, "onTheWater.overview.headline", "Choose how you want to get out there")}
-          </h2>
-          <p className="mt-4 text-sm leading-relaxed text-cream/55 sm:text-[0.9375rem]">
-            {tWater(
-              t,
-              "onTheWater.overview.body",
-              "Pick a category to see details and pricing — or use the bar above to switch anytime. Every activity section below is organized with clear details, pricing, and booking info so you can plan your day on the water in one place.",
-            )}
-          </p>
-        </div>
-
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:mt-16 lg:grid-cols-2 lg:gap-6">
-          {cards.map((item, index) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => onSelect(item.tab)}
-              className="group relative flex w-full flex-col overflow-hidden border border-gold/[0.12] bg-[#0a0a0a] text-left outline-none transition-[box-shadow] focus-visible:ring-2 focus-visible:ring-gold/45 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0d0d0d] sm:min-h-0"
-            >
-              <div className="relative aspect-[16/9] w-full overflow-hidden sm:aspect-[2/1]">
-                <Image
-                  src={item.image}
-                  alt={item.imageAlt}
-                  fill
-                  sizes="(max-width: 640px) 100vw, 50vw"
-                  className="object-cover transition-[transform,filter] duration-700 ease-out group-hover:scale-[1.04] group-hover:brightness-105"
-                />
-                <div
-                  className="absolute inset-0 bg-gradient-to-t from-[#0b0b0b] via-[#0b0b0b]/35 to-transparent"
-                  aria-hidden
-                />
-                <span className="absolute left-4 top-4 inline-flex border border-gold/25 bg-[#0b0b0b]/55 px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-gold/90 backdrop-blur-sm">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
-                  <h3 className="font-serif text-xl tracking-tight text-cream sm:text-2xl">
-                    {item.title}
-                  </h3>
-                  <p className="mt-2 text-[0.875rem] leading-relaxed text-cream/65 sm:text-[0.9375rem]">
-                    {item.description}
-                  </p>
-                  {item.priceLabel ? (
-                    <p className="mt-3 border border-gold/20 bg-[#0b0b0b]/65 px-3 py-2 text-[0.8125rem] font-medium leading-snug text-gold-secondary backdrop-blur-sm sm:text-[0.84375rem]">
-                      {item.priceLabel}
-                    </p>
-                  ) : null}
-                  <span className="mt-4 inline-flex text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-gold/85 transition-colors group-hover:text-gold-secondary">
-                    {tWater(t, "onTheWater.shared.viewDetails", "View details")}{" "}
-                    <span aria-hidden> →</span>
-                  </span>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-    </SectionReveal>
   );
 }
 
@@ -1572,8 +1437,8 @@ export function WaterActivitiesPageClient() {
 
   return (
     <div>
-      <WaterActivitiesTabBar active={tab} onSelect={setTab} t={t} />
-      {tab === "overview" && <OverviewGrid onSelect={setTab} t={t} locale={locale} />}
+      <ActivityPicker active={tab} onSelect={setTab} t={t} locale={locale} />
+      <div className={styles.activityDetail} key={tab}>
 
       {tab === "pwc" && <JetskisJetcarsExperience variant="ratesOnly" />}
 
@@ -1584,6 +1449,8 @@ export function WaterActivitiesPageClient() {
       {tab === "parasailing" && <ParasailingSection t={t} locale={locale} />}
 
       {tab === "fishing" && (
+        <div>
+        <div className={styles.fishingPhoto}><Image src="/sitephotos/fishing1.webp" alt={locale === "es" ? "Cañas de pesca a bordo de un barco" : "Fishing rods aboard a charter boat"} fill sizes="100vw" className={styles.cover}/></div>
         <SectionReveal
           id="fishing-charters"
           className="scroll-mt-[5.5rem] border-b border-gold/10 bg-[#0e0e0e] sm:scroll-mt-24"
@@ -1591,7 +1458,9 @@ export function WaterActivitiesPageClient() {
         >
           <FishingChartersSection />
         </SectionReveal>
+        </div>
       )}
+      </div>
     </div>
   );
 }

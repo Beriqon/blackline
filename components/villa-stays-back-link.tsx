@@ -14,11 +14,12 @@ export function VillaStaysBackLink({
 }) {
   const t = useTranslations();
   const searchParams = useSearchParams();
-  const page = searchParams.get("page");
-  const baseHref =
-    page && /^\d+$/.test(page) && Number(page) > 1
-      ? `/services/villas?page=${page}`
-      : "/services/villas";
+  const retained = new URLSearchParams();
+  for (const key of ["page", "q", "area", "guests", "beds", "sort", "photos"]) {
+    const value = searchParams.get(key);
+    if (value) retained.set(key, value);
+  }
+  const baseHref = "/services/villas" + (retained.size ? "?" + retained.toString() : "");
   const href = villaId ? `${baseHref}#villa-${villaId}` : baseHref;
 
   return (

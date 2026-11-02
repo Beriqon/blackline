@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { Mail } from "lucide-react";
+import { CookieSettingsButton } from "@/components/cookie-settings-button";
+import { ArrowUpRight, Mail, MapPin } from "lucide-react";
 import { getI18n } from "@/lib/i18n/server";
 import { getMainNavLinks } from "@/lib/i18n/nav";
+import styles from "./site-footer.module.css";
 
 function InstagramGlyph({ className }: { className?: string }) {
   return (
@@ -29,76 +31,61 @@ function TikTokGlyph({ className }: { className?: string }) {
   );
 }
 
-const socialIconLinkClass =
-  "inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-gold/20 text-cream/55 transition-colors hover:border-gold/45 hover:text-gold-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold/50";
-
 export async function SiteFooter() {
   const { t } = await getI18n();
   const footerLinks = [
     { href: "/services", label: t("common.services") },
     ...getMainNavLinks(t),
+    { href: "/affiliate-program", label: "Affiliate program" },
+  ];
+  const serviceLinks = [
+    { href: "/services/chauffeur-services", key: "nav.chauffeur" },
+    { href: "/services/exotic-cars", key: "nav.exoticCars" },
+    { href: "/services/yachts", key: "nav.yachts" },
+    { href: "/services/villas", key: "nav.villas" },
+    { href: "/services/private-jets", key: "nav.privateJets" },
+    { href: "/services/vip-nightlife", key: "nav.vipNightlife" },
   ];
 
   return (
-    <footer className="border-t border-gold/10 bg-charcoal">
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
-          <div>
-            <p className="font-serif text-xl tracking-[0.15em] text-cream">
-              BLACKLINE
-            </p>
-            <p className="mt-1 text-[0.65rem] uppercase tracking-[0.45em] text-gold">
-              Concierge
-            </p>
-            <p className="mt-5 max-w-sm text-sm leading-relaxed text-cream/58">
-              {t("footer.tagline")}
-            </p>
+    <footer className={styles.footer}>
+      <div className={styles.container}>
+        <div className={styles.topline}>
+          <span><MapPin size={12} aria-hidden /> Miami, Florida</span>
+          <span>{t("homeUpgrade.signature")}</span>
+        </div>
+        <div className={styles.grid}>
+          <div className={styles.brand}>
+            <Link href="/" aria-label={t("common.homeAria")} className={styles.logo}>
+              <span>BLACKLINE</span><span>CONCIERGE</span>
+            </Link>
+            <p>{t("footer.tagline")}</p>
+            <div className={styles.socials}>
+              <a href="https://www.instagram.com/blackline_concierge/" target="_blank" rel="noopener noreferrer" aria-label={t("footer.instagramAria")}><InstagramGlyph className="size-4" /></a>
+              <a href="https://www.tiktok.com/@blacklineconcierge" target="_blank" rel="noopener noreferrer" aria-label={t("footer.tiktokAria")}><TikTokGlyph className="size-4" /></a>
+              <a href="mailto:Blackline235@gmail.com" aria-label={t("footer.emailAria")}><Mail size={16} strokeWidth={1.5} aria-hidden /></a>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-x-10 gap-y-4 text-sm">
-            {footerLinks.map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                className="text-cream/60 transition-colors hover:text-gold-secondary"
-              >
-                {l.label}
-              </Link>
-            ))}
+          <nav className={styles.column} aria-label={t("footer.explore")}>
+            <h2>{t("footer.explore")}</h2>
+            {footerLinks.map((link) => <Link key={link.href} href={link.href}>{link.label}</Link>)}
+          </nav>
+          <nav className={styles.column} aria-label={t("footer.collection")}>
+            <h2>{t("footer.collection")}</h2>
+            {serviceLinks.map((link) => <Link key={link.href} href={link.href}>{t(link.key)}</Link>)}
+          </nav>
+          <div className={`${styles.column} ${styles.contact}`}>
+            <h2>{t("footer.directLine")}</h2>
+            <a href="tel:+17866840345" className={styles.phone}>+1 (786) 684-0345</a>
+            <a href="mailto:Blackline235@gmail.com">Blackline235@gmail.com</a>
+            <a href="https://wa.me/17866840345" target="_blank" rel="noopener noreferrer" className={styles.whatsapp}>{t("footer.whatsapp")}<ArrowUpRight size={14} aria-hidden /></a>
+            <p className={styles.contactNote}>{t("footer.contactNote")}</p>
           </div>
         </div>
-        <div className="mt-16 flex flex-col gap-4 border-t border-gold/10 pt-10 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-xs tracking-wide text-cream/42">
-              {t("footer.copyright", { year: new Date().getFullYear() })}
-            </p>
-          </div>
-          <div className="flex flex-row flex-wrap items-center gap-3 sm:gap-4">
-            <a
-              href="https://www.instagram.com/blackline_concierge/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t("footer.instagramAria")}
-              className={socialIconLinkClass}
-            >
-              <InstagramGlyph className="size-[1.15rem]" />
-            </a>
-            <a
-              href="https://www.tiktok.com/@blacklineconcierge"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t("footer.tiktokAria")}
-              className={socialIconLinkClass}
-            >
-              <TikTokGlyph className="size-[1.05rem]" />
-            </a>
-            <a
-              href="mailto:Blackline235@gmail.com"
-              aria-label={t("footer.emailAria")}
-              className={socialIconLinkClass}
-            >
-              <Mail className="size-[1.15rem]" strokeWidth={1.75} aria-hidden />
-            </a>
-          </div>
+        <div className={styles.bottom}>
+          <p>{t("footer.copyright", { year: new Date().getFullYear() })}</p>
+          <div className={styles.legal}><Link href="/privacy">{t("footer.privacy")}</Link><Link href="/terms">{t("footer.terms")}</Link><Link href="/cookies">Cookie policy</Link><CookieSettingsButton/></div>
+          <a href="https://geniuzaic.com/nl" target="_blank" rel="noopener noreferrer" className={styles.credit}>Powered by <span>Geniuz</span><ArrowUpRight size={11} aria-hidden /></a>
         </div>
       </div>
     </footer>

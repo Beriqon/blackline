@@ -1,0 +1,135 @@
+.page { --gold: #c6a46c; --cream: #f5f1e8; --muted: #aaa59b; background: #0b0b0b; color: var(--cream); overflow: clip; }
+.container { width: min(1280px, calc(100% - 112px)); margin-inline: auto; }
+.section { padding-block: 110px; scroll-margin-top: 90px; }
+.cover { object-fit: cover; }
+.hero { display: grid; grid-template-columns: 1fr 1fr; min-height: 650px; border-bottom: 1px solid #c6a46c26; }
+.heroCopy { padding: 100px 48px 45px max(56px, calc((100vw - 1280px)/2)); display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
+.eyebrow { font-size: 9px; font-weight: 500; line-height: 1.8; letter-spacing: .23em; text-transform: uppercase; color: var(--gold); }
+.hero h1, .heading { font-family: var(--font-playfair), Georgia, serif; font-weight: 400; letter-spacing: -.045em; line-height: 1.12; }
+.hero h1 { font-size: clamp(48px, 5.5vw, 83px); margin-top: 28px; }
+.hero em, .heading em { color: #d4b887; font-weight: 400; }
+.heroBody { max-width: 410px; margin-top: 28px; font-size: 14px; line-height: 1.95; color: #bdb8ad; }
+.textLink { display: inline-flex; align-items: center; gap: 17px; min-height: 44px; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: #e5d6ba; transition: color .3s; }
+.textLink:hover { color: var(--gold); }
+.heroCopy .textLink { margin-top: 27px; border-bottom: 1px solid #c6a46c4d; }
+.location { margin-top: 66px; display: flex; align-items: center; gap: 9px; color: #a69b86; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
+.heroVisual { position: relative; min-height: 680px; }
+.heroVisual > img { object-position: 59% center; filter: saturate(.7); }
+.heroOverlay { position: absolute; inset: 0; background: linear-gradient(0deg, #080b0cce, transparent 55%); }
+.heroEdition { position: absolute; top: 30px; left: 30px; font-size: 8px; letter-spacing: .2em; color: #eee5d4; }
+.heroCaption { position: absolute; bottom: 35px; left: 35px; right: 25px; }
+.heroCaption > span { display: block; font-family: var(--font-playfair), Georgia, serif; font-size: clamp(60px, 8vw, 125px); letter-spacing: .12em; color: #f5f1e866; line-height: 1.1; }
+.heroCaption p { margin-top: 14px; font-family: var(--font-playfair), Georgia, serif; font-size: 16px; font-style: italic; color: #e8dcc7; }
+.heading { font-size: clamp(36px, 4vw, 57px); margin-top: 22px; }
+.storyGrid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 90px; }
+.storyCopy > p { font-size: 14px; line-height: 2; color: var(--muted); margin-bottom: 18px; }
+.storyCopy > .note { color: #e0c9a1; font-family: var(--font-playfair), Georgia, serif; font-size: 22px; line-height: 1.6; font-style: italic; border-left: 1px solid #c6a46c66; padding-left: 24px; margin-top: 28px; margin-bottom: 0; }
+.chauffeur { display: grid; grid-template-columns: 1.1fr 1fr; background: #141413; }
+.chauffeurPhoto { position: relative; min-height: 560px; }
+.chauffeurPhoto img { filter: saturate(.65) brightness(.8); }
+.chauffeurPhoto::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, #0009, transparent 35%); }
+.chauffeurPhoto > span { position: absolute; z-index: 1; bottom: 30px; left: 35px; right: 25px; font-size: 11px; letter-spacing: .08em; color: #e2d3bb; }
+.chauffeurCopy { padding: 75px clamp(30px, 5vw, 80px); align-self: center; }
+.chauffeurCopy > p:not(.eyebrow) { font-size: 13px; line-height: 1.95; color: var(--muted); margin-top: 22px; }
+.chauffeurCopy .heading { font-size: clamp(34px, 3.5vw, 50px); }
+.chauffeurCopy .textLink { margin-top: 24px; }
+.journeyHeading { display: flex; align-items: flex-end; justify-content: space-between; gap: 50px; margin-bottom: 46px; }
+.journeyHeading > p { max-width: 340px; font-size: 14px; line-height: 1.95; color: var(--muted); padding-bottom: 5px; }
+.journey { display: grid; grid-template-columns: 1.15fr 1fr; border: 1px solid #c6a46c2c; background: #121511; }
+.realMapWrap { position: relative; min-width: 0; min-height: 470px; background: #d8d8cf; isolation: isolate; }
+.realMap { position: absolute; inset: 0; z-index: 0; font-family: var(--font-manrope), sans-serif; }
+.realMap :global(.leaflet-tile-pane) { filter: grayscale(.55) sepia(.12); }
+.realMap :global(.leaflet-control-attribution) { font-size: 9px; color: #333; background: #fffef4ed; }
+.realMap :global(.leaflet-control-attribution a) { color: #534225; }
+.realMap :global(.leaflet-control-zoom a) { color: #e0c38a; background: #151513; border-color: #c6a46c4d; }
+.realMap :global(.leaflet-tooltip) { background: #151513; color: #f5f1e8; border: 1px solid #c6a46c; font-size: 10px; padding: 6px 10px; }
+.realMap :global(.leaflet-tooltip-top)::before { border-top-color: #c6a46c; }
+.mapMarkerRoot { background: none; border: none; }
+.mapMarker { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 1px solid #c6a46c; background: #151513; color: #e0c38a; font-family: var(--font-manrope), sans-serif; font-size: 11px; box-shadow: 0 3px 14px #0005; transition: background .3s, color .3s; }
+.mapMarker[data-selected="true"] { background: #c6a46c; color: #111; box-shadow: 0 0 0 5px #c6a46c42, 0 3px 14px #0005; }
+.openMap { position: absolute; z-index: 1; left: 14px; bottom: 28px; background: #151513; color: #e0c38a; padding: 10px 13px; font-size: 10px; border: 1px solid #c6a46c4d; }
+.mapError { position: absolute; z-index: 1; top: 60px; left: 20px; right: 20px; background: #151513; color: #f5f1e8; padding: 15px; font-size: 12px; line-height: 1.8; }
+@media (max-width: 800px) { .realMapWrap { min-height: 380px; } }
+.journeyDetail { background: #151513; padding: 35px; min-width: 0; }
+.journeyTabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.journeyTabs button { display: flex; flex-direction: column; align-items: flex-start; gap: 9px; min-height: 62px; border-bottom: 1px solid #c6a46c26; color: #a39d91; font-size: 10px; text-align: left; line-height: 1.5; padding-bottom: 11px; cursor: pointer; transition: color .3s, border-color .3s; }
+.journeyTabs button span { font-family: var(--font-playfair), Georgia, serif; font-style: italic; font-size: 16px; }
+.journeyTabs button[aria-selected="true"] { color: #e0c38a; border-bottom-color: #c6a46c; }
+.journeyPanel { padding-top: 37px; }
+.journeyPanel h3 { font-family: var(--font-playfair), Georgia, serif; font-size: 30px; line-height: 1.25; }
+.journeyPanel p { font-size: 13px; line-height: 1.9; color: var(--muted); margin-top: 17px; }
+.journeyPanel .textLink { margin-top: 20px; }
+.journeyNote { color: #948c7d; font-size: 10px; line-height: 1.9; max-width: 650px; margin-top: 18px; }
+.principlesTitle { max-width: 650px; }
+.principles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 50px; margin-top: 54px; }
+.principles article { border-top: 1px solid #c6a46c4d; padding-top: 24px; }
+.principles article > span { font-family: var(--font-playfair), Georgia, serif; font-style: italic; font-size: 24px; color: #c6a46c; }
+.principles h3 { font-family: var(--font-playfair), Georgia, serif; font-size: 25px; line-height: 1.35; margin-top: 25px; }
+.principles p { font-size: 13px; line-height: 1.9; color: var(--muted); margin-top: 16px; }
+.closing { padding-block: 85px; border-top: 1px solid #c6a46c24; background: radial-gradient(ellipse at 15% 50%, #c6a46c0c, transparent 65%), #111110; }
+.closingGrid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 90px; align-items: center; }
+.closingGrid > div > p:not(.eyebrow) { font-size: 14px; line-height: 1.95; color: var(--muted); max-width: 360px; }
+.primaryButton { display: flex; align-items: center; justify-content: space-between; gap: 25px; width: fit-content; min-height: 54px; padding: 17px 25px; font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: #111; background: #c6a46c; transition: background .3s; }
+.primaryButton:hover { background: #e0c38a; }
+.closing .primaryButton { margin-top: 25px; }
+.closing .textLink { margin-top: 12px; }
+.page a:focus-visible, .page button:focus-visible, .journeyPanel:focus-visible { outline: 2px solid var(--gold); outline-offset: 5px; }
+@media (max-width: 1050px) {
+  .container { width: calc(100% - 64px); }
+  .heroCopy { padding: 65px 32px; }
+  .heroVisual { min-height: 620px; }
+  .hero h1 { font-size: 57px; }
+  .storyGrid, .closingGrid { gap: 45px; }
+  .journeyDetail { padding: 28px; }
+  .journey { grid-template-columns: 1fr 1fr; }
+  .principles { gap: 28px; }
+}
+@media (max-width: 800px) {
+  .section { padding-block: 75px; }
+  .hero { grid-template-columns: 1fr; }
+  .heroCopy { padding: 65px 32px 45px; }
+  .hero h1 { font-size: clamp(51px, 8vw, 72px); }
+  .heroBody { max-width: 500px; }
+  .location { margin-top: 35px; }
+  .heroVisual { min-height: 0; height: 430px; }
+  .heroVisual > img { object-position: center 58%; }
+  .heroCaption > span { font-size: 85px; }
+  .storyGrid { grid-template-columns: 1fr; gap: 30px; }
+  .chauffeur { grid-template-columns: 1fr; }
+  .chauffeurPhoto { min-height: 370px; }
+  .chauffeurCopy { padding: 50px 32px; }
+  .journeyHeading { display: block; }
+  .journeyHeading > p { margin-top: 25px; max-width: 500px; }
+  .journey { grid-template-columns: 1fr; }
+  .journeyPanel { min-height: 280px; }
+  .closingGrid { grid-template-columns: 1fr; gap: 28px; }
+}
+@media (max-width: 600px) {
+  .container { width: calc(100% - 40px); }
+  .heroCopy { padding: 50px 20px 35px; }
+  .hero h1 { font-size: clamp(46px, 10.8vw, 64px); }
+  .eyebrow { font-size: 8px; letter-spacing: .18em; }
+  .heroBody { font-size: 13px; }
+  .heroVisual { height: 360px; }
+  .heroCaption { left: 22px; bottom: 25px; }
+  .heroCaption > span { font-size: 70px; }
+  .heroCaption p { font-size: 14px; }
+  .heroEdition { top: 22px; left: 22px; }
+  .heading { font-size: clamp(34px, 8.3vw, 48px); }
+  .storyCopy > p { font-size: 13px; }
+  .storyCopy > .note { font-size: 21px; }
+  .chauffeurPhoto { min-height: 290px; }
+  .chauffeurPhoto > span { left: 20px; font-size: 10px; }
+  .chauffeurCopy { padding: 45px 20px; }
+  .chauffeurCopy .heading { font-size: 36px; }
+  .journeyDetail { padding: 24px 20px; }
+  .journeyTabs { gap: 9px; }
+  .journeyTabs button { font-size: 9px; }
+  .journeyPanel h3 { font-size: 28px; }
+  .principles { grid-template-columns: 1fr; gap: 32px; margin-top: 35px; }
+  .principles h3 { margin-top: 16px; }
+  .closing { padding-block: 65px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page *, .page *::before, .page *::after { animation: none !important; transition: none !important; }
+}

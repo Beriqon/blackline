@@ -1,95 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
+import { ArrowUpRight, ChevronDown, Car, Ship, Waves, Compass, Plane, House, ChefHat, Sparkles, Camera, Shield } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
-
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "@/components/locale-provider";
 import { getServiceLinks } from "@/lib/i18n/nav";
 import { cn } from "@/lib/utils";
+import styles from "./services-nav-dropdown.module.css";
 
-const linkClass =
-  "text-sm font-medium text-cream/85 transition-colors hover:text-gold-secondary";
+const icons=[Car,Car,Ship,Waves,Compass,Plane,House,ChefHat,Sparkles,Camera,Shield];
 
-export function ServicesNavDropdown() {
-  const t = useTranslations();
-  const serviceLinks = useMemo(() => getServiceLinks(t), [t]);
-  const [open, setOpen] = useState(false);
-  const pathname = usePathname();
-
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
-  const handleBlur = useCallback((e: React.FocusEvent<HTMLDivElement>) => {
-    if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
-      setOpen(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open]);
-
-  return (
-    <div
-      className="relative"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-      onFocus={() => setOpen(true)}
-      onBlur={handleBlur}
-    >
-      <Link
-        href="/services"
-        className={cn(
-          "inline-flex items-center gap-1 rounded-sm outline-none ring-gold/35 focus-visible:ring-2",
-          linkClass,
-        )}
-        aria-haspopup="menu"
-        aria-expanded={open}
-      >
-        {t("common.services")}
-        <ChevronDown
-          className={cn(
-            "size-3.5 opacity-55 transition-transform duration-200",
-            open && "rotate-180",
-          )}
-          aria-hidden
-        />
-      </Link>
-      <div
-        className={cn(
-          "absolute left-0 top-full z-50 pt-1 transition-[opacity,visibility] duration-150",
-          open
-            ? "visible opacity-100"
-            : "pointer-events-none invisible opacity-0",
-        )}
-        role="presentation"
-      >
-        <div
-          className="min-w-[13.5rem] rounded-sm border border-gold/15 bg-[#141414] py-2 shadow-lg shadow-black/40"
-          role="menu"
-          aria-label={t("common.services")}
-        >
-          {serviceLinks.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              role="menuitem"
-              className="block px-4 py-2.5 text-sm text-cream/85 transition-colors hover:bg-gold/5 hover:text-gold-secondary"
-              onClick={() => setOpen(false)}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+export function ServicesNavDropdown(){
+ const t=useTranslations(),pathname=usePathname();
+ const links=useMemo(()=>getServiceLinks(t),[t]);
+ const [open,setOpen]=useState(false);
+ const root=useRef<HTMLDivElement>(null),trigger=useRef<HTMLAnchorElement>(null);
+ useEffect(()=>setOpen(false),[pathname]);
+ useEffect(()=>{if(!open)return;const key=(e:KeyboardEvent)=>{if(e.key==="Escape"){trigger.current?.focus();setOpen(false);}};const outside=(e:PointerEvent)=>{if(!root.current?.contains(e.target as Node))setOpen(false);};window.addEventListener("keydown",key);window.addEventListener("pointerdown",outside);return()=>{window.removeEventListener("keydown",key);window.removeEventListener("pointerdown",outside);};},[open]);
+ return <div ref={root} className={styles.root} onMouseEnter={()=>setOpen(true)} onMouseLeave={()=>setOpen(false)} onBlur={e=>{if(!e.currentTarget.contains(e.relatedTarget as Node|null))setOpen(false);}}>
+ <Link ref={trigger} href="/services" className={styles.trigger} aria-expanded={open} aria-controls="desktop-service-navigation" onKeyDown={e=>{if(e.key==="ArrowDown"){e.preventDefault();setOpen(true);requestAnimationFrame(()=>root.current?.querySelector<HTMLAnchorElement>('[data-service-link]')?.focus());}}} onFocus={()=>setOpen(true)}>{t("common.services")}<ChevronDown size={13} className={open?styles.rotated:undefined}/></Link>
+ <div id="desktop-service-navigation" className={cn(styles.dropdown,open&&styles.open)} inert={!open}>
+ <div className={styles.panel}><div className={styles.heading}><span>BLACKLINE <i>/</i> {t("common.services")}</span><Link href="/services" onClick={()=>setOpen(false)} aria-label={t("common.services")}><ArrowUpRight size={17}/></Link></div>
+ <nav className={styles.grid} aria-label={t("common.services")}>{links.map((item,index)=>{const Icon=icons[index];return <Link data-service-link key={item.href} href={item.href} className={styles.item} aria-current={pathname===item.href?"page":undefined} onClick={()=>setOpen(false)}><span className={styles.icon}><Icon size={17} strokeWidth={1.35}/></span><span>{item.label}</span><ArrowUpRight className={styles.arrow} size={14}/></Link>;})}</nav>
+ <div className={styles.foot}><span>MIAMI & SOUTH FLORIDA</span><span>BLACKLINE CONCIERGE</span></div></div></div></div>;
 }

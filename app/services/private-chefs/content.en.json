@@ -1,0 +1,47 @@
+{
+  "hero1": "Good company.",
+  "hero2": "Exceptional taste.",
+  "intro": "A long lunch on the water. An intimate dinner at your villa. A private chef, a menu made for you, and time to enjoy every course.",
+  "heroAlt": "A private dining spread set out on a yacht in Miami",
+  "signature": "YOUR TABLE. YOUR OCCASION.",
+  "story1": "The best table",
+  "story2": "is your own.",
+  "storyAlt": "A selection of dishes prepared for private dining",
+  "photoNote": "A TASTE OF THE BLACKLINE EXPERIENCE",
+  "roster1": "The people",
+  "roster2": "behind the plate.",
+  "rosterCaption": "THE CHEF COLLECTION / MIAMI & BEYOND",
+  "previousChef": "Previous chef",
+  "nextChef": "Next chef",
+  "previousPhoto": "Previous food photo",
+  "nextPhoto": "Next food photo",
+  "formatsEyebrow": "Dining, your way",
+  "formats1": "At home here.",
+  "formats2": "Or wherever you go.",
+  "gallery1": "A little taste",
+  "gallery2": "of what awaits.",
+  "galleryCaption": "FROM THE KITCHEN / THE BLACKLINE TABLE",
+  "processEyebrow": "Consider dinner arranged",
+  "process1": "Your preferences.",
+  "process2": "Our attention to detail.",
+  "steps": [
+    {
+      "title": "Tell us about your table",
+      "body": "Share your dates, location, guest count, and the occasion. Let us know your favorite cuisines and any dietary needs."
+    },
+    {
+      "title": "Shape the menu",
+      "body": "Your concierge coordinates the chef, menu, service style, and kitchen arrangements. Pricing and availability are confirmed with you."
+    },
+    {
+      "title": "Be a guest at your own table",
+      "body": "Once the details are agreed, your chef takes care of preparation and service. You settle in and enjoy the company."
+    }
+  ],
+  "pairEyebrow": "Part of a greater stay",
+  "ctaEyebrow": "Your next memorable meal",
+  "cta1": "Bring the people.",
+  "cta2": "We’ll set the scene.",
+  "ctaBody": "An evening for two or a celebration for your whole group. Tell us what you have in mind, and we’ll help arrange the right chef for it.",
+  "galleryBody": "A few frames from the private dining experience — from plated courses to tables on the water. Drag, swipe, or use the arrows to explore."
+}

@@ -1,16 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
+import { ArrowDown, ArrowUpRight } from "lucide-react";
+import en from "./content.en.json";
+import es from "./content.es.json";
+import styles from "./water.module.css";
 import { Suspense } from "react";
 
 import { ServicePhotographyAddon } from "@/components/service-photography-addon";
-import { WaterActivitiesHero } from "@/components/water-activities-hero";
 import { WaterActivitiesPageClient } from "@/components/water-activities-page-client";
 import { SectionReveal } from "@/components/section-reveal";
 import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import { getI18n } from "@/lib/i18n/server";
 import { tWater } from "@/lib/i18n/water-activities-page";
 import { JETSKIS_PHOTO_ADDON_IMAGES } from "@/lib/jetskis-jetcars-data";
-import { cn } from "@/lib/utils";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getI18n();
@@ -24,8 +27,6 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const btnPrimary =
-  "inline-flex min-h-11 items-center justify-center border border-gold/40 bg-gold px-8 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-[#0b0b0b] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-gold-secondary hover:bg-gold-secondary hover:shadow-[0_0_0_1px_rgba(224,195,138,0.4),0_14px_48px_rgba(198,164,108,0.2)] active:translate-y-0";
 
 function WaterHeroFallback() {
   return (
@@ -45,29 +46,13 @@ function WaterClientFallback() {
   );
 }
 
+async function WaterOverviewHero() {
+ const {locale}=await getI18n();const copy=locale==="es"?es:en;
+ return <section className={styles.hero} aria-labelledby="water-title"><Image src="/sitephotos/miamibeach.jpg" alt={copy.heroAlt} fill preload sizes="100vw" className={styles.heroImage}/><div className={styles.shade}/><div className={styles.container+" "+styles.heroContent}><p className={styles.eyebrow}>{copy.eyebrow}</p><h1 id="water-title">{copy.hero1}<br/><em>{copy.hero2}</em></h1><p className={styles.intro}>{copy.heroBody}</p><a href="#water-explorer" className={styles.textLink}>{copy.discover}<ArrowDown size={15} aria-hidden/></a><div className={styles.heroFoot}><span>BLACKLINE / SOUTH FLORIDA</span><span>{copy.signature}</span></div></div></section>;
+}
 async function WaterPageCta() {
-  const { t } = await getI18n();
-  return (
-    <SectionReveal className="border-b border-gold/10 bg-charcoal py-14 sm:py-16 lg:py-20">
-      <div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
-        <h2 className="font-serif text-xl tracking-tight text-cream sm:text-2xl">
-          {tWater(t, "onTheWater.pageCta.headline", "Ready to get on the water?")}
-        </h2>
-        <p className="mx-auto mt-4 max-w-lg text-sm leading-relaxed text-cream/55">
-          {tWater(
-            t,
-            "onTheWater.pageCta.body",
-            "Share your dates and what you want to try — we'll line up PWC, parasail windows, or fishing in one response.",
-          )}
-        </p>
-        <div className="mt-8">
-          <Link href={CONTACT_TRIP_BUILDER_HREF} className={btnPrimary}>
-            {tWater(t, "onTheWater.pageCta.button", "Contact us")}
-          </Link>
-        </div>
-      </div>
-    </SectionReveal>
-  );
+ const {locale}=await getI18n();const copy=locale==="es"?es:en;
+ return <SectionReveal className={styles.closing}><div className={styles.container+" "+styles.closingGrid}><h2 className={styles.heading}>{copy.cta1}<br/><em>{copy.cta2}</em></h2><div><p>{copy.ctaBody}</p><Link href={CONTACT_TRIP_BUILDER_HREF} className={styles.primaryButton}>{copy.plan}<ArrowUpRight size={17} aria-hidden/></Link></div></div></SectionReveal>;
 }
 
 async function WaterPhotographyAddon() {
@@ -101,9 +86,9 @@ async function WaterPhotographyAddon() {
 
 export default function JetskisJetcarsPage() {
   return (
-    <>
+    <div className={styles.page}>
       <Suspense fallback={<WaterHeroFallback />}>
-        <WaterActivitiesHero />
+        <WaterOverviewHero />
       </Suspense>
 
       <div className="section-gradient-divider" aria-hidden />
@@ -123,6 +108,6 @@ export default function JetskisJetcarsPage() {
       <Suspense fallback={null}>
         <WaterPageCta />
       </Suspense>
-    </>
+    </div>
   );
 }

@@ -1,0 +1,45 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  border-bottom: 1px solid rgba(198, 164, 108, .1);
+  background: rgba(11, 11, 11, .92);
+  backdrop-filter: blur(12px);
+  transition: background-color .35s ease, border-color .35s ease;
+}
+
+.overlay {
+  position: fixed;
+  background: transparent;
+  backdrop-filter: none;
+  border-bottom-color: rgba(245, 241, 232, .12);
+}
+
+.overlay[data-scrolled="true"] {
+  background: #0b0b0b;
+  border-bottom-color: rgba(198, 164, 108, .15);
+}
+
+.overlay[data-scrolled="false"] [data-header-control] {
+  background-color: transparent;
+}
+
+.overlay[data-scrolled="false"] {
+  background: linear-gradient(180deg, rgba(0, 0, 0, .65), rgba(0, 0, 0, .08));
+}
+
+:global(body:has(header[data-hero-overlay="true"]) main [class*="heroCopy"]) {
+  padding-top: 100px;
+}
+
+@media (min-width: 901px) {
+  :global(body:has(header[data-hero-overlay="true"]) main [class*="heroEdition"]),
+  :global(body:has(header[data-hero-overlay="true"]) main [class*="photoTop"]) {
+    top: 90px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header { transition: none; }
+}

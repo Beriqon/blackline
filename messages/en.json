@@ -52,11 +52,118 @@
     "securityGuards": "Security guards"
   },
   "footer": {
+    "explore": "Explore Blackline",
+    "collection": "The collection",
+    "directLine": "Your direct line",
+    "whatsapp": "Connect on WhatsApp",
+    "contactNote": "Share your dates and your vision. We’ll take care of the details.",
+    "privacy": "Privacy policy",
+    "terms": "Terms & conditions",
     "tagline": "Miami luxury concierge — yachts, jets, exotics, villas, and VIP access. One team, one call.",
     "copyright": "© {year} Blackline Concierge. Miami, Florida.",
     "instagramAria": "Instagram — @blackline_concierge",
     "tiktokAria": "TikTok — @blacklineconcierge",
     "emailAria": "Email Blackline235@gmail.com"
+  },
+  "homeUpgrade": {
+    "directory": {
+      "chauffeurTagline": "Every great stay starts with a seamless arrival.",
+      "chauffeurLink": "Explore the chauffeur fleet",
+      "chauffeurExterior": "Front view of a Mercedes-Maybach chauffeur van",
+      "chauffeurInterior": "Blue leather seating inside a private chauffeur van",
+      "chauffeurFeatures": {
+        "airport": "Airport transfers",
+        "evening": "Evenings & events",
+        "private": "Private drivers & group transport"
+      },
+      "escapes": {
+        "title": "Arrivals & escapes",
+        "body": "The drive, the destination, the place you call yours."
+      },
+      "adventure": {
+        "title": "Adventure & experiences",
+        "body": "Go beyond the itinerary. Find your kind of excitement."
+      },
+      "lifestyle": {
+        "title": "Lifestyle & access",
+        "body": "Good food, unforgettable nights, and the details that make it personal."
+      },
+      "exploreService": "Discover the service",
+      "chefAlt": "Prepared canapés for a private dining experience"
+    },
+    "moments": {
+      "line1": "Some moments",
+      "line2": "stay with you.",
+      "body": "Out on the water. Behind the wheel. Right where you want to be. A few frames from the Blackline experience.",
+      "gallery": "Client moments photo gallery",
+      "previous": "Previous client photo",
+      "next": "Next client photo",
+      "pause": "Pause slideshow",
+      "play": "Play slideshow"
+    },
+    "heroLine1": "Miami,",
+    "heroLine2": "on your terms.",
+    "heroBody": "Extraordinary stays. Open-water escapes. Unforgettable arrivals. Your Miami, thoughtfully arranged by one dedicated concierge.",
+    "plan": "Plan your experience",
+    "explore": "Explore the collection",
+    "scroll": "Discover Blackline",
+    "signature": "One call. Every detail.",
+    "promises": {
+      "personal": "Personally curated",
+      "considered": "Every detail considered",
+      "effortless": "Effortlessly yours"
+    },
+    "collectionEyebrow": "The Blackline collection",
+    "collectionLine1": "Exceptional ways",
+    "collectionLine2": "to experience Miami.",
+    "collectionBody": "By land, by sea, or somewhere entirely your own. Discover the experiences that make your stay.",
+    "cardLabels": {
+      "0": "Beyond the shoreline",
+      "1": "Make an entrance",
+      "2": "Somewhere extraordinary"
+    },
+    "imageAlts": {
+      "0": "White superyacht on the water at sunset",
+      "1": "Black Lamborghini Urus at sunset",
+      "2": "Waterfront Miami villa with a rooftop pool"
+    },
+    "viewCollection": "Explore collection",
+    "beyond": "And beyond the expected",
+    "storyEyebrow": "The art of a seamless stay",
+    "storyLine1": "Your time is precious.",
+    "storyLine2": "Make it exceptional.",
+    "storyBody": "A waterfront residence. A driver waiting when you land. An afternoon that drifts into a perfect evening. We bring the details together, so you can be completely in the moment.",
+    "storyNote": "One dedicated team. A stay that feels entirely your own.",
+    "storyLink": "Meet Blackline",
+    "processEyebrow": "Consider it taken care of",
+    "processTitle": "From first hello",
+    "processEmphasis": "to the last detail.",
+    "steps": {
+      "discover": {
+        "title": "Tell us your vision",
+        "body": "Your dates, your people, your idea of a perfect Miami stay. It all starts with a conversation."
+      },
+      "curate": {
+        "title": "We shape the details",
+        "body": "We bring together options for your stay, transport, and experiences, then refine the plan with you."
+      },
+      "experience": {
+        "title": "Simply be here",
+        "body": "Once arrangements are confirmed, your concierge coordinates the moving parts. You enjoy the moment."
+      }
+    },
+    "weekendLine1": "A weekend away.",
+    "weekendLine2": "A world of possibility.",
+    "weekendBody": "From your first arrival to the last sunset. Bring your favorite people; we’ll help bring your Miami weekend together.",
+    "weekend": {
+      "arrival": "A chauffeured arrival",
+      "water": "An afternoon on the water",
+      "evening": "An evening to remember"
+    },
+    "closingEyebrow": "Your Miami begins here",
+    "closingLine1": "The extraordinary",
+    "closingLine2": "starts with a conversation.",
+    "whatsapp": "Speak to your concierge"
   },
   "home": {
     "eyebrow": "Miami luxury concierge",
@@ -125,27 +232,27 @@
   "contactPage": {
     "metaDescription": "Reach Blackline Miami by WhatsApp, phone, or Instagram DM — fast replies for exotic car rentals, yachts, and concierge requests.",
     "eyebrow": "Contact",
-    "headline": "Direct line. Fast replies.",
-    "heroBody": "WhatsApp is fastest for itineraries and custom packages. Phone for same-day coordination. Instagram when you already follow us.",
+    "headline": "Your Miami starts with a conversation.",
+    "heroBody": "A weekend away. A special occasion. Something entirely your own. Tell us what you have in mind, and let your concierge take care of the details.",
     "sameDay": "Same-day & short-notice requests welcome",
     "howToReach": "How to reach us",
-    "channelsTitle": "WhatsApp, phone, or Instagram",
-    "channelsBody": "Pick the channel that fits: WhatsApp for threads and photos, a call for live detail — or Instagram DM if that's where you already spend time.",
-    "whatsappTitle": "Recommended for speed",
+    "channelsTitle": "One team. Your preferred way to connect.",
+    "channelsBody": "Start a conversation wherever you feel most at home. The same personal attention, from the first hello to the final detail.",
+    "whatsappTitle": "Your direct line",
     "whatsappBody": "Send dates, group size, and what you want — we reply with options and next steps.",
     "openWhatsapp": "Open WhatsApp",
-    "phoneTitle": "Prefer voice",
+    "phoneTitle": "Let's talk",
     "phoneBody": "Call for urgent timing, airport runs, or when you want to talk through the plan live.",
-    "instagramTitle": "Social & casual",
+    "instagramTitle": "Share your inspiration",
     "instagramBody": "DM us on Instagram for quick questions or to share inspiration before you book.",
     "messageInstagram": "Message on Instagram",
     "tripBuilder": "Trip builder",
-    "customPackage": "Custom package — WhatsApp ready",
-    "customPackageBody": "Build your Miami package in a few taps — chauffeur, cars, yacht, villa, nightlife, and add-ons — then open WhatsApp with everything filled in.",
+    "customPackage": "A stay shaped around you.",
+    "customPackageBody": "Choose your dates, your people and the experiences you have in mind. Your selections become one message, ready to share with your Blackline concierge.",
     "buildHeading": "Build your package",
     "buildDescription": "Select what you want — the message appears below. Tap the button to open WhatsApp with this text.",
     "whatsAppIntroLine": "Hi Blackline — I'd like a custom Miami concierge package (via contact page builder).",
-    "readyTitle": "Ready when you are",
+    "readyTitle": "Consider it taken care of.",
     "readyBody": "No forms to wait on. Tell us what you are planning and we will shape the rest around your dates and group."
   },
   "aboutPage": {

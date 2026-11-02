@@ -23,7 +23,7 @@ export function SectionReveal({
   const reduceMotion = useReducedMotion();
   const initial = reduceMotion
     ? { opacity: 1, y: 0 }
-    : { opacity: 0, y: 36 };
+    : { opacity: 1, y: 36 };
 
   return (
     <motion.section

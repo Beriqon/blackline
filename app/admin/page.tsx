@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
-
-import OwnerBookingsPage from "@/app/owner/bookings/page";
+import { AdminLogin } from "@/components/admin-login";
 
 export const metadata: Metadata = {
-  title: "Admin",
-  robots: { index: false, follow: false },
+ title: "Private access — Admin",
+ description: "Blackline Concierge private workspace.",
+ robots: { index: false, follow: false },
 };
 
-export default function AdminPage() {
-  return <OwnerBookingsPage />;
-}
+export default function AdminPage(){return <AdminLogin/>;}

@@ -13,6 +13,7 @@ export function CartHeaderButton() {
   return (
     <button
       type="button"
+      data-header-control
       onClick={() => setOpen(true)}
       className={cn(
         "relative inline-flex h-10 w-10 items-center justify-center border border-gold/22 bg-charcoal/80 text-cream transition-colors hover:border-gold/40 hover:text-gold-secondary sm:h-11 sm:w-11",
