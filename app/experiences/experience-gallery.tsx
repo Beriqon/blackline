@@ -1,14 +1,16 @@
 "use client";
 
+import { useMomentPhotos } from "@/lib/moment-galleries";
 import Image from "next/image";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useRef } from "react";
 import styles from "./experiences.module.css";
 
-export function ExperienceGallery({ photos, previousLabel, nextLabel, label }: {
+export function ExperienceGallery({photos: initialPhotos, previousLabel, nextLabel, label }: {
   photos: readonly { src: string; alt: string }[];
   previousLabel: string; nextLabel: string; label: string;
 }) {
+  const photos=useMomentPhotos("experiences",initialPhotos);
   const track = useRef<HTMLDivElement>(null);
   function move(direction: number) {
     const element = track.current;

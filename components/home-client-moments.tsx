@@ -1,5 +1,6 @@
 "use client";
 
+import { useMomentPhotos } from "@/lib/moment-galleries";
 import Image from "next/image";
 import { ArrowLeft, ArrowRight, Pause, Play } from "lucide-react";
 import { useInView, useReducedMotion } from "motion/react";
@@ -22,7 +23,7 @@ export function HomeClientMoments() {
   const [atEnd, setAtEnd] = useState(false);
   const [dragging, setDragging] = useState(false);
   const dragRef = useRef<{ pointerId: number; startX: number; scrollLeft: number } | null>(null);
-  const images = PHOTOGRAPHER_SHOOT_SLIDES;
+  const images = useMomentPhotos("home", PHOTOGRAPHER_SHOOT_SLIDES);
 
   const updatePosition = useCallback(() => {
     const track = trackRef.current;
@@ -31,7 +32,7 @@ export function HomeClientMoments() {
     const max = track.scrollWidth - track.clientWidth;
     const gap = Number.parseFloat(getComputedStyle(track).columnGap) || 0;
     setProgress(max > 0 ? Math.min(1, Math.max(0, track.scrollLeft / max)) : 0);
-    setActive(Math.min(images.length - 1, Math.round(track.scrollLeft / (card.offsetWidth + gap))));
+    setActive(Math.max(0, Math.min(images.length - 1, Math.round(track.scrollLeft / (card.offsetWidth + gap)))));
     setAtEnd(max <= 0 || track.scrollLeft >= max - 2);
   }, [images.length]);
 
@@ -128,7 +129,7 @@ export function HomeClientMoments() {
           ))}
         </div>
         <div className={`${styles.container} ${styles.momentsFooter}`}>
-          <div className={styles.momentsCounter}><span>{String(active + 1).padStart(2, "0")}</span><span>/ {String(images.length).padStart(2, "0")}</span></div>
+          <div className={styles.momentsCounter}><span>{String(images.length ? Math.min(active + 1,images.length) : 0).padStart(2, "0")}</span><span>/ {String(images.length).padStart(2, "0")}</span></div>
           <div className={styles.momentsProgress} aria-hidden><span style={{ transform: `translateX(${progress * 300}%)` }} /></div>
           <div className={styles.momentsControls}>
             {!reducedMotion && <button type="button" onClick={() => { setPlaying(!playing); setFocused(false); }} aria-label={t(playing ? "homeUpgrade.moments.pause" : "homeUpgrade.moments.play")} aria-pressed={playing} aria-controls="client-moments-track">{playing ? <Pause size={15} aria-hidden /> : <Play size={15} aria-hidden />}</button>}

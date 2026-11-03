@@ -1,3 +1,4 @@
+import { EXPERIENCE_MOMENTS as momentsGallery } from "@/lib/experience-moments";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,38 +21,7 @@ const images = [
   { src: "/photography/carphotos/carphoto5.jpg", detail: "/exoticcar/lamborghini/huracanwhite/huracanwhite.webp", href: "/services/exotic-cars" },
   { src: "/privatejets/gulfstreamg550/gulfstreamg550.webp", detail: "/home/chauffeur-interior.webp", href: "/services/private-jets" },
 ];
-const momentsGallery = [
-  { src: "/sitephotos/miamibeach.jpg", alt: "Miami beach and skyline" },
-  { src: "/sitephotos/fishing1.webp", alt: "Boating on open water" },
-  { src: "/sitephotos/jetski3.jpg", alt: "Jet ski at sunset" },
-  { src: "/vipvenues/nikkibeach2.webp", alt: "Poolside at Nikki Beach" },
-  { src: "/vipvenues/joiabeach2.webp", alt: "Joia Beach palms and pool" },
-  { src: "/vipvenues/cocomiami.jpg", alt: "Coco Miami exterior" },
-  { src: "/vipvenues/livmiami1.jpg", alt: "LIV Miami entrance view" },
-  { src: "/vipvenues/clubspace.jpg", alt: "Club Space Miami venue" },
-  { src: "/photography/carphotos/carphoto8.jpg", alt: "Exotic car detail" },
-  { src: "/photography/jetskiphotos/jetskiphoto1.jpg", alt: "Jet ski session on water" },
-  { src: "/yachts/68azimuttheone/68azimuttheone1.jpg", alt: "Azimut yacht exterior profile" },
-  { src: "/privatejets/learjet60/learjet60.webp", alt: "Learjet 60 parked on runway" },
-  { src: "/vipvenues/m2miami.jpg", alt: "M2 Miami nightlife facade" },
-  { src: "/vipvenues/e11even.jpg", alt: "E11EVEN Miami venue lights" },
-  { src: "/vipvenues/joiabeach1.jpg", alt: "Joia Beach daytime scene" },
-  { src: "/vipvenues/joiabeach3.jpg", alt: "Joia Beach waterfront dinner" },
-  { src: "/vipvenues/nikkibeach1.webp", alt: "Nikki Beach lounge setup" },
-  { src: "/vipvenues/cocomiami2.webp", alt: "Coco Miami night atmosphere" },
-  { src: "/vipvenues/rockwell1.jpg", alt: "Rockwell club entrance" },
-  { src: "/vipvenues/mrjones.jpg", alt: "Mr Jones venue front" },
-  { src: "/vipvenues/livmiami.jpg", alt: "LIV Miami exterior detail" },
-  { src: "/photography/carphotos/carphoto1.jpg", alt: "Exotic fleet lineup" },
-  { src: "/photography/carphotos/carphoto5.jpg", alt: "Luxury car street shot" },
-  { src: "/exoticcar/lamborghini/huracanwhite/huracanwhite.webp", alt: "White Huracan profile" },
-  { src: "/photography/yachtphotos/yachtphoto1.jpg", alt: "Yacht cruising Miami waters" },
-  { src: "/yachts/68azimuttheone/68azimuttheone3.jpg", alt: "Azimut deck perspective" },
-  { src: "/yachts/68azimuttheone/68azimuttheone8.jpg", alt: "Flybridge and skyline view" },
-  { src: "/exoticcar/chauffeur/chevsuburban/chevsuburban1.jpg", alt: "Chauffeur Suburban exterior" },
-  { src: "/exoticcar/chauffeur/exclusivesprinter/exclusivesprinter1.jpg", alt: "Executive Sprinter van" },
-  { src: "/exoticcar/chauffeur/tiffanyblue/5STAR.jpg", alt: "Premium chauffeur fleet vehicle" },
-] as const;
+
 export default async function ExperiencesPage() {
   const { locale } = await getI18n();
   const copy = locale === "es" ? es : en;
@@ -88,3 +58,4 @@ export default async function ExperiencesPage() {
     <SectionReveal className={styles.closing} aria-labelledby="experience-cta"><div className={styles.container + " " + styles.closingGrid}><div><p className={styles.eyebrow}>{copy.ctaEyebrow}</p><h2 id="experience-cta" className={styles.heading}>{copy.cta1}<br /><em>{copy.cta2}</em></h2></div><div><p>{copy.ctaBody}</p><Link href={CONTACT_TRIP_BUILDER_HREF} className={styles.primaryButton}>{copy.plan}<ArrowUpRight size={17} aria-hidden /></Link><Link href="/services" className={styles.textLink}>{copy.services}<ArrowUpRight size={15} aria-hidden /></Link></div></div></SectionReveal>
   </div>;
 }
+

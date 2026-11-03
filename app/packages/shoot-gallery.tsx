@@ -1,11 +1,13 @@
 "use client";
 
+import { useMomentPhotos } from "@/lib/moment-galleries";
 import Image from "next/image";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useRef, useState } from "react";
 import styles from "./packages.module.css";
 
-export function ShootGallery({photos,label,previousLabel,nextLabel}:{photos:readonly {src:string;alt:string}[];label:string;previousLabel:string;nextLabel:string}) {
+export function ShootGallery({photos: initialPhotos,label,previousLabel,nextLabel}:{photos:readonly {src:string;alt:string}[];label:string;previousLabel:string;nextLabel:string}) {
+  const photos=useMomentPhotos("packages",initialPhotos);
   const track=useRef<HTMLDivElement>(null);
   const drag=useRef<{id:number;x:number;left:number}|null>(null);
   const [dragging,setDragging]=useState(false);
