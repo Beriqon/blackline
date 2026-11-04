@@ -1,0 +1,10 @@
+"use client";
+import {useEffect,useState} from "react";
+import {loadRows,saveRow} from "@/lib/workspace-store";
+import type {QuoteRequestRecord,QuoteRequestStatus} from "@/lib/quote-requests-store";
+import styles from "@/app/admin/dashboard/dashboard.module.css";
+export function AdminRequests(){
+ const [rows,setRows]=useState<QuoteRequestRecord[]>([]),[error,setError]=useState(""),[busy,setBusy]=useState(false);
+ useEffect(()=>{loadRows<QuoteRequestRecord>("quote_requests").then(setRows).catch(e=>setError(e.message));},[]);
+ return <section className={styles.panel} style={{marginTop:24}}><div className={styles.panelHeading}><div><p className={styles.eyebrow}>WEBSITE INQUIRIES</p><h2>Quote requests</h2></div><span>{rows.length} requests</span></div>{error&&<p role="alert" className={styles.error}>{error}</p>}<div className={styles.tableScroll}><table><thead><tr><th>Guest</th><th>Request</th><th>Received / source</th><th>Status</th></tr></thead><tbody>{rows.map(r=><tr key={r.id}><td>{r.customerName}<small>{r.customerEmail}</small></td><td style={{whiteSpace:"normal",minWidth:240,maxWidth:500}}><details><summary>{r.summary||r.message.slice(0,90)}</summary><p style={{whiteSpace:"pre-wrap",marginTop:12}}>{r.message}</p>{r.items?.map((i,n)=><small key={n}>{i.title} · {i.subtitle}</small>)}</details></td><td>{new Date(r.createdAtIso).toLocaleDateString()}<small>{r.source}</small></td><td><select aria-label={`Request status for ${r.customerName}`} disabled={busy} value={r.status} onChange={async e=>{const next={...r,status:e.target.value as QuoteRequestStatus,updatedAtIso:new Date().toISOString()};setBusy(true);try{await saveRow("quote_requests",r.id,next);setRows(items=>items.map(i=>i.id===r.id?next:i));}catch(e){setError(e instanceof Error?e.message:"Could not save status.");}finally{setBusy(false);}}}>{["pending","quoted","confirmed","cancelled"].map(s=><option key={s}>{s}</option>)}</select></td></tr>)}</tbody></table></div>{!rows.length&&<p className={styles.empty}>Website quote requests will appear here.</p>}</section>;
+}

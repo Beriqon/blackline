@@ -1,3 +1,5 @@
+import {CatalogProvider} from "@/components/catalog-provider";
+import {publicProducts} from "@/lib/catalog-server";
 import type { Metadata } from "next";
 import { Manrope, Playfair_Display } from "next/font/google";
 import "./globals.css";
@@ -52,6 +54,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
+  const products = await publicProducts();
 
   return (
     <html
@@ -60,11 +63,11 @@ export default async function RootLayout({
     >
       <body className="flex min-h-full flex-col overflow-x-hidden bg-background font-sans text-cream">
         <LocaleProvider locale={locale}>
-          <CartProvider>
+          <CatalogProvider initial={products}><CartProvider>
             <SiteFrame header={<SiteHeader />} footer={<SiteFooter />} floating={<WhatsappFloatingButton />}>
               {children}
             </SiteFrame>
-          </CartProvider>
+          </CartProvider></CatalogProvider>
         </LocaleProvider>
       </body>
     </html>

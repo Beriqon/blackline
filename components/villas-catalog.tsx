@@ -1,4 +1,5 @@
 "use client";
+import {usePublishedCollection} from "./catalog-provider";
 import { ArrowDown, ArrowUpRight, Building2, Search, SlidersHorizontal, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,7 +9,7 @@ import { useLocale } from "@/components/locale-provider";
 import { ScrollRevealItem } from "@/components/scroll-reveal-item";
 import { localizeVilla } from "@/lib/i18n/villas-page";
 import { paginateSlice } from "@/lib/pagination";
-import { VILLAS, VILLA_NEIGHBORHOODS, formatVillaUsd, type Villa } from "@/lib/villas-data";
+import { VILLAS as STATIC_VILLAS, VILLA_NEIGHBORHOODS, formatVillaUsd, type Villa } from "@/lib/villas-data";
 import styles from "@/app/services/villas/villas.module.css";
 
 export function villaFactNumber(villa: Villa, label: string) {
@@ -16,6 +17,7 @@ export function villaFactNumber(villa: Villa, label: string) {
   return value && /^\d/.test(value) ? Number.parseFloat(value) : 0;
 }
 function VillasCatalogInner() {
+ const VILLAS=usePublishedCollection("villas",STATIC_VILLAS);
   const {locale,t}=useLocale(); const es=locale==="es";
   const router=useRouter(),pathname=usePathname(),params=useSearchParams();
   const q=params.get("q")??"",area=params.get("area")??"all",guests=Number(params.get("guests"))||0,beds=Number(params.get("beds"))||0,photosOnly=params.get("photos")==="1",sort=params.get("sort")??"recommended";
@@ -28,7 +30,7 @@ function VillasCatalogInner() {
     if(sort==="price")list.sort((a,b)=>(a.nightlyRates?.weekdayUsd??Infinity)-(b.nightlyRates?.weekdayUsd??Infinity));
     if(sort==="bedrooms")list.sort((a,b)=>villaFactNumber(b,"Bedrooms")-villaFactNumber(a,"Bedrooms"));
     return list;
-  },[q,area,guests,beds,photosOnly,sort]);
+  },[q,area,guests,beds,photosOnly,sort,VILLAS]);
   const {slice,pageCount,safePage,total}=paginateSlice(filtered,requestedPage,12);
   function submit(event:FormEvent<HTMLFormElement>){event.preventDefault();const form=new FormData(event.currentTarget),next=new URLSearchParams();for(const key of ["q","area","guests","beds","sort","photos"]){const value=String(form.get(key)??"").trim();if(value&&value!=="all"&&value!=="0"&&value!=="recommended")next.set(key,value);}router.replace(`${pathname}${next.size?"?"+next:""}`,{scroll:false});}
   function pageTo(page:number){const next=new URLSearchParams(params.toString());if(page>1)next.set("page",String(page));else next.delete("page");router.replace(`${pathname}${next.size?"?"+next:""}`,{scroll:false});document.getElementById("villas-properties")?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});}

@@ -1,3 +1,4 @@
+import {publishedProduct} from "./catalog-server";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -12,7 +13,7 @@ import { getYachtBySlug } from "@/lib/yachts-data";
 export function createYachtProductPage(slug: string) {
   async function generateMetadata(): Promise<Metadata> {
     const { locale, t } = await getI18n();
-    const yacht = getYachtBySlug(slug);
+    const yacht = await publishedProduct("yachts",slug,getYachtBySlug(slug));
     if (!yacht) {
       return { title: t("nav.yachts") };
     }
@@ -23,8 +24,8 @@ export function createYachtProductPage(slug: string) {
     };
   }
 
-  function YachtProductPage() {
-    const yacht = getYachtBySlug(slug);
+  async function YachtProductPage() {
+    const yacht = await publishedProduct("yachts",slug,getYachtBySlug(slug));
     if (!yacht) notFound();
     return <YachtFleetProduct yacht={yacht} />;
   }

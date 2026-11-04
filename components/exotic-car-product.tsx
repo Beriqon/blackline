@@ -1,4 +1,5 @@
 "use client";
+import {usePublishedCollection} from "./catalog-provider";
 import Link from "next/link";
 import { ChevronLeft, ArrowUpRight } from "lucide-react";
 import { Suspense, useMemo } from "react";
@@ -9,7 +10,7 @@ import { ExoticCarBookingPanel } from "@/components/exotic-car-booking-panel";
 import { SectionReveal } from "@/components/section-reveal";
 import { ServicePhotographyAddon } from "@/components/service-photography-addon";
 import { localizeExoticCar } from "@/lib/i18n/exotic-cars-page";
-import { EXOTIC_CARS_DAILY, type ExoticCar } from "@/lib/exotic-cars-data";
+import { EXOTIC_CARS_DAILY as STATIC_EXOTIC_CARS_DAILY, type ExoticCar } from "@/lib/exotic-cars-data";
 import { EXOTIC_FILTER_KEYS, exoticSeats, exoticSpec, exoticPhotos } from "@/lib/exotic-presentation";
 import { EXOTIC_PHOTOGRAPHY_ADDON_IMAGES } from "@/lib/exotic-car-photos";
 import Image from "next/image";
@@ -23,6 +24,7 @@ function CarBackLink() { const params = useSearchParams(), { t } = useLocale(); 
 export function ExoticCarProduct({ car }: {
     car: ExoticCar;
 }) {
+    const EXOTIC_CARS_DAILY=usePublishedCollection("exotic-cars",STATIC_EXOTIC_CARS_DAILY);
     const { locale, t } = useLocale();
     const es = locale === "es";
     const vehicle = useMemo(() => localizeExoticCar(car, locale, t), [car, locale, t]);

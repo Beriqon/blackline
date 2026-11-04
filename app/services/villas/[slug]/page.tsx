@@ -1,3 +1,4 @@
+import {publishedProduct} from "@/lib/catalog-server";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -16,7 +17,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const { t, locale } = await getI18n();
-  const villa = getVillaBySlug(slug);
+  const villa = await publishedProduct("villas",slug,getVillaBySlug(slug));
   if (!villa) {
     return { title: t("villasPage.productMetaFallback") };
   }
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function VillaPage({ params }: Props) {
   const { slug } = await params;
-  const villa = getVillaBySlug(slug);
+  const villa = await publishedProduct("villas",slug,getVillaBySlug(slug));
   if (!villa) notFound();
   return (
     <Suspense fallback={null}>

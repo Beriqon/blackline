@@ -1,4 +1,5 @@
 "use client";
+import {usePublishedCollection} from "./catalog-provider";
 import Link from "next/link";
 import { ChevronLeft, ArrowUpRight } from "lucide-react";
 import { Suspense, useMemo } from "react";
@@ -10,7 +11,7 @@ import { SectionReveal } from "@/components/section-reveal";
 import { ServicePhotographyAddon } from "@/components/service-photography-addon";
 import { localizeChauffeurFleetEntry } from "@/lib/i18n/chauffeur-services-page";
 import { displayChauffeurRate, CHAUFFEUR_FILTER_KEYS } from "@/lib/chauffeur-presentation";
-import { CHAUFFEUR_FLEET_SORTED, type ChauffeurFleetEntry } from "@/lib/chauffeur-fleet-data";
+import { CHAUFFEUR_FLEET_SORTED as STATIC_CHAUFFEUR_FLEET_SORTED, type ChauffeurFleetEntry } from "@/lib/chauffeur-fleet-data";
 import { exoticSeats, exoticSpec, exoticPhotos } from "@/lib/exotic-presentation";
 import { EXOTIC_PHOTOGRAPHY_ADDON_IMAGES } from "@/lib/exotic-car-photos";
 import Image from "next/image";
@@ -29,6 +30,7 @@ function CarBackLink() {
 export function ChauffeurVehicleProduct({ car }: {
     car: ChauffeurFleetEntry;
 }) {
+    const CHAUFFEUR_FLEET_SORTED=usePublishedCollection("chauffeur-services",STATIC_CHAUFFEUR_FLEET_SORTED);
     const { locale, t } = useLocale();
     const es = locale === "es";
     const vehicle = useMemo(() => localizeChauffeurFleetEntry(car, locale, t), [car, locale, t]);

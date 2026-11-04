@@ -1,7 +1,6 @@
+import {bookingDatabase} from "./supabase-server";
 import "server-only";
 
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
 
 import type { BookingSource } from "@/lib/bookings";
 
@@ -27,37 +26,7 @@ export type QuoteRequestRecord = {
   items?: QuoteRequestItem[];
 };
 
-type QuoteRequestStorePayload = {
-  quoteRequests: QuoteRequestRecord[];
-};
-
-const STORE_DIR = path.join(process.cwd(), "data");
-const STORE_FILE = path.join(STORE_DIR, "quote-requests.json");
-
-async function ensureStore(): Promise<void> {
-  await mkdir(STORE_DIR, { recursive: true });
-}
-
-async function readStore(): Promise<QuoteRequestStorePayload> {
-  await ensureStore();
-  try {
-    const raw = await readFile(STORE_FILE, "utf8");
-    const parsed = JSON.parse(raw) as Partial<QuoteRequestStorePayload>;
-    return {
-      quoteRequests: Array.isArray(parsed.quoteRequests)
-        ? parsed.quoteRequests
-        : [],
-    };
-  } catch {
-    return { quoteRequests: [] };
-  }
-}
-
-async function writeStore(payload: QuoteRequestStorePayload): Promise<void> {
-  await ensureStore();
-  await writeFile(STORE_FILE, JSON.stringify(payload, null, 2), "utf8");
-}
-
+async function readStore():Promise<{quoteRequests:QuoteRequestRecord[]}>{return {quoteRequests:await bookingDatabase<QuoteRequestRecord[]>("list_quotes")};}
 function createId(prefix: string) {
   return `${prefix}_${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36)}`;
 }
@@ -91,7 +60,7 @@ export async function createQuoteRequest(args: {
     updatedAtIso: nowIso,
   };
   payload.quoteRequests.push(record);
-  await writeStore(payload);
+  await bookingDatabase("save_quote",record);
   return record;
 }
 
@@ -107,7 +76,7 @@ export async function updateQuoteRequest(args: {
   const payload = await readStore();
   let updated: QuoteRequestRecord | null = null;
 
-  const next = payload.quoteRequests.map((req) => {
+  payload.quoteRequests.forEach((req) => {
     if (req.id !== args.quoteRequestId) return req;
     updated = {
       ...req,
@@ -124,16 +93,8 @@ export async function updateQuoteRequest(args: {
   });
 
   if (!updated) throw new Error("Quote request not found.");
-  await writeStore({ quoteRequests: next });
+  await bookingDatabase("save_quote",updated);
   return updated;
 }
 
-export async function deleteQuoteRequest(quoteRequestId: string): Promise<void> {
-  const payload = await readStore();
-  const exists = payload.quoteRequests.some((r) => r.id === quoteRequestId);
-  if (!exists) throw new Error("Quote request not found.");
-  await writeStore({
-    quoteRequests: payload.quoteRequests.filter((r) => r.id !== quoteRequestId),
-  });
-}
-
+export async function deleteQuoteRequest(quoteRequestId:string):Promise<void>{await bookingDatabase("delete_quote",{id:quoteRequestId});}

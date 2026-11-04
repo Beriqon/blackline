@@ -570,7 +570,9 @@ export function getFleetGalleryPaths(yachtId: string): readonly string[] {
 export function resolveYachtGalleryPaths(yacht: {
   id: string;
   cardCoverSrc?: string;
+  galleryPaths?: readonly string[];
 }): readonly string[] {
+  if (yacht.galleryPaths) return yacht.galleryPaths;
   const paths = getFleetGalleryPaths(yacht.id);
   if (paths.length > 0) return paths;
   if (yacht.cardCoverSrc) return [yacht.cardCoverSrc];

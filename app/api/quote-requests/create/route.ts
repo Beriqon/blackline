@@ -28,7 +28,7 @@ export async function POST(request: Request) {
   }
 
   const message = (body.message ?? "").trim();
-  if (!message) {
+  if (!message || message.length>8000 || (body.customerEmail?.length??0)>254 || (body.items?.length??0)>50) {
     return NextResponse.json({ error: "message is required." }, { status: 400 });
   }
 
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
       message,
       summary: body.summary,
       items: body.items,
-      status: body.status,
+      status: "pending",
     });
 
     return NextResponse.json({ quoteRequest });

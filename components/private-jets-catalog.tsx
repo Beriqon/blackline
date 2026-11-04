@@ -1,4 +1,5 @@
 "use client";
+import {usePublishedCollection} from "./catalog-provider";
 
 import { ArrowDown, ArrowUpRight, ChevronLeft, ChevronRight, Plane, X } from "lucide-react";
 import Image from "next/image";
@@ -239,10 +240,11 @@ export function PrivateJetsCatalog() {
   const [filter, setFilter] = useState<"all" | PrivateJetCategory>("all");
   const [selected, setSelected] = useState<PrivateJet | null>(null);
 
-  const jets = useMemo(
+  const originalJets = useMemo(
     () => getLocalizedPrivateJets(locale, t),
     [locale, t],
   );
+  const jets=usePublishedCollection("private-jets",originalJets);
   const categoryFilters = useMemo(
     () => getPrivateJetCategoryFilters(t),
     [t],

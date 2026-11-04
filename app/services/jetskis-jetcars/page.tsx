@@ -1,3 +1,4 @@
+import {ManagedProductCollection} from "@/components/managed-product-collection";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -8,7 +9,6 @@ import styles from "./water.module.css";
 import { Suspense } from "react";
 
 import { ServicePhotographyAddon } from "@/components/service-photography-addon";
-import { WaterActivitiesPageClient } from "@/components/water-activities-page-client";
 import { SectionReveal } from "@/components/section-reveal";
 import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import { getI18n } from "@/lib/i18n/server";
@@ -94,7 +94,7 @@ export default function JetskisJetcarsPage() {
       <div className="section-gradient-divider" aria-hidden />
 
       <Suspense fallback={<WaterClientFallback />}>
-        <WaterActivitiesPageClient />
+        <ManagedProductCollection service="jetskis-jetcars" id="water-explorer"/>
       </Suspense>
 
       <div className="section-gradient-divider" aria-hidden />

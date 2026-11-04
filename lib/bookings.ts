@@ -1,3 +1,4 @@
+import {bookingDateTime} from "./booking-time";
 import { computeFleetTotals, durationOptionsFromYacht } from "@/lib/yacht-fleet-pricing";
 import { ALL_EXOTIC_CARS, type ExoticCar } from "@/lib/exotic-cars-data";
 import { getYachtBySlug, type Yacht } from "@/lib/yachts-data";
@@ -16,6 +17,8 @@ export type BookingPaymentType = "full" | "deposit";
 export type ExoticCarBookingMode = "self-drive" | "chauffeur";
 
 export type ExoticCarBookingSelection = {
+  service?: "exotic-cars"|"chauffeur-services";
+  timeZone?: string;
   category: "exotic-car";
   itemId: string;
   rentalMode: ExoticCarBookingMode;
@@ -27,6 +30,7 @@ export type ExoticCarBookingSelection = {
 };
 
 export type YachtBookingSelection = {
+  timeZone?: string;
   category: "yacht";
   itemId: string;
   charterDate: string;
@@ -54,6 +58,7 @@ export type BookingQuote = {
 };
 
 export type BookingRecord = {
+  service?: "yachts"|"exotic-cars"|"chauffeur-services";
   id: string;
   category: BookingCategory;
   itemId: string;
@@ -67,6 +72,11 @@ export type BookingRecord = {
   paymentType?: BookingPaymentType;
   customerName: string;
   customerEmail: string;
+  customerPhone?: string;
+  notes?: string;
+  adminStatus?: "Completed";
+  adminSource?: "Website"|"WhatsApp"|"Instagram"|"Affiliate";
+  affiliate?: string;
   source: BookingSource;
   selection: BookingSelection;
   createdAtIso: string;
@@ -127,11 +137,7 @@ function formatDateOnlyLocal(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-function parseDateTime(date: string, time: string): Date | null {
-  if (!/^\d{2}:\d{2}$/.test(time)) return null;
-  const next = new Date(`${date}T${time}:00`);
-  return Number.isNaN(next.getTime()) ? null : next;
-}
+function parseDateTime(date:string,time:string,timeZone?:string):Date|null{return bookingDateTime(date,time,timeZone);}
 
 function clampHours(input: number | undefined, fallback: number): number {
   const rounded = Math.round(input ?? fallback);
@@ -181,7 +187,7 @@ export function getYachtBookingConfig(yacht: Yacht) {
   };
 }
 
-export function selectionToRange(selection: BookingSelection) {
+export function selectionToRange(selection: BookingSelection, live?: ExoticCar | Yacht) {
   if (selection.category === "exotic-car") {
     if (selection.rentalMode === "self-drive") {
       const start = parseDateOnly(selection.startDate);
@@ -191,10 +197,10 @@ export function selectionToRange(selection: BookingSelection) {
       }
       const startTime = selection.startTime ?? "09:00";
       const endTime = selection.endTime ?? "20:00";
-      const startIsoDateTime = parseDateTime(selection.startDate, startTime);
+      const startIsoDateTime = parseDateTime(selection.startDate, startTime,selection.timeZone);
       const endIsoDateTime = parseDateTime(
         selection.endDate ?? selection.startDate,
-        endTime,
+        endTime,selection.timeZone,
       );
       if (!startIsoDateTime || !endIsoDateTime) {
         throw new Error("Choose a valid self-drive start/end time.");
@@ -208,7 +214,7 @@ export function selectionToRange(selection: BookingSelection) {
         bookingMode: "self-drive",
       };
     }
-    const start = parseDateTime(selection.startDate, selection.startTime ?? "");
+    const start = parseDateTime(selection.startDate, selection.startTime ?? "",selection.timeZone);
     if (!start) throw new Error("Choose a valid chauffeur date and time.");
     const hours = clampHours(selection.durationHours, 4);
     const end = new Date(start.getTime() + hours * 60 * 60 * 1000);
@@ -219,9 +225,9 @@ export function selectionToRange(selection: BookingSelection) {
     };
   }
 
-  const start = parseDateTime(selection.charterDate, selection.startTime);
+  const start = parseDateTime(selection.charterDate, selection.startTime,selection.timeZone);
   if (!start) throw new Error("Choose a valid charter date and departure time.");
-  const yacht = getYachtBySlug(selection.itemId);
+  const yacht = (live as Yacht | undefined) ?? getYachtBySlug(selection.itemId);
   if (!yacht) throw new Error("Selected yacht was not found.");
   const option = durationOptionsFromYacht(yacht).find(
     (item) => item.label === selection.durationLabel,
@@ -257,9 +263,9 @@ export function describeSelection(selection: BookingSelection): string {
   )} · ${selection.durationLabel} charter`;
 }
 
-export function computeBookingQuote(selection: BookingSelection): BookingQuote {
+export function computeBookingQuote(selection: BookingSelection, live?: ExoticCar | Yacht): BookingQuote {
   if (selection.category === "exotic-car") {
-    const car = getExoticCarById(selection.itemId);
+    const car = (live as ExoticCar | undefined) ?? getExoticCarById(selection.itemId);
     if (!car) throw new Error("Selected vehicle was not found.");
 
     if (selection.rentalMode === "self-drive") {
@@ -319,7 +325,7 @@ export function computeBookingQuote(selection: BookingSelection): BookingQuote {
     };
   }
 
-  const yacht = getYachtBySlug(selection.itemId);
+  const yacht = (live as Yacht | undefined) ?? getYachtBySlug(selection.itemId);
   if (!yacht) throw new Error("Selected yacht was not found.");
   const duration = durationOptionsFromYacht(yacht).find(
     (item) => item.label === selection.durationLabel,
@@ -328,6 +334,7 @@ export function computeBookingQuote(selection: BookingSelection): BookingQuote {
   const gratuityPct = Number.isFinite(selection.gratuityPct)
     ? Math.round(selection.gratuityPct)
     : 18;
+  if(![15,18,20,22].includes(gratuityPct))throw new Error("Choose a valid gratuity percentage.");
   const totals = computeFleetTotals(duration.baseUsd, gratuityPct as 15 | 18 | 20 | 22);
   return {
     category: "yacht",

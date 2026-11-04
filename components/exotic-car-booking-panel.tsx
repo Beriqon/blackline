@@ -126,21 +126,21 @@ export function ExoticCarBookingPanel({ car, className, chauffeurOnly = false }:
   const selection = useMemo(() => {
     return mode === "self-drive"
       ? {
-          category: "exotic-car" as const,
+          category: "exotic-car" as const,service:chauffeurOnly||car.section==="hourly"?"chauffeur-services" as const:"exotic-cars" as const,timeZone:Intl.DateTimeFormat().resolvedOptions().timeZone,
           itemId: car.id,
           rentalMode: "self-drive" as const,
           startDate,
           endDate,
         }
       : {
-          category: "exotic-car" as const,
+          category: "exotic-car" as const,timeZone:Intl.DateTimeFormat().resolvedOptions().timeZone,
           itemId: car.id,
           rentalMode: "chauffeur" as const,
           startDate,
           startTime: effectiveStartTime,
           durationHours,
         };
-  }, [car.id, durationHours, effectiveStartTime, endDate, mode, startDate]);
+  }, [car.id,car.section,chauffeurOnly,durationHours,effectiveStartTime,endDate,mode,startDate]);
 
   const alreadyInCart = useMemo(
     () => items.some((x) => x.category === "exotic-car" && x.id === car.id),
@@ -149,11 +149,11 @@ export function ExoticCarBookingPanel({ car, className, chauffeurOnly = false }:
 
   const quote = useMemo(() => {
     try {
-      return computeBookingQuote(selection);
+      return computeBookingQuote(selection,car);
     } catch {
       return null;
     }
-  }, [selection]);
+  }, [selection,car]);
 
   const blockedDays = useMemo(
     () => blockedDateSet(windows, todayPlus(0), 21),

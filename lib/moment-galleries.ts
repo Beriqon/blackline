@@ -1,4 +1,5 @@
 "use client";
+import {loadRows,saveRow,uploadPhoto} from "./workspace-store";
 import { useEffect, useState } from "react";
 import { PHOTOGRAPHER_SHOOT_SLIDES } from "@/lib/photographer-shoots-data";
 import { ATV_CAROUSEL_SLIDES } from "@/lib/atv-gallery-data";
@@ -13,7 +14,11 @@ export const MOMENT_GALLERIES=[
 ] as const;
 export type MomentGalleryId=typeof MOMENT_GALLERIES[number]["id"];
 const EVENT="blackline-moments-updated";
-function database():Promise<IDBDatabase>{return new Promise((resolve,reject)=>{const request=indexedDB.open("blackline-moment-photos",1);request.onupgradeneeded=()=>request.result.createObjectStore("galleries");request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});}
-export async function readMomentPhotos(id:MomentGalleryId):Promise<MomentPhoto[]|undefined>{const db=await database();return new Promise((resolve,reject)=>{const tx=db.transaction("galleries","readonly"),r=tx.objectStore("galleries").get(id);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);tx.oncomplete=()=>db.close();tx.onabort=()=>{db.close();reject(tx.error);};});}
-export async function saveMomentPhotos(id:MomentGalleryId,photos:MomentPhoto[]){const db=await database();await new Promise<void>((resolve,reject)=>{const tx=db.transaction("galleries","readwrite");tx.objectStore("galleries").put(photos,id);tx.oncomplete=()=>{db.close();resolve();};tx.onabort=tx.onerror=()=>{db.close();reject(tx.error);};});window.dispatchEvent(new Event(EVENT));const channel=new BroadcastChannel(EVENT);channel.postMessage(id);channel.close();}
-export function useMomentPhotos(id:MomentGalleryId,defaults:readonly MomentPhoto[]){const [saved,setSaved]=useState<MomentPhoto[]|undefined>();useEffect(()=>{let alive=true;const load=()=>{readMomentPhotos(id).then(p=>{if(alive)setSaved(p);}).catch(()=>{});};load();window.addEventListener(EVENT,load);const channel=new BroadcastChannel(EVENT);channel.onmessage=load;return()=>{alive=false;window.removeEventListener(EVENT,load);channel.close();};},[id]);return saved??defaults;}
+export async function readMomentPhotos(id:MomentGalleryId):Promise<MomentPhoto[]|undefined>{
+ await loadRows<MomentPhoto[]>("photo_galleries");
+ const {supabaseBrowser}=await import("./supabase-browser");
+ const {data,error}=await supabaseBrowser().from("photo_galleries").select("data").eq("id",id).maybeSingle();
+ if(error)throw new Error(error.message);return data?.data as MomentPhoto[]|undefined;
+}
+export async function saveMomentPhotos(id:MomentGalleryId,photos:MomentPhoto[]){const next=[];for(const photo of photos)next.push({...photo,src:await uploadPhoto(photo.src)});await saveRow("photo_galleries",id,next);window.dispatchEvent(new Event(EVENT));}
+export function useMomentPhotos(id:MomentGalleryId,defaults:readonly MomentPhoto[]){const [saved,setSaved]=useState<MomentPhoto[]|undefined>();useEffect(()=>{let alive=true;const load=()=>{readMomentPhotos(id).then(p=>{if(alive)setSaved(p);}).catch(()=>{});};load();window.addEventListener(EVENT,load);const refresh=()=>{if(!document.hidden)load();};window.addEventListener("focus",refresh);return()=>{alive=false;window.removeEventListener(EVENT,load);window.removeEventListener("focus",refresh);};},[id]);return saved??defaults;}

@@ -1,19 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { Loader2, Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { Loader2, ShoppingBag, Trash2, X, ArrowLeft, ArrowRight, ArrowUpRight, CalendarDays, Check, ChevronRight, LockKeyhole, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
+import { useCallback, useMemo, useState, useEffect, useRef, useContext } from "react";
 
 import { useCart } from "@/components/cart-context";
 import { useTranslations } from "@/components/locale-provider";
-import type { CartAddonsState, CartCategory } from "@/lib/cart-types";
+import type { CartAddonsState, CartCategory, CartLine } from "@/lib/cart-types";
 import {
   formatCartLinesForMessage,
-  isSingleUnitInventory,
 } from "@/lib/cart-types";
 import type { Translator } from "@/lib/i18n/translate";
 import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
-import { cn } from "@/lib/utils";
+import css from "./cart-drawer.module.css";
+import {CatalogContext} from "./catalog-provider";
+import {cartNeedsQuote,internationalCartPhone} from "@/lib/cart-summary";
 import { whatsAppUrlWithText } from "@/lib/whatsapp";
 import { SECURITY_GUARD_RATE_CARDS } from "@/lib/security-guards-data";
 import { computeSecurityGuardsAddonTotalUsd } from "@/lib/security-guards-pricing";
@@ -131,11 +132,23 @@ export function CartDrawer() {
     open,
     setOpen,
     removeItem,
-    decrementItem,
-    addItem,
-    clear,
   } = useCart();
 
+  const catalog=useContext(CatalogContext);
+  const [step,setStep]=useState<"selection"|"details">("selection");
+  const dialog=useRef<HTMLDialogElement>(null),scrollArea=useRef<HTMLDivElement>(null),nameInput=useRef<HTMLInputElement>(null);
+  useEffect(()=>{
+    if(!open)return;
+    const previous=document.body.style.overflow;
+    document.body.style.overflow="hidden";
+    if(dialog.current&&!dialog.current.open)dialog.current.showModal();
+    return()=>{document.body.style.overflow=previous;};
+  },[open]);
+  useEffect(()=>{
+    if(!open)return;
+    const frame=requestAnimationFrame(()=>{scrollArea.current?.scrollTo({top:0});if(step==="details")nameInput.current?.focus({preventScroll:true});});
+    return()=>cancelAnimationFrame(frame);
+  },[step,open]);
   const [payMode, setPayMode] = useState<"full" | "deposit">("deposit");
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
@@ -144,24 +157,6 @@ export function CartDrawer() {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [quoteRequestLoading, setQuoteRequestLoading] = useState(false);
-
-  const unsupportedItems = useMemo(
-    () =>
-      items.filter(
-        (item) =>
-          (item.category === "exotic-car" || item.category === "yacht") &&
-          (!item.bookingSelection || !item.bookingQuote?.payableOnline),
-      ),
-    [items],
-  );
-
-  const nonBookableItems = useMemo(
-    () =>
-      items.filter(
-        (item) => item.category !== "exotic-car" && item.category !== "yacht",
-      ),
-    [items],
-  );
 
   const checkoutEligibleItems = useMemo(
     () =>
@@ -219,11 +214,7 @@ export function CartDrawer() {
     return Math.round(checkoutTotal * (DEPOSIT_PCT / 100) * 100) / 100;
   }, [checkoutTotal, payMode]);
 
-  const customerPhoneFull = useMemo(() => {
-    const phone = customerPhone.trim();
-    if (!phone) return "";
-    return `${customerPhoneCountryCode} ${phone}`;
-  }, [customerPhone, customerPhoneCountryCode]);
+  const customerPhoneFull=useMemo(()=>internationalCartPhone(customerPhoneCountryCode,customerPhone),[customerPhone,customerPhoneCountryCode]);
 
   const hasContactDetails =
     customerName.trim().length > 0 &&
@@ -231,6 +222,7 @@ export function CartDrawer() {
     customerPhoneFull.length > 0;
 
   const canPay =
+    !cartNeedsQuote(items,addonsForRequest) &&
     checkoutEligibleItems.length > 0 &&
     checkoutEligibleItems.length === items.length &&
     hasContactDetails &&
@@ -238,7 +230,7 @@ export function CartDrawer() {
     chargeToday >= MIN_CHARGE_USD;
 
   const needsQuoteWhatsApp =
-    unsupportedItems.length > 0 || nonBookableItems.length > 0;
+    cartNeedsQuote(items,addonsForRequest);
 
   const startCheckout = useCallback(async () => {
     if (!canPay) {
@@ -267,7 +259,7 @@ export function CartDrawer() {
       });
       const data = (await res.json()) as { url?: string; error?: string };
       if (!res.ok) {
-        setCheckoutError(data.error ?? t("cart.errors.checkoutFailed"));
+        setCheckoutError(res.status===503?t("cart.errors.checkoutFailed"):data.error ?? t("cart.errors.checkoutFailed"));
         return;
       }
       if (data.url) window.location.href = data.url;
@@ -312,9 +304,6 @@ export function CartDrawer() {
       customerPhoneFull
         ? `${t("cart.whatsapp.phoneLabel")} ${customerPhoneFull}`
         : "",
-      payMode === "full"
-        ? t("cart.whatsapp.payFull")
-        : t("cart.whatsapp.payDeposit", { pct: DEPOSIT_PCT }),
       "",
       t("cart.whatsapp.closing"),
     ]
@@ -326,7 +315,7 @@ export function CartDrawer() {
     setQuoteRequestLoading(true);
     setCheckoutError(null);
     try {
-      await fetch("/api/quote-requests/create", {
+      const response=await fetch("/api/quote-requests/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -337,12 +326,15 @@ export function CartDrawer() {
           customerEmail,
         }),
       });
+      if(!response.ok)throw new Error("Quote request failed");
+      setOpen(false);
+      setStep("selection");
+      window.location.assign(href);
     } catch {
-      setCheckoutError(t("cart.errors.quoteRecordFailed"));
+      setCheckoutError(t("cart.ux.quoteFailed"));
     } finally {
       setQuoteRequestLoading(false);
-      window.open(href, "_blank", "noopener,noreferrer");
-      setOpen(false);
+
     }
   }, [
     addonsForRequest,
@@ -356,441 +348,66 @@ export function CartDrawer() {
     t,
   ]);
 
-  if (!open) return null;
-
-  return (
-    <div className="fixed inset-0 z-[60]">
-      <button
-        type="button"
-        className="absolute inset-0 bg-[#0b0b0b]/65 backdrop-blur-[2px]"
-        aria-label={t("cart.closeCart")}
-        onClick={() => setOpen(false)}
-      />
-      <aside
-        className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col overflow-y-auto border-l border-gold/20 bg-[#161616] shadow-[-12px_0_48px_rgba(0,0,0,0.42)]"
-        aria-label={t("cart.selectionCartAria")}
-      >
-        <div className="flex items-center justify-between border-b border-gold/18 bg-[#1b1b1b] px-4 py-4 sm:px-5">
-          <div className="flex items-center gap-2">
-            <ShoppingBag className="size-5 text-gold/80" aria-hidden />
-            <h2 className="font-serif text-lg tracking-tight text-cream">
-              {t("cart.yourSelection")}
-            </h2>
-          </div>
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            className="flex h-10 w-10 items-center justify-center border border-gold/20 bg-white/[0.03] text-cream/80 transition-colors hover:border-gold/40 hover:bg-gold/10 hover:text-gold-secondary"
-            aria-label={t("cart.close")}
-          >
-            <X className="size-5" />
-          </button>
-        </div>
-
-        <div className="px-4 py-4 sm:px-5">
-          {items.length === 0 ? (
-            <p className="text-sm leading-relaxed text-cream/65">
-              {t("cart.emptyState")}
-            </p>
-          ) : (
-            <ul className="space-y-3" role="list">
-              {items.map((line) => (
-                <li
-                  key={line.key}
-                  className="border border-gold/18 bg-[#202020] p-3 sm:p-4"
-                >
-                  <div className="flex gap-3">
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[0.6rem] font-semibold uppercase tracking-[0.28em] text-gold/90">
-                        {labelForCategory(line.category, t)}
-                      </p>
-                      <p className="mt-1 font-serif text-[0.95rem] leading-snug text-cream">
-                        {line.title}
-                      </p>
-                      {line.subtitle ? (
-                        <p className="mt-0.5 text-[0.75rem] text-cream/68">
-                          {line.subtitle}
-                        </p>
-                      ) : null}
-                      {line.priceHint ? (
-                        <p className="mt-1 text-[0.72rem] tabular-nums text-cream/62">
-                          {line.priceHint}
-                        </p>
-                      ) : null}
-                      {line.bookingQuote?.description ? (
-                        <p className="mt-1 text-[0.72rem] leading-relaxed text-cream/62">
-                          {line.bookingQuote.description}
-                        </p>
-                      ) : null}
-                      <Link
-                        href={line.href}
-                        className="mt-2 inline-block text-[0.68rem] font-medium uppercase tracking-[0.14em] text-gold-secondary underline-offset-4 hover:underline"
-                        onClick={() => setOpen(false)}
-                      >
-                        {t("cart.viewListing")}
-                      </Link>
-                    </div>
-                    <div className="flex shrink-0 flex-col items-end gap-2">
-                      {isSingleUnitInventory(line.category) ? (
-                        <p className="max-w-[7rem] text-right text-[0.62rem] leading-snug text-cream/58">
-                          {t("cart.oneLineItem")}
-                        </p>
-                      ) : (
-                        <div className="flex items-center gap-1 border border-gold/18 bg-[#181818]">
-                          <button
-                            type="button"
-                            className="flex h-8 w-8 items-center justify-center text-cream/80 hover:bg-gold/10 hover:text-gold-secondary"
-                            aria-label={t("cart.decreaseQuantity")}
-                            onClick={() => decrementItem(line.key)}
-                          >
-                            <Minus className="size-3.5" />
-                          </button>
-                          <span className="min-w-[1.25rem] text-center text-xs tabular-nums text-cream/90">
-                            {line.quantity}
-                          </span>
-                          <button
-                            type="button"
-                            className="flex h-8 w-8 items-center justify-center text-cream/80 hover:bg-gold/10 hover:text-gold-secondary"
-                            aria-label={t("cart.increaseQuantity")}
-                            onClick={() =>
-                              addItem({
-                                category: line.category,
-                                id: line.id,
-                                title: line.title,
-                                subtitle: line.subtitle,
-                                priceHint: line.priceHint,
-                                href: line.href,
-                              })
-                            }
-                          >
-                            <Plus className="size-3.5" />
-                          </button>
-                        </div>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => removeItem(line.key)}
-                        className="text-cream/60 transition-colors hover:text-cream/90"
-                        aria-label={t("cart.remove")}
-                      >
-                        <Trash2 className="size-4" />
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div className="border-t border-gold/18 bg-[#1b1b1b] p-4 sm:p-5">
-          {items.length > 0 ? (
-            <div className="mb-4 space-y-3">
-              <div>
-                <p className="text-[0.6rem] font-medium uppercase tracking-[0.24em] text-gold/80">
-                  {t("cart.checkoutTotal")}
-                </p>
-                <p className="mt-1.5 font-serif text-xl text-gold-secondary">
-                  ${checkoutTotal.toLocaleString("en-US")}
-                </p>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <label
-                    htmlFor="cart-customer-name"
-                    className="text-[0.6rem] font-medium uppercase tracking-[0.24em] text-gold/65"
-                  >
-                    {t("cart.name")}
-                  </label>
-                  <input
-                    id="cart-customer-name"
-                    type="text"
-                    value={customerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
-                    className="mt-1.5 w-full border border-gold/18 bg-[#262626] px-3 py-2 text-sm text-cream"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="cart-customer-email"
-                    className="text-[0.6rem] font-medium uppercase tracking-[0.24em] text-gold/65"
-                  >
-                    {t("cart.email")}
-                  </label>
-                  <input
-                    id="cart-customer-email"
-                    type="email"
-                    value={customerEmail}
-                    onChange={(e) => setCustomerEmail(e.target.value)}
-                    className="mt-1.5 w-full border border-gold/18 bg-[#262626] px-3 py-2 text-sm text-cream"
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <label
-                    htmlFor="cart-customer-phone"
-                    className="text-[0.6rem] font-medium uppercase tracking-[0.24em] text-gold/65"
-                  >
-                    {t("cart.phone")}
-                  </label>
-                  <div className="mt-1.5 flex gap-2">
-                    <select
-                      id="cart-customer-phone-country-code"
-                      value={customerPhoneCountryCode}
-                      onChange={(e) => setCustomerPhoneCountryCode(e.target.value)}
-                      className="w-[48%] border border-gold/18 bg-[#262626] px-3 py-2 text-sm text-cream"
-                    >
-                      {PHONE_COUNTRY_CODES.map((option) => (
-                        <option key={option.code} value={option.code}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                    <input
-                      id="cart-customer-phone"
-                      type="tel"
-                      value={customerPhone}
-                      onChange={(e) => setCustomerPhone(e.target.value)}
-                      placeholder="6 12345678"
-                      className="w-[52%] border border-gold/18 bg-[#262626] px-3 py-2 text-sm text-cream placeholder:text-cream/35"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => setPayMode("deposit")}
-                  className={cn(
-                    "border px-3 py-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.14em] transition-colors",
-                    payMode === "deposit"
-                      ? "border-gold/45 bg-gold/12 text-cream"
-                      : "border-gold/18 bg-white/[0.03] text-cream/72 hover:border-gold/32",
-                  )}
-                >
-                  {t("cart.payDeposit", { pct: DEPOSIT_PCT })}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPayMode("full")}
-                  className={cn(
-                    "border px-3 py-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.14em] transition-colors",
-                    payMode === "full"
-                      ? "border-gold/45 bg-gold/12 text-cream"
-                      : "border-gold/18 bg-white/[0.03] text-cream/72 hover:border-gold/32",
-                  )}
-                >
-                  {t("cart.payFull")}
-                </button>
-              </div>
-              {chargeToday !== null ? (
-                <p className="text-[0.75rem] text-cream/80">
-                  {t("cart.chargedToday")}{" "}
-                  <span className="font-semibold text-gold">
-                    ${chargeToday.toLocaleString("en-US", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </span>
-                  {payMode === "deposit" ? (
-                    <span className="text-cream/60">
-                      {" "}
-                      {t("cart.chargedTodayDepositSuffix", {
-                        pct: DEPOSIT_PCT,
-                        total: checkoutTotal.toLocaleString("en-US", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        }),
-                      })}
-                    </span>
-                  ) : null}
-                </p>
-              ) : null}
-              {nonBookableItems.length > 0 ? (
-                <p className="text-[0.72rem] leading-relaxed text-cream/62">
-                  {t("cart.nonBookableHint")}
-                </p>
-              ) : null}
-              {unsupportedItems.length > 0 ? (
-                <p className="text-[0.72rem] leading-relaxed text-cream/62">
-                  {t("cart.unsupportedHint")}
-                </p>
-              ) : null}
-              {checkoutError ? (
-                <p className="text-[0.7rem] text-red-300/90">{checkoutError}</p>
-              ) : null}
-            </div>
-          ) : null}
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <button
-              type="button"
-              onClick={() => void startCheckout()}
-              disabled={!canPay || checkoutLoading}
-              className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 border border-gold/40 bg-gold px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#0b0b0b] transition-all hover:bg-gold-secondary disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              {checkoutLoading ? (
-                <Loader2 className="size-4 animate-spin" aria-hidden />
-              ) : null}
-              {t("cart.payWithCard")}
-            </button>
-            <button
-              type="button"
-              onClick={() => clear()}
-              disabled={items.length === 0}
-              className="inline-flex min-h-11 flex-1 items-center justify-center border border-gold/24 bg-white/[0.03] px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.16em] text-cream/88 transition-colors hover:border-gold/40 hover:bg-white/[0.05] disabled:cursor-not-allowed disabled:opacity-35"
-            >
-              {t("cart.clearAll")}
-            </button>
-          </div>
-
-          {items.length > 0 ? (
-            <div className="mt-5 border-t border-gold/[0.08] pt-5">
-              <p className="text-[0.55rem] font-semibold uppercase tracking-[0.26em] text-gold/55">
-                {t("cart.optionalAddons")}
-              </p>
-              <p className="mt-1.5 text-[0.65rem] leading-relaxed text-cream/48">
-                {t("cart.addonsScopeNote")}
-              </p>
-              <div className="mt-3 rounded-sm border border-gold/10 bg-[#181818]/90 p-2.5">
-                {!hasSecurityItems ? (
-                  <>
-                    <label className="flex cursor-pointer items-start gap-2 border-b border-gold/[0.06] pb-2.5">
-                      <input
-                        type="checkbox"
-                        className="mt-0.5 size-3.5 shrink-0 border-gold/25"
-                        checked={addonsForRequest.securityArmed}
-                        onChange={(e) =>
-                          patchAddons({ securityArmed: e.target.checked })
-                        }
-                      />
-                      <span className="text-[0.72rem] leading-snug text-cream/75">
-                        {t("cart.armedSecurity")}
-                        <span className="ml-1.5 text-[0.6rem] text-cream/45">
-                          {t("cart.rateSuffix", {
-                            rate: armedRateCard.hourlyRateUsd,
-                            hours: armedRateCard.minimumHours,
-                            minTotal: formatUsdNoCents(
-                              armedRateCard.minimumTotalUsd,
-                            ),
-                          })}
-                        </span>
-                      </span>
-                    </label>
-                    <label className="mt-2 flex cursor-pointer items-start gap-2 border-b border-gold/[0.06] pb-2.5">
-                      <input
-                        type="checkbox"
-                        className="mt-0.5 size-3.5 shrink-0 border-gold/25"
-                        checked={addonsForRequest.securityUnarmed}
-                        onChange={(e) =>
-                          patchAddons({ securityUnarmed: e.target.checked })
-                        }
-                      />
-                      <span className="text-[0.72rem] leading-snug text-cream/75">
-                        {t("cart.unarmedSecurity")}
-                        <span className="ml-1.5 text-[0.6rem] text-cream/45">
-                          {t("cart.rateSuffix", {
-                            rate: unarmedRateCard.hourlyRateUsd,
-                            hours: unarmedRateCard.minimumHours,
-                            minTotal: formatUsdNoCents(
-                              unarmedRateCard.minimumTotalUsd,
-                            ),
-                          })}
-                        </span>
-                      </span>
-                    </label>
-                  </>
-                ) : null}
-                <label
-                  className={cn(
-                    "flex cursor-pointer items-start gap-2 border-b border-gold/[0.06] pb-2.5",
-                    !hasSecurityItems && "pt-2",
-                  )}
-                >
-                  <input
-                    type="checkbox"
-                    className="mt-0.5 size-3.5 shrink-0 border-gold/25"
-                    checked={addons.femaleHosts}
-                    onChange={(e) =>
-                      patchAddons({ femaleHosts: e.target.checked })
-                    }
-                  />
-                  <span className="text-[0.72rem] leading-snug text-cream/75">
-                    {t("cart.femaleHosts")}
-                  </span>
-                </label>
-                {addons.femaleHosts ? (
-                  <div className="mt-2 pl-5">
-                    <label
-                      htmlFor="addon-host-count"
-                      className="text-[0.55rem] font-medium uppercase tracking-[0.2em] text-gold/50"
-                    >
-                      {t("cart.headcount")}
-                    </label>
-                    <input
-                      id="addon-host-count"
-                      type="number"
-                      min={1}
-                      max={8}
-                      value={addons.femaleHostsCount}
-                      onChange={(e) => {
-                        const n = Number.parseInt(e.target.value, 10);
-                        patchAddons({
-                          femaleHostsCount: Number.isFinite(n)
-                            ? Math.min(8, Math.max(1, n))
-                            : 1,
-                        });
-                      }}
-                      className="mt-1 w-full max-w-[5rem] border border-gold/14 bg-[#141414] px-2 py-1 text-xs text-cream"
-                    />
-                  </div>
-                ) : null}
-                <label className="mt-2 flex cursor-pointer items-start gap-2 border-t border-gold/[0.06] pt-2.5">
-                  <input
-                    type="checkbox"
-                    className="mt-0.5 size-3.5 shrink-0 border-gold/25"
-                    checked={addons.photoshoot}
-                    onChange={(e) =>
-                      patchAddons({ photoshoot: e.target.checked })
-                    }
-                  />
-                  <span className="text-[0.72rem] leading-snug text-cream/75">
-                    {t("cart.photoshoot")}
-                  </span>
-                </label>
-                <p className="mt-2 border-t border-gold/[0.06] pt-2 text-[0.58rem] leading-relaxed text-cream/42">
-                  {formatCartAddonsLocalized(addonsForRequest, t)}
-                </p>
-              </div>
-            </div>
-          ) : null}
-
-          <p className="mt-3 text-[0.65rem] leading-relaxed text-cream/58">
-            {t("cart.footerNote")}{" "}
-            {needsQuoteWhatsApp ? (
-              <button
-                type="button"
-                disabled={quoteRequestLoading}
-                onClick={() => void startQuoteWhatsApp()}
-                className="text-gold/70 underline-offset-2 hover:underline disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {quoteRequestLoading
-                  ? t("cart.requestingQuote")
-                  : t("cart.requestWhatsapp")}
-              </button>
-            ) : (
-              <Link
-                href={CONTACT_TRIP_BUILDER_HREF}
-                className="text-gold/70 underline-offset-2 hover:underline"
-                onClick={() => setOpen(false)}
-              >
-                {t("cart.contactUsFirst")}
-              </Link>
-            )}
-            .
-          </p>
-        </div>
-      </aside>
+  const busy=checkoutLoading||quoteRequestLoading;
+  const selectedExtras=Number(addonsForRequest.securityArmed)+Number(addonsForRequest.securityUnarmed)+Number(addons.femaleHosts)+Number(addons.photoshoot);
+  const closeCart=()=>{setOpen(false);setStep("selection");setCheckoutError(null);};
+  const showDetails=()=>{setCheckoutError(null);setStep("details");};
+  const money=(n:number)=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:2}).format(n);
+  const thumbnail=(line:CartLine)=>{
+    const service=line.category==="exotic-car"?(line.href.includes("/chauffeur-services/")?"chauffeur-services":"exotic-cars"):line.category==="yacht"?"yachts":line.category==="private-jet"?"private-jets":line.category;
+    const product=catalog.find(p=>(p.service===service&&(p.id===line.id||p.id.endsWith(":"+line.id)))||p.name===line.title);
+    return product?.images.split("\n").find(Boolean);
+  };
+  if(!open)return null;
+  return <dialog ref={dialog} className={css.drawer} aria-labelledby="cart-title" onCancel={closeCart} onClose={closeCart} onClick={e=>{if(e.target===e.currentTarget)closeCart();}}>
+   <div className={css.shell}>
+    <header className={css.header}><div><p className={css.eyebrow}>{t("cart.ux.eyebrow")}</p><h2 id="cart-title">{t(step==="selection"?"cart.yourSelection":"cart.ux.detailsStep")}<span>{t("cart.ux.experienceCount",{n:items.length})}</span></h2></div><button type="button" onClick={closeCart} className={css.close} aria-label={t("cart.closeCart")}><X size={21}/></button></header>
+    {items.length>0&&<nav className={css.steps} aria-label={t("cart.ux.reviewLabel")}><button type="button" aria-current={step==="selection"?"step":undefined} onClick={()=>{setStep("selection");setCheckoutError(null);}}><span>{step==="details"?<Check size={13}/>:"01"}</span>{t("cart.ux.selectionStep")}</button><ChevronRight size={14}/><button type="button" aria-current={step==="details"?"step":undefined} onClick={showDetails}><span>02</span>{t("cart.ux.detailsStep")}</button></nav>}
+    <div className={css.body} ref={scrollArea}>
+     {items.length===0?<div className={css.empty}><div className={css.emptyIcon}><ShoppingBag size={34} strokeWidth={1}/></div><p className={css.eyebrow}>BLACKLINE / MIAMI</p><h3>{t("cart.ux.emptyTitle")}</h3><p>{t("cart.ux.emptyHint")}</p><Link href="/services" className={css.primary} onClick={closeCart}>{t("cart.ux.browse")}<ArrowUpRight size={16}/></Link><div className={css.emptyCategories}><Link href="/services/yachts" onClick={closeCart}>{t("cart.categories.yacht")}</Link><Link href="/services/exotic-cars" onClick={closeCart}>{t("cart.categories.exoticCar")}</Link><Link href="/services/private-jets" onClick={closeCart}>{t("cart.categories.privateJet")}</Link></div></div>:step==="selection"?<>
+      <p className={css.intro}>{t("cart.ux.selectionHint")}</p>
+      <ul className={css.items}>{items.map(line=>{const image=thumbnail(line),online=checkoutEligibleItems.some(item=>item.key===line.key);return <li key={line.key} className={css.item}>
+       <Link href={line.href} onClick={closeCart} className={css.photo} tabIndex={-1} aria-hidden="true">{image?<img src={image} alt=""/>:<ShoppingBag size={24} strokeWidth={1}/>}</Link>
+       <div className={css.itemContent}><p className={css.category}>{labelForCategory(line.category,t)}</p><Link href={line.href} onClick={closeCart} className={css.itemTitle}>{line.title}</Link>{line.subtitle&&<p className={css.itemSubtitle}>{line.subtitle}</p>}
+        <p className={css.price}>{online?money(line.bookingQuote!.totalUsd):line.priceHint||t("cart.ux.onRequest")}</p>
+        {line.bookingQuote?.description&&<p className={css.dates}><CalendarDays size={13}/>{line.bookingQuote.description}</p>}
+        <span className={css.itemStatus} data-online={online}>{online?<Check size={11}/>:<MessageCircle size={11}/>} {t(online?"cart.ux.ready":"cart.ux.quote")}</span>
+        <div className={css.itemActions}><Link href={line.href} onClick={closeCart}>{t(line.bookingSelection?"cart.ux.editDates":"cart.ux.viewDetails")}<ArrowUpRight size={12}/></Link><button type="button" aria-label={t("cart.ux.removeItem",{title:line.title})} onClick={()=>removeItem(line.key)}><Trash2 size={12}/>{t("cart.ux.removeText")}</button></div>
+       </div>
+      </li>;})}</ul>
+      <details className={css.addons}><summary><span><Sparkles size={18}/><span><strong>{t("cart.ux.extras")}</strong><small>{t("cart.ux.extrasHint")}</small></span></span><span className={css.extrasCount}>{selectedExtras>0?t("cart.ux.selectedExtras",{n:selectedExtras}):"+"}</span></summary><div className={css.addonBody}>
+       {!hasSecurityItems&&<><label className={css.addon}><input type="checkbox" checked={addonsForRequest.securityArmed} onChange={e=>patchAddons({securityArmed:e.target.checked})}/><span><strong>{t("cart.armedSecurity")}</strong><small>{t("cart.rateSuffix",{rate:armedRateCard.hourlyRateUsd,hours:armedRateCard.minimumHours,minTotal:formatUsdNoCents(armedRateCard.minimumTotalUsd)})}</small></span></label><label className={css.addon}><input type="checkbox" checked={addonsForRequest.securityUnarmed} onChange={e=>patchAddons({securityUnarmed:e.target.checked})}/><span><strong>{t("cart.unarmedSecurity")}</strong><small>{t("cart.rateSuffix",{rate:unarmedRateCard.hourlyRateUsd,hours:unarmedRateCard.minimumHours,minTotal:formatUsdNoCents(unarmedRateCard.minimumTotalUsd)})}</small></span></label></>}
+       <label className={css.addon}><input type="checkbox" checked={addons.femaleHosts} onChange={e=>patchAddons({femaleHosts:e.target.checked})}/><span><strong>{t("cart.femaleHosts")}</strong><small>{t("cart.ux.onRequest")}</small></span></label>
+       {addons.femaleHosts&&<label className={css.headcount}>{t("cart.headcount")}<input type="number" min={1} max={8} value={addons.femaleHostsCount} onChange={e=>patchAddons({femaleHostsCount:Math.min(8,Math.max(1,parseInt(e.target.value)||1))})}/></label>}
+       <label className={css.addon}><input type="checkbox" checked={addons.photoshoot} onChange={e=>patchAddons({photoshoot:e.target.checked})}/><span><strong>{t("cart.photoshoot")}</strong><small>{t("cart.ux.onRequest")}</small></span></label>
+       {(addonsForRequest.securityArmed||addonsForRequest.securityUnarmed)&&<p className={css.hint}>{t("cart.ux.securityNote")}</p>}
+      </div></details>
+      {needsQuoteWhatsApp&&<div className={css.notice}><MessageCircle size={18}/><p>{t(checkoutBaseTotal>0?"cart.ux.mixedNote":"cart.ux.requestNote")}</p></div>}
+      <button type="button" className={css.continueShopping} onClick={closeCart}><ArrowLeft size={14}/>{t("cart.ux.continueBrowsing")}</button>
+     </>:<>
+      <div className={css.detailsIntro}><h3>{t("cart.ux.contactHeading")}</h3><p>{t("cart.ux.contactHint")}</p></div>
+      <form id="cart-checkout-form" onSubmit={e=>{e.preventDefault();if(busy)return;if(!/^\+\d{7,15}$/.test(customerPhoneFull)){setCheckoutError(t("cart.ux.phoneError"));return;}void(needsQuoteWhatsApp?startQuoteWhatsApp():startCheckout());}} className={css.form}>
+       <label htmlFor="cart-customer-name">{t("cart.name")}<input ref={nameInput} id="cart-customer-name" type="text" autoComplete="name" required maxLength={150} value={customerName} onChange={e=>setCustomerName(e.target.value)} placeholder={t("cart.ux.namePlaceholder")}/></label>
+       <label htmlFor="cart-customer-email">{t("cart.email")}<input id="cart-customer-email" type="email" autoComplete="email" required maxLength={254} value={customerEmail} onChange={e=>setCustomerEmail(e.target.value)} placeholder={t("cart.ux.emailPlaceholder")}/></label>
+       <div><label htmlFor="cart-customer-phone">{t("cart.phone")}</label><div className={css.phone}><select id="cart-customer-phone-country-code" aria-label={t("cart.ux.countryCode")} autoComplete="tel-country-code" value={customerPhoneCountryCode} onChange={e=>setCustomerPhoneCountryCode(e.target.value)}>{PHONE_COUNTRY_CODES.map(option=><option key={option.code} value={option.code}>{option.label}</option>)}</select><input id="cart-customer-phone" type="tel" inputMode="tel" autoComplete="tel-national" required maxLength={30} value={customerPhone} onChange={e=>setCustomerPhone(e.target.value)} placeholder={t("cart.ux.phonePlaceholder")}/></div></div>
+       {!needsQuoteWhatsApp&&<fieldset className={css.payment}><legend>{t("cart.ux.paymentHeading")}</legend>{(["deposit","full"] as const).map(mode=><label key={mode} data-selected={payMode===mode}><input type="radio" name="cart-payment-mode" value={mode} checked={payMode===mode} onChange={()=>setPayMode(mode)}/><span><strong>{t(mode==="deposit"?"cart.payDeposit":"cart.payFull",{pct:DEPOSIT_PCT})}</strong><small>{t(mode==="deposit"?"cart.ux.depositHint":"cart.ux.fullHint")}</small></span><b>{money(mode==="deposit"?Math.round(checkoutTotal*30)/100:checkoutTotal)}</b></label>)}</fieldset>}
+      </form>
+      <div className={css.notice}>{needsQuoteWhatsApp?<MessageCircle size={19}/>:<ShieldCheck size={19}/>}<p>{t(needsQuoteWhatsApp?"cart.ux.whatsappNote":"cart.ux.secureNote")}</p></div>
+      <details className={css.review}><summary>{t("cart.ux.reviewLabel")}<span>{items.length}</span></summary><ul>{items.map(line=><li key={line.key}><span>{line.title}</span><small>{line.bookingQuote?.payableOnline?money(line.bookingQuote.totalUsd):t("cart.ux.onRequest")}</small></li>)}</ul>{selectedExtras>0&&<p className={css.hint}>{formatCartAddonsLocalized(addonsForRequest,t)}</p>}</details>
+      <button type="button" className={css.continueShopping} onClick={()=>{setStep("selection");setCheckoutError(null);}}><ArrowLeft size={14}/>{t("cart.ux.back")}</button>
+     </>}
     </div>
-  );
+    <footer className={css.footer}>
+     {items.length>0?<>
+      {needsQuoteWhatsApp?<><div className={css.total}><span>{t("cart.ux.finalQuote")}</span><strong className={css.quoteTotal}>{t("cart.ux.quoteTotal")}</strong></div>{checkoutTotal>0&&<div className={css.subtotal}><span>{t("cart.ux.pricedSubtotal")}</span><span>{money(checkoutTotal)}</span></div>}</>:<><div className={css.total}><span>{t("cart.ux.total")}</span><strong>{money(checkoutTotal)}</strong></div>{step==="details"&&<><div className={css.subtotal}><span>{t("cart.ux.dueToday")}</span><strong>{money(chargeToday??0)}</strong></div>{payMode==="deposit"&&<div className={css.subtotal}><span>{t("cart.ux.remaining")}</span><span>{money(checkoutTotal-(chargeToday??0))}</span></div>}</>}{step==="details"&&payMode==="deposit"&&<p className={css.smallPrint}>{t("cart.ux.balanceNote")}</p>}</>}
+      {checkoutError&&<div className={css.error} role="alert"><strong>{t("cart.ux.errorHeading")}</strong><p>{checkoutError}</p></div>}
+      {!needsQuoteWhatsApp&&step==="details"&&(chargeToday??0)<MIN_CHARGE_USD&&<p className={css.error}>{t("cart.ux.minimum")}</p>}
+      {step==="selection"?<button key="cart-continue" type="button" className={css.primary} onClick={e=>{e.preventDefault();showDetails();}}>{t("cart.ux.continue")}<ArrowRight size={17}/></button>:<button key="cart-submit" type="submit" form="cart-checkout-form" className={css.primary} disabled={busy||(!needsQuoteWhatsApp&&(chargeToday??0)<MIN_CHARGE_USD)}>{busy?<Loader2 size={17} className="animate-spin"/>:needsQuoteWhatsApp?<MessageCircle size={17}/>:<LockKeyhole size={16}/>} {t(needsQuoteWhatsApp?"cart.ux.whatsapp":"cart.ux.payNow")}<ArrowRight size={16}/></button>}
+      <div className={css.footerMeta}><span><ShieldCheck size={12}/>{t("cart.ux.savedNote")}</span><Link href={CONTACT_TRIP_BUILDER_HREF} onClick={closeCart}>{t("cart.ux.contactSupport")}</Link></div>
+     </>:<p className={css.emptyFooter}>{t("cart.ux.savedNote")}</p>}
+    </footer>
+   </div>
+  </dialog>;
 }
 
 function labelForCategory(c: CartCategory, t: Translator): string {

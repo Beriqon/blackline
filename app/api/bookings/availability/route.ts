@@ -25,5 +25,5 @@ export async function GET(request: NextRequest) {
     itemId,
   });
 
-  return NextResponse.json({ windows });
+  return NextResponse.json({ windows: windows.map(w=>({...w,bookingId:"unavailable",source:"website",label:"Unavailable"})) });
 }

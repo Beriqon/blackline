@@ -1,4 +1,5 @@
 "use client";
+import {usePublishedCollection} from "./catalog-provider";
 import { Ship, X, ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -345,7 +346,8 @@ function YachtsCatalogInner() {
     const { locale, t } = useLocale();
     const es = locale === "es";
     const [selected, setSelected] = useState<Yacht | null>(null);
-    const localizedYachts = useMemo(() => getLocalizedYachts(locale, t), [locale, t]);
+    const originalYachts = useMemo(() => getLocalizedYachts(locale, t), [locale, t]);
+    const localizedYachts=usePublishedCollection("yachts",originalYachts);
     const valid = (key: string, allowed: string[], fallback: string) => { const value = searchParams.get(key) || fallback; return allowed.includes(value) ? value : fallback; };
     const q = searchParams.get("q") || "", region = valid("region", ["all", "miami", "north-miami", "fort-lauderdale", "bahamas"], "all"), size = valid("size", ["all", "under-50", "50-70", "70-100", "over-100"], "all"), budget = valid("budget", ["all", "under-3k", "3k-5k", "over-5k"], "all"), guests = valid("guests", ["all", "6", "10", "12", "13"], "all"), sort = valid("sort", ["default", "price-asc", "price-desc", "name-asc", "name-desc"], "default"), featured = searchParams.get("featured") === "featured" ? "featured" : "all";
     const requestedPage = Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1);

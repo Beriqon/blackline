@@ -1,3 +1,5 @@
+import cartUxEn from "@/messages/cartUx.en.json";
+import cartUxEs from "@/messages/cartUx.es.json";
 import en from "@/messages/en.json";
 import es from "@/messages/es.json";
 import packageBuilderEn from "@/messages/packageBuilder.en.json";
@@ -27,7 +29,7 @@ function mergeMessages(base: Messages, ...extras: Messages[]): Messages {
 registerDictionary(
   "en",
   mergeMessages(
-    en as Messages,
+    {...en,cart:{...en.cart,ux:cartUxEn}} as Messages,
     vipNightlifeEn as Messages,
     privateChefsEn as Messages,
     villasEn as Messages,
@@ -38,7 +40,7 @@ registerDictionary(
 registerDictionary(
   "es",
   mergeMessages(
-    es as Messages,
+    {...es,cart:{...es.cart,ux:cartUxEs}} as Messages,
     vipNightlifeEs as Messages,
     privateChefsEs as Messages,
     villasEs as Messages,

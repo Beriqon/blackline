@@ -1,3 +1,4 @@
+import {publishedProduct} from "@/lib/catalog-server";
 import { notFound } from "next/navigation";
 
 import { YachtFleetProduct } from "@/components/yacht-fleet-product";
@@ -34,7 +35,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props) {
   const { locale, t } = await getI18n();
   const { slug } = await params;
-  const yacht = getYachtBySlug(slug);
+  const yacht = await publishedProduct("yachts",slug,getYachtBySlug(slug));
   if (!yacht) {
     return { title: t("nav.yachts") };
   }
@@ -47,7 +48,7 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function FleetYachtPage({ params }: Props) {
   const { slug } = await params;
-  const y = getYachtBySlug(slug);
+  const y = await publishedProduct("yachts",slug,getYachtBySlug(slug));
   if (!y) notFound();
   return <YachtFleetProduct yacht={y} />;
 }

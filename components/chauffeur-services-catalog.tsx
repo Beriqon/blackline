@@ -1,4 +1,5 @@
 "use client";
+import {usePublishedCollection} from "./catalog-provider";
 import Image from "next/image";
 import Link from "next/link";
 import { Car, Search, ArrowUpRight } from "lucide-react";
@@ -9,10 +10,9 @@ import { ScrollRevealItem } from "@/components/scroll-reveal-item";
 import { SectionReveal } from "@/components/section-reveal";
 import { ServicePhotographyAddon } from "@/components/service-photography-addon";
 import { ExoticCatalogPagination } from "@/components/exotic-cars-pagination";
-import { CHAUFFEUR_FLEET_SORTED, FEATURED_CHAUFFEUR_ID_SET, type ChauffeurFleetEntry } from "@/lib/chauffeur-fleet-data";
+import { CHAUFFEUR_FLEET_SORTED as STATIC_CHAUFFEUR_FLEET_SORTED, type ChauffeurFleetEntry } from "@/lib/chauffeur-fleet-data";
 import { chauffeurHourlyPrice, displayChauffeurRate } from "@/lib/chauffeur-presentation";
-import { getLocalizedChauffeurFleet } from "@/lib/i18n/chauffeur-services-page";
-import { exoticGalleryCoverStyle, type ExoticSortMode } from "@/lib/exotic-catalog-utils";
+import { exoticGalleryCoverStyle } from "@/lib/exotic-catalog-utils";
 import { exoticPhotos, exoticSeats, exoticSpec } from "@/lib/exotic-presentation";
 import { paginateSlice } from "@/lib/pagination";
 import { EXOTIC_PHOTOGRAPHY_ADDON_IMAGES } from "@/lib/exotic-car-photos";
@@ -23,21 +23,22 @@ function CarCard({ car, query }: {
 }) {
     const { locale, t } = useLocale();
     const es = locale === "es";
-    const raw = CHAUFFEUR_FLEET_SORTED.find(c => c.id === car.id) ?? car;
+    const raw = car;
     const photos = exoticPhotos(car);
     const details = [exoticSpec(raw, "Style"), exoticSpec(raw, "Seats") ? exoticSpec(raw, "Seats") + " " + (es ? "plazas" : "seats") : undefined, exoticSpec(raw, "Color") ?? exoticSpec(raw, "Exterior")].filter(Boolean);
-    return <Link className={styles.card} href={"/services/chauffeur-services/" + car.id + (query ? "?" + query : "")}><div className={styles.cardPhoto}>{photos[0] ? <Image src={photos[0]} alt={car.name} fill sizes="(max-width:700px) 100vw, (max-width:1050px) 50vw, 33vw" style={exoticGalleryCoverStyle(car, 0)} className={styles.cardImage}/> : <div className={styles.placeholder}><Car size={38}/><span>{t("exoticCarsPage.photosComingSoon")}</span></div>}{FEATURED_CHAUFFEUR_ID_SET.has(car.id) && <span className={styles.badge}>{t("exoticCarsPage.featured")}</span>}{photos.length > 0 && <span className={styles.photoCount}>{photos.length} {es ? "fotos" : "photos"}</span>}<span className={styles.cardArrow}><ArrowUpRight size={17}/></span></div><div className={styles.cardBody}><p className={styles.eyebrow}>{car.group}</p><h3>{car.name}</h3><div className={styles.cardDetails}>{details.map(d => <span key={d}>{d}</span>)}</div><div className={styles.cardPrice}><p>{displayChauffeurRate(car, es)}</p><span>{es ? "Ver vehículo" : "Explore vehicle"} ↗</span></div><p className={styles.chauffeurAvailable}>{es ? "Con chófer privado" : "Private chauffeur included"}</p></div></Link>;
+    return <Link className={styles.card} href={"/services/chauffeur-services/" + car.id + (query ? "?" + query : "")}><div className={styles.cardPhoto}>{photos[0] ? <Image src={photos[0]} alt={car.name} fill sizes="(max-width:700px) 100vw, (max-width:1050px) 50vw, 33vw" style={exoticGalleryCoverStyle(car, 0)} className={styles.cardImage}/> : <div className={styles.placeholder}><Car size={38}/><span>{t("exoticCarsPage.photosComingSoon")}</span></div>}{car.featured && <span className={styles.badge}>{t("exoticCarsPage.featured")}</span>}{photos.length > 0 && <span className={styles.photoCount}>{photos.length} {es ? "fotos" : "photos"}</span>}<span className={styles.cardArrow}><ArrowUpRight size={17}/></span></div><div className={styles.cardBody}><p className={styles.eyebrow}>{car.group}</p><h3>{car.name}</h3><div className={styles.cardDetails}>{details.map(d => <span key={d}>{d}</span>)}</div><div className={styles.cardPrice}><p>{displayChauffeurRate(car, es)}</p><span>{es ? "Ver vehículo" : "Explore vehicle"} ↗</span></div><p className={styles.chauffeurAvailable}>{es ? "Con chófer privado" : "Private chauffeur included"}</p></div></Link>;
 }
 function ChauffeurServicesCatalogInner() {
+ const CHAUFFEUR_FLEET_SORTED=usePublishedCollection("chauffeur-services",STATIC_CHAUFFEUR_FLEET_SORTED);
     const { locale, t } = useLocale();
     const es = locale === "es";
     const router = useRouter(), pathname = usePathname(), params = useSearchParams();
-    const cars = useMemo(() => getLocalizedChauffeurFleet(locale, t), [locale, t]);
-    const brands = useMemo(() => [...new Set(CHAUFFEUR_FLEET_SORTED.map(c => c.group))].sort(), []);
+    const cars = CHAUFFEUR_FLEET_SORTED;
+    const brands = useMemo(() => [...new Set(CHAUFFEUR_FLEET_SORTED.map(c => c.group))].sort(), [CHAUFFEUR_FLEET_SORTED]);
     const valid = (key: string, allowed: string[], fallback = "all") => { const v = params.get(key) || fallback; return allowed.includes(v) ? v : fallback; };
     const q = params.get("q") || "", brand = valid("brand", ["all", ...brands]), budget = valid("budget", ["all", "under-200", "200-300", "over-300", "on-request"]), seats = valid("seats", ["all", "2", "4", "5", "6"]), sort = valid("sort", ["featured-first", "price-asc", "price-desc", "name-asc", "name-desc"], "featured-first"), featured = params.get("featured") === "yes", photosOnly = params.get("photos") === "yes";
     const filtered = useMemo(() => {
-        const matched = cars.filter(c => { const raw = CHAUFFEUR_FLEET_SORTED.find(r => r.id === c.id) ?? c; const price = chauffeurHourlyPrice(raw); return (brand === "all" || c.group === brand) && (!q || [c.name, c.group, ...(raw.specs ?? []).map(r => r.value)].join(" ").toLowerCase().includes(q.trim().toLowerCase())) && (seats === "all" || exoticSeats(raw) >= Number(seats)) && (!featured || FEATURED_CHAUFFEUR_ID_SET.has(c.id)) && (!photosOnly || exoticPhotos(c).length > 0) && (budget === "all" || (budget === "on-request" ? price === null : price !== null && (budget === "under-200" ? price < 200 : budget === "200-300" ? price >= 200 && price < 300 : price >= 300))); });
+        const matched = cars.filter(c => { const raw = CHAUFFEUR_FLEET_SORTED.find(r => r.id === c.id) ?? c; const price = chauffeurHourlyPrice(raw); return (brand === "all" || c.group === brand) && (!q || [c.name, c.group, ...(raw.specs ?? []).map(r => r.value)].join(" ").toLowerCase().includes(q.trim().toLowerCase())) && (seats === "all" || exoticSeats(raw) >= Number(seats)) && (!featured || c.featured) && (!photosOnly || exoticPhotos(c).length > 0) && (budget === "all" || (budget === "on-request" ? price === null : price !== null && (budget === "under-200" ? price < 200 : budget === "200-300" ? price >= 200 && price < 300 : price >= 300))); });
         if (sort === "featured-first")
             return matched;
         return [...matched].sort((a, b) => {
@@ -51,7 +52,7 @@ function ChauffeurServicesCatalogInner() {
             }
             return (sort === "name-desc" ? -1 : 1) * a.name.localeCompare(b.name, locale);
         });
-    }, [cars, brand, q, seats, featured, photosOnly, budget, sort]);
+    }, [cars, CHAUFFEUR_FLEET_SORTED,locale,brand,q,seats,featured,photosOnly,budget,sort]);
     const requested = Math.max(1, parseInt(params.get("page") || "1", 10) || 1);
     const { slice, pageCount, safePage, total } = paginateSlice(filtered, requested, 9);
     const active = [q, brand !== "all", budget !== "all", seats !== "all", featured, photosOnly].filter(Boolean).length;

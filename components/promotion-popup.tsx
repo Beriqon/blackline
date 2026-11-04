@@ -15,7 +15,7 @@ export function PromotionPopup(){
  const [settings,setSettings]=useState<PromotionSettings>(DEFAULT_PROMOTION),[dismissed,setDismissed]=useState(false);
  const dialog=useRef<HTMLDialogElement>(null);
  const {consent}=useCookieConsent();
- useEffect(()=>{const sync=()=>setSettings(readPromotion());const storage=(event:StorageEvent)=>{if(event.key===PROMOTION_STORAGE_KEY||event.key===null)sync();};sync();window.addEventListener(PROMOTION_EVENT,sync);window.addEventListener("storage",storage);return()=>{window.removeEventListener(PROMOTION_EVENT,sync);window.removeEventListener("storage",storage);};},[]);
+ useEffect(()=>{const sync=()=>{readPromotion().then(setSettings).catch(()=>{});};const storage=(event:StorageEvent)=>{if(event.key===PROMOTION_STORAGE_KEY||event.key===null)sync();};sync();window.addEventListener(PROMOTION_EVENT,sync);window.addEventListener("storage",storage);return()=>{window.removeEventListener(PROMOTION_EVENT,sync);window.removeEventListener("storage",storage);};},[]);
  const visible=!!consent&&settings.enabled&&!dismissed&&!!settings.title.trim()&&!!settings.message.trim();
  useEffect(()=>{const el=dialog.current;if(!el)return;if(!visible){if(el.open)el.close();return;}if(!el.open)el.showModal();const previous=document.body.style.overflow;document.body.style.overflow="hidden";return()=>{document.body.style.overflow=previous;if(el.open)el.close();};},[visible]);
  return <dialog ref={dialog} className={styles.dialog} aria-labelledby="promotion-title" aria-describedby="promotion-message" onCancel={e=>{e.preventDefault();setDismissed(true);}} onClick={e=>{if(e.target===e.currentTarget)setDismissed(true);}}><PromotionContent settings={settings} onClose={()=>setDismissed(true)}/></dialog>;

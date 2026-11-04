@@ -87,6 +87,7 @@ export async function POST(request: Request) {
           selection: item.bookingSelection!,
           customerName,
           customerEmail,
+          customerPhone,
           source: "website",
           status: "pending",
           paymentMode: "stripe",

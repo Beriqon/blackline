@@ -1,24 +1,25 @@
 "use client";
+import {CatalogContext,usePublishedCollection} from "./catalog-provider";
+import {catalogId} from "@/lib/catalog-live";
 
 import { ChevronDown } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 
 import { useLocale, useTranslations } from "@/components/locale-provider";
 import { localizeCatalogText } from "@/lib/i18n/localize-catalog-text";
 
 import {
-  CHAUFFEUR_FLEET_SORTED,
+  CHAUFFEUR_FLEET_SORTED as STATIC_CHAUFFEUR_FLEET_SORTED,
   chauffeurPackageQuoteLine,
   chauffeurQuoteRateLine,
 } from "@/lib/chauffeur-fleet-data";
 import {
-  EXOTIC_CARS_DAILY,
-  EXOTIC_CARS_HOURLY_GROUPS,
+  EXOTIC_CARS_DAILY as STATIC_EXOTIC_CARS_DAILY,
   type ExoticCar,
 } from "@/lib/exotic-cars-data";
 import {
-  ATV_TOURS,
-  UTV_PRODUCTS,
+  ATV_TOURS as STATIC_ATV_TOURS,
+  UTV_PRODUCTS as STATIC_UTV_PRODUCTS,
   type AtvTourProduct,
   type UtvDurationOption,
   type UtvProduct,
@@ -29,23 +30,22 @@ import {
   formatUsd,
 } from "@/lib/bookings";
 import { CUSTOM_PACKAGE_MISC_ADDONS } from "@/lib/custom-package-addons";
-import { JETSKIS_OFFERINGS } from "@/lib/jetskis-jetcars-data";
+import { JETSKIS_OFFERINGS as STATIC_JETSKIS_OFFERINGS } from "@/lib/jetskis-jetcars-data";
 import {
   PRIVATE_CHEF_SERVICE_CARDS,
-  PRIVATE_CHEFS_ROSTER,
+  PRIVATE_CHEFS_ROSTER as STATIC_PRIVATE_CHEFS_ROSTER,
 } from "@/lib/private-chefs-data";
-import { PRIVATE_JETS } from "@/lib/private-jets-data";
+import { PRIVATE_JETS as STATIC_PRIVATE_JETS } from "@/lib/private-jets-data";
 import {
-  vipFeaturedVenues,
-  vipSouthBeachClubs,
+  vipFeaturedVenues as STATIC_vipFeaturedVenues,
   vipTransport,
 } from "@/lib/vip-nightlife-data";
-import { VILLAS } from "@/lib/villas-data";
+import { VILLAS as STATIC_VILLAS } from "@/lib/villas-data";
 import {
   HOSTESS_HEADCOUNT_OPTIONS,
   YACHT_HOSTESS_ADDON,
 } from "@/lib/yacht-hostess-addon";
-import { YACHTS } from "@/lib/yachts-data";
+import { YACHTS as STATIC_YACHTS } from "@/lib/yachts-data";
 import { whatsAppUrlWithText } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
 
@@ -205,6 +205,20 @@ export function CustomPackageWhatsApp({
   buildDescription,
   idSuffix = "",
 }: CustomPackageWhatsAppProps = {}) {
+  const liveProducts=useContext(CatalogContext);
+  const YACHTS=usePublishedCollection("yachts",STATIC_YACHTS);
+  const VILLAS=usePublishedCollection("villas",STATIC_VILLAS);
+  const PRIVATE_JETS=usePublishedCollection("private-jets",STATIC_PRIVATE_JETS);
+  const EXOTIC_CARS_DAILY=usePublishedCollection("exotic-cars",STATIC_EXOTIC_CARS_DAILY);
+  const CHAUFFEUR_FLEET_SORTED=usePublishedCollection("chauffeur-services",STATIC_CHAUFFEUR_FLEET_SORTED);
+  const PRIVATE_CHEFS_ROSTER=usePublishedCollection("private-chefs",STATIC_PRIVATE_CHEFS_ROSTER);
+  const EXOTIC_CARS_HOURLY_GROUPS=useMemo(()=>[{title:"Chauffeur services",cars:CHAUFFEUR_FLEET_SORTED}],[CHAUFFEUR_FLEET_SORTED]);
+  const ATV_TOURS=useMemo(()=>liveProducts.filter(p=>p.service==="atv"&&!/utv/i.test(p.name)&&catalogId(p)!=="night-glow").map(p=>({...STATIC_ATV_TOURS.find(t=>t.id===catalogId(p))??STATIC_ATV_TOURS[0],id:catalogId(p),duration:p.name.replace(/^ATV tour\s*—\s*/,""),price:p.price,image:p.images.split("\n")[0]})) as unknown as typeof STATIC_ATV_TOURS,[liveProducts]);
+  const UTV_PRODUCTS=useMemo(()=>liveProducts.filter(p=>p.service==="atv"&&/utv/i.test(p.name)).map(p=>{const original=STATIC_UTV_PRODUCTS.find(u=>u.id===catalogId(p))??STATIC_UTV_PRODUCTS[0];const options=(p.rates??"").split("\n").map((line,i)=>({id:original.options[i]?.id??String(i),duration:line.split(":")[0],price:Number(line.match(/\$([\d,]+)/)?.[1]?.replaceAll(",",""))||p.price}));if(options[0])options[0].price=p.price;return {...original,id:catalogId(p),title:p.name,tagline:p.description,image:p.images.split("\n")[0],options:options.length?options:[{id:"request",duration:"On request",price:p.price}]};}) as unknown as typeof STATIC_UTV_PRODUCTS,[liveProducts]);
+  const JETSKIS_OFFERINGS=useMemo(()=>liveProducts.filter(p=>p.service==="jetskis-jetcars").map(p=>({...STATIC_JETSKIS_OFFERINGS[0],title:p.name,description:p.description,image:p.images.split("\n")[0]})) as unknown as typeof STATIC_JETSKIS_OFFERINGS,[liveProducts]);
+  const vipFeaturedVenues=useMemo(()=>liveProducts.filter(p=>p.service==="vip-nightlife").map(p=>({...STATIC_vipFeaturedVenues[0],name:p.name,about:p.description,subtitle:p.specs,imageSrc:p.images.split("\n")[0],gallery:p.images.split("\n").filter(Boolean).map(src=>({src,alt:p.name}))})),[liveProducts]);
+  const vipSouthBeachClubs=useMemo<string[]>(()=>[],[]);
+
   const { locale } = useLocale();
   const t = useTranslations();
   const l = useCallback(
@@ -284,7 +298,7 @@ export function CustomPackageWhatsApp({
   const anyYachtSelected = useMemo(
     () =>
       YACHTS.some((y) => sel[`yacht:${y.id}`]) || !!sel[OPEN_TBD.yacht],
-    [sel],
+    [sel,YACHTS],
   );
 
   const hasSelection = useMemo(
@@ -595,7 +609,7 @@ export function CustomPackageWhatsApp({
     lines.push("");
     lines.push(pb("msgClosing"));
     return lines.join("\n");
-  }, [
+  }, [YACHTS,VILLAS,PRIVATE_JETS,EXOTIC_CARS_DAILY,CHAUFFEUR_FLEET_SORTED,PRIVATE_CHEFS_ROSTER,EXOTIC_CARS_HOURLY_GROUPS,ATV_TOURS,UTV_PRODUCTS,JETSKIS_OFFERINGS,vipFeaturedVenues,vipSouthBeachClubs,
     chauffeurHours,
     dates,
     groupSize,

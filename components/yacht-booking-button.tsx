@@ -98,17 +98,12 @@ export function YachtBookingButton({
   const [gratuityPct, setGratuityPct] = useState(defaultGratuityPct ?? 18);
   const [localError, setLocalError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (defaultDurationLabel) {
-      setDurationLabel(defaultDurationLabel);
-    }
-  }, [defaultDurationLabel]);
-
-  useEffect(() => {
-    if (typeof defaultGratuityPct === "number") {
-      setGratuityPct(defaultGratuityPct);
-    }
-  }, [defaultGratuityPct]);
+  const [priorDefaults,setPriorDefaults]=useState({duration:defaultDurationLabel,gratuity:defaultGratuityPct});
+  if(priorDefaults.duration!==defaultDurationLabel||priorDefaults.gratuity!==defaultGratuityPct){
+    setPriorDefaults({duration:defaultDurationLabel,gratuity:defaultGratuityPct});
+    if(defaultDurationLabel&&priorDefaults.duration!==defaultDurationLabel)setDurationLabel(defaultDurationLabel);
+    if(typeof defaultGratuityPct==="number"&&priorDefaults.gratuity!==defaultGratuityPct)setGratuityPct(defaultGratuityPct);
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -168,7 +163,7 @@ export function YachtBookingButton({
 
   const selection = useMemo(
     () => ({
-      category: "yacht" as const,
+      category: "yacht" as const,timeZone:Intl.DateTimeFormat().resolvedOptions().timeZone,
       itemId: resolvedYacht?.id ?? "",
       charterDate,
       startTime: effectiveStartTime,
@@ -181,7 +176,7 @@ export function YachtBookingButton({
   const quote = useMemo(() => {
     if (!resolvedYacht) return null;
     try {
-      return computeBookingQuote(selection);
+      return computeBookingQuote(selection,resolvedYacht);
     } catch {
       return null;
     }

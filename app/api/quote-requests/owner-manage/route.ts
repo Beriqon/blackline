@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import {requireAdmin} from "@/lib/supabase-server";
 import { NextResponse } from "next/server";
 
 import type { BookingSource } from "@/lib/bookings";
@@ -13,12 +13,7 @@ import {
 
 export const runtime = "nodejs";
 
-const OWNER_COOKIE = "blackline-owner-access";
 
-function isOwnerUnlocked(cookieValue: string | undefined) {
-  const expected = process.env.OWNER_BOOKING_CODE?.trim();
-  return !!expected && cookieValue === expected;
-}
 
 type PatchBody = {
   quoteRequestId?: string;
@@ -35,8 +30,7 @@ type DeleteBody = {
 };
 
 export async function PATCH(request: Request) {
-  const cookieStore = await cookies();
-  if (!isOwnerUnlocked(cookieStore.get(OWNER_COOKIE)?.value)) {
+  if (!(await requireAdmin())) {
     return NextResponse.json({ error: "Owner access required." }, { status: 401 });
   }
 
@@ -65,8 +59,7 @@ export async function PATCH(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const cookieStore = await cookies();
-  if (!isOwnerUnlocked(cookieStore.get(OWNER_COOKIE)?.value)) {
+  if (!(await requireAdmin())) {
     return NextResponse.json({ error: "Owner access required." }, { status: 401 });
   }
 
