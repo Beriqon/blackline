@@ -33,8 +33,7 @@ export function AdminLogin(){
          <button className={styles.submit} type="submit" disabled={busy}>Sign in to workspace<ArrowUpRight size={18} strokeWidth={1.5}/></button>
          <div className={styles.feedback} role="status" aria-live="polite">{message}</div>
        </form>
-       <Link href="/admin/dashboard" className={styles.demoEntry}>Open workspace <ArrowUpRight size={14}/><span>SIGN-IN REQUIRED</span></Link>
-       <Link href="/admin/activate" className={styles.demoEntry}>Activate your account<ArrowUpRight size={14}/></Link><div className={styles.restricted}><span/>Reserved for the Blackline team<span/></div>
+       <div className={styles.restricted}><span/>Reserved for the Blackline team<span/></div>
      </div>
      <footer className={styles.loginFooter}><span>© {new Date().getFullYear()} BLACKLINE CONCIERGE</span><Link href="/privacy">Privacy policy<ArrowUpRight size={11}/></Link></footer>
    </section>
