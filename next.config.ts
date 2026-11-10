@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  outputFileTracingIncludes: { "/api/balance/confirmation": ["./public/fonts/NotoSans.ttf"], "/api/orders/confirmation": ["./public/fonts/NotoSans.ttf"],"/api/zelle/confirmation":["./public/fonts/NotoSans.ttf"] },
   experimental: {turbopackFileSystemCacheForDev:false},
   allowedDevOrigins: ["localhost", "127.0.0.1"],
   images: {

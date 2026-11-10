@@ -178,3 +178,15 @@ html {
     opacity: 1;
   }
 }
+
+/* Global hero offsets must live outside CSS Modules (production purity checks). */
+body:has(header[data-hero-overlay="true"]) main [class*="heroCopy"] {
+  padding-top: 100px;
+}
+
+@media (min-width: 901px) {
+  body:has(header[data-hero-overlay="true"]) main [class*="heroEdition"],
+  body:has(header[data-hero-overlay="true"]) main [class*="photoTop"] {
+    top: 90px;
+  }
+}

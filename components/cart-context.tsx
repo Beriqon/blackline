@@ -136,7 +136,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const key = cartLineKey(
       input.category,
       input.id,
-      bookingSelectionKey(input.bookingSelection),
+      input.experienceSelection?JSON.stringify(input.experienceSelection):bookingSelectionKey(input.bookingSelection),
     );
     const single = isSingleUnitInventory(input.category);
     setItems((prev) => {

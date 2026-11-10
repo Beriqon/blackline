@@ -1,0 +1,5 @@
+"use client";
+import type {QuoteContact} from "@/lib/quote-contact";
+export function QuoteContactFields({value,onChange,locale="en"}:{value:QuoteContact;onChange:(next:QuoteContact)=>void;locale?:string}){
+ const es=locale==="es";return <fieldset className="my-5 grid gap-3 border border-gold/20 p-4"><legend className="px-2 text-sm text-gold">{es?"Tus datos de contacto":"Your contact details"}</legend>{([["name",es?"Nombre completo":"Full name","text","name"],["email",es?"Correo electrónico":"Email address","email","email"],["phone",es?"Teléfono con código de país":"Phone with country code","tel","tel"]] as const).map(([key,label,type,autoComplete])=><label key={key} className="grid gap-2 text-xs text-cream/75">{label}<input type={type} autoComplete={autoComplete} maxLength={key==="name"?200:key==="email"?254:40} required placeholder={key==="phone"?"+1 786 555 0123":undefined} value={value[key]} onChange={e=>onChange({...value,[key]:e.target.value})} className="min-h-11 min-w-0 border border-gold/20 bg-black/30 px-3 py-2 text-sm text-cream"/></label>)}</fieldset>;
+}

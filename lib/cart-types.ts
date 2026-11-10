@@ -45,6 +45,7 @@ export type CartLineInput = {
   href: string;
   bookingSelection?: BookingSelection;
   bookingQuote?: BookingQuote;
+  experienceSelection?: { date: string; hours: number; units: number };
 };
 
 export type CartLine = CartLineInput & {

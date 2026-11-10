@@ -1,4 +1,7 @@
 "use client";
+import {QuoteContactFields} from "./quote-contact-fields";
+import {normalizeQuoteContact} from "@/lib/quote-contact";
+import { AddToCartButton } from "@/components/add-to-cart-button";
 import { ExternalMapConsent } from "@/components/cookie-preferences";
 
 import { ArrowUpRight, MapPin, Building2, ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
@@ -117,6 +120,7 @@ export function VillaFleetProduct({ villa: sourceVilla }: { villa: Villa }) {
   const thumbStripRef = useRef<HTMLDivElement | null>(null);
   const thumbRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const swipe = useRef<{id:number;x:number;y:number}|null>(null);
+  const [quoteContact,setQuoteContact]=useState({name:"",email:"",phone:""});
   const [creatingQuoteRequest, setCreatingQuoteRequest] = useState(false);
   const [quoteRequestError, setQuoteRequestError] = useState<string | null>(
     null,
@@ -264,7 +268,8 @@ export function VillaFleetProduct({ villa: sourceVilla }: { villa: Villa }) {
       {hasPolicy&&<section className={styles.policySection}>{villa.policyNotes!.map(note=><p key={note}>{note}</p>)}</section>}
       </div>
       <aside className={styles.inquiryAside} id="stay-inquiry"><p className={styles.eyebrow}>{t("villasPage.residencesName",{name:villa.name})}</p><h2 className={styles.inquiryPrice}>{nightlyRates?t("villasPage.fromPerNight",{price:formatVillaUsd(nightlyRates.weekdayUsd)}):locale==="es"?"Tu estancia privada.":"Your private stay."}</h2><p className={styles.inquiryTagline}>{villa.cardTagline}</p><div className={styles.inquiryFacts}>{sourceVilla.facts.map((f,i)=>({source:f,localized:villa.facts[i]})).filter(f=>["Bedrooms","Bathrooms","Max guests"].includes(f.source.label)).map(f=><div key={f.source.label}><strong>{f.localized.value}</strong><span>{f.localized.label}</span></div>)}</div>
-              <div className={styles.requestPanel}>
+              <div className={styles.requestPanel}><AddToCartButton label={locale==="es"?"Añadir a la selección":"Add to selection"} item={{category:"other",id:sourceVilla.id,title:sourceVilla.name,href:`/services/villas/${sourceVilla.id}`,priceHint:locale==="es"?"Precio pendiente — no incluido":"Price follows — excluded from payment"}}/>
+                <QuoteContactFields value={quoteContact} onChange={setQuoteContact} locale={locale}/>
                 {quoteRequestError ? (
                   <p className="mb-4 text-center text-[0.75rem] text-red-300/90">
                     {quoteRequestError}
@@ -274,9 +279,11 @@ export function VillaFleetProduct({ villa: sourceVilla }: { villa: Villa }) {
                   type="button"
                   disabled={creatingQuoteRequest}
                   onClick={async () => {
+                    const contact=normalizeQuoteContact(quoteContact);if(!contact){setQuoteRequestError(locale==="es"?"Introduce tu nombre, correo y teléfono con código de país.":"Enter your name, email and phone with country code.");return;}
                     setQuoteRequestError(null);
                     setCreatingQuoteRequest(true);
                     const message = [
+                      `Name: ${contact.name}`,`Email: ${contact.email}`,`Phone: ${contact.phone}`,
                       t("villasPage.whatsappIntro"),
                       villa.name,
                       t("villasPage.whatsappLocation", {
@@ -299,22 +306,23 @@ export function VillaFleetProduct({ villa: sourceVilla }: { villa: Villa }) {
                     const href = whatsAppUrlWithText(message);
 
                     try {
-                      await fetch("/api/quote-requests/create", {
+                      const response=await fetch("/api/quote-requests/create", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                          source: "whatsapp",
+                          source: "whatsapp",customerName:contact.name,customerEmail:contact.email,customerPhone:contact.phone,items:[{id:sourceVilla.id,category:"villas",title:sourceVilla.name}],
                           message,
                           summary: t("villasPage.quoteSummary", {
                             name: villa.name,
                           }),
                         }),
                       });
+                      if(!response.ok)throw Error("Quote request could not be saved.");
+                      window.open(href, "_blank", "noopener,noreferrer");
                     } catch {
                       setQuoteRequestError(t("villasPage.quoteError"));
                     } finally {
                       setCreatingQuoteRequest(false);
-                      window.open(href, "_blank", "noopener,noreferrer");
                     }
                   }}
                   className={cn(

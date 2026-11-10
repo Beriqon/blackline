@@ -50,7 +50,7 @@ export async function assertAvailability(selection: BookingSelection, live?: imp
   }
 }
 
-export async function createBookingRecord(args: {
+export async function prepareBookingRecord(args: {
   selection: BookingSelection;
   customerName: string;
   customerEmail: string;
@@ -96,6 +96,11 @@ export async function createBookingRecord(args: {
     updatedAtIso: nowIso,
     holdUntilIso,
   };
+  return record;
+}
+
+export async function createBookingRecord(args: Parameters<typeof prepareBookingRecord>[0]) {
+  const record = await prepareBookingRecord(args);
   await persistBooking(record);
   return record;
 }

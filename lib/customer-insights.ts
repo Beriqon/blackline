@@ -5,7 +5,7 @@ export function bookingStart(booking:AdminBooking):number|null{
  return dates.length?Math.min(...dates):null;
 }
 export function agreedBookingValue(bookings:AdminBooking[]){
- return bookings.filter(b=>b.status==="Confirmed"||b.status==="Completed").reduce((sum,b)=>sum+b.items.reduce((n,item)=>n+(Number.isFinite(item.price)?item.price:0),0),0);
+ return bookings.filter(b=>!b.testMode&&(b.status==="Confirmed"||b.status==="Completed")).reduce((sum,b)=>sum+b.items.reduce((n,item)=>n+(Number.isFinite(item.price)?item.price:0),0),0);
 }
 export function bookingHistoryByYear(bookings:AdminBooking[]){
  const groups=new Map<string,AdminBooking[]>();

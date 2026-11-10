@@ -1,4 +1,6 @@
 "use client";
+import {QuoteContactFields} from "./quote-contact-fields";
+import {normalizeQuoteContact} from "@/lib/quote-contact";
 import {CatalogContext,usePublishedCollection} from "./catalog-provider";
 import {catalogId} from "@/lib/catalog-live";
 
@@ -268,6 +270,7 @@ export function CustomPackageWhatsApp({
     null | "armed" | "unarmed"
   >(null);
   const sid = idSuffix ? `-${idSuffix}` : "";
+  const [quoteContact,setQuoteContact]=useState({name:"",email:"",phone:""});
   const [creatingQuoteRequest, setCreatingQuoteRequest] = useState(false);
   const [quoteRequestError, setQuoteRequestError] = useState<string | null>(
     null,
@@ -1401,6 +1404,7 @@ export function CustomPackageWhatsApp({
         <pre className="mt-3 max-h-64 overflow-auto whitespace-pre-wrap rounded-sm border border-gold/12 bg-[#070707] p-4 text-[0.8125rem] leading-relaxed text-cream/65">
           {message}
         </pre>
+        <QuoteContactFields value={quoteContact} onChange={setQuoteContact} locale={locale}/>
         {quoteRequestError ? (
           <p className="mt-3 text-center text-[0.75rem] text-red-300/90">
             {quoteRequestError}
@@ -1415,19 +1419,23 @@ export function CustomPackageWhatsApp({
             onClick={async (e) => {
               e.preventDefault();
               if (!hasSelection || creatingQuoteRequest) return;
+              const contact=normalizeQuoteContact(quoteContact);if(!contact){setQuoteRequestError(locale==="es"?"Introduce tu nombre, correo y teléfono con código de país.":"Enter your name, email and phone with country code.");return;}
+              const requestMessage=[message,"",`Name: ${contact.name}`,`Email: ${contact.email}`,`Phone: ${contact.phone}`].join("\n");
 
               setQuoteRequestError(null);
               setCreatingQuoteRequest(true);
               try {
-                await fetch("/api/quote-requests/create", {
+                const response=await fetch("/api/quote-requests/create", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
-                    message,
+                    message:requestMessage,customerName:contact.name,customerEmail:contact.email,customerPhone:contact.phone,
                     summary: resolvedIntro,
                     source: "whatsapp",
                   }),
                 });
+                if(!response.ok)throw Error(pb("quoteError"));
+                window.open(whatsAppUrlWithText(requestMessage),"_blank","noopener,noreferrer");
               } catch (err) {
                 setQuoteRequestError(
                   err instanceof Error
@@ -1436,7 +1444,7 @@ export function CustomPackageWhatsApp({
                 );
               } finally {
                 setCreatingQuoteRequest(false);
-                window.open(href, "_blank", "noopener,noreferrer");
+
               }
             }}
           >

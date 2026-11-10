@@ -1,10 +1,13 @@
+import type {BalancePayment} from "./balance-types";
 import { CATALOG_PRODUCTS } from "@/lib/admin-catalog-seed";
+import type {ZelleOrder} from "./zelle-types";
+import type {QuoteRequestRecord} from "./quote-requests-store";
 export const ADMIN_SERVICES=[
  ["yachts","Yachts"],["exotic-cars","Exotic cars"],["chauffeur-services","Chauffeur services"],["private-jets","Private jets"],["private-chefs","Private chefs"],["villas","Villas & stays"],["security-guards","Security"],["jetskis-jetcars","On the water"],["atv","ATV & UTV"],["vip-nightlife","VIP venues"],["photographer","Photo & video shoots"],
 ] as const;
 export type AdminProduct={id:string;name:string;service:string;description:string;price:number;unit:string;status:"visible"|"hidden"|"archived";featured:boolean;images:string;specs:string;included:string;requirements:string;location:string;capacity:string;rates?:string};
-export type AdminBookingItem={service:string;product:string;productId?:string;start:string;end:string;price:number};
-export type AdminBooking={id:string;checkoutId?:string;paymentStatus?:string;name:string;email:string;phone:string;source:"Website"|"WhatsApp"|"Instagram"|"Affiliate";affiliate:string;status:"Pending"|"Confirmed"|"Completed"|"Cancelled";notes:string;items:AdminBookingItem[]};
+export type AdminBookingItem={service:string;product:string;productId?:string;start:string;end:string;price:number;priceFollows?:boolean;description?:string;imageSrc?:string};
+export type AdminBooking={id:string;balancePayment?:BalancePayment;createdAtIso?:string;quoteRequest?:QuoteRequestRecord;linkedQuotes?:QuoteRequestRecord[];recordPayment?:{method:"Stripe"|"Manual";paidCents:number|null};checkoutId?:string;paymentStatus?:string;zelleOrder?:ZelleOrder;testMode?:true;stripeOrder?:{requiresReview?:boolean;reviewReason?:string;paymentType?:"deposit"|"full";knownTotalCents:number;paidCents:number;remainingCents:number;createdAtIso:string;paidAtIso?:string};name:string;email:string;phone:string;source:"Website"|"WhatsApp"|"Instagram"|"Affiliate";affiliate:string;status:"Pending"|"Confirmed"|"Completed"|"Cancelled";notes:string;items:AdminBookingItem[]};
 export const DEMO_PRODUCTS:AdminProduct[]=CATALOG_PRODUCTS;
 export const DEMO_BOOKINGS:AdminBooking[]=[
  {id:"BL-DEMO-001",name:"Alex Morgan",email:"alex@example.com",phone:"+1 202 555 0101",source:"Website",affiliate:"",status:"Confirmed",notes:"Example website booking with multiple services.",items:[{service:"yachts",product:"166 Trinity",start:"2026-11-02T10:00",end:"2026-11-02T14:00",price:30000},{service:"chauffeur-services",product:"Exclusive sprinter",start:"2026-11-02T09:00",end:"2026-11-02T15:00",price:1320}]},

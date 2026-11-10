@@ -19,6 +19,8 @@ export type QuoteRequestRecord = {
   updatedAtIso: string;
   customerName: string;
   customerEmail: string;
+  customerPhone?:string;
+  orderId?:string;
   source: BookingSource;
   status: QuoteRequestStatus;
   message: string;
@@ -39,6 +41,7 @@ export async function listQuoteRequests(): Promise<QuoteRequestRecord[]> {
 export async function createQuoteRequest(args: {
   customerName: string;
   customerEmail: string;
+  customerPhone?:string;
   source: BookingSource;
   message: string;
   summary?: string;
@@ -51,6 +54,7 @@ export async function createQuoteRequest(args: {
     id: createId("qr"),
     customerName: args.customerName.trim(),
     customerEmail: args.customerEmail.trim(),
+    customerPhone:args.customerPhone?.trim()??"",
     source: args.source,
     status: args.status ?? "pending",
     message: args.message.trim(),

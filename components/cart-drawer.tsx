@@ -14,13 +14,13 @@ import type { Translator } from "@/lib/i18n/translate";
 import { CONTACT_TRIP_BUILDER_HREF } from "@/lib/contact-hrefs";
 import css from "./cart-drawer.module.css";
 import {CatalogContext} from "./catalog-provider";
-import {cartNeedsQuote,internationalCartPhone} from "@/lib/cart-summary";
+import {internationalCartPhone} from "@/lib/cart-summary";
 import { whatsAppUrlWithText } from "@/lib/whatsapp";
 import { SECURITY_GUARD_RATE_CARDS } from "@/lib/security-guards-data";
-import { computeSecurityGuardsAddonTotalUsd } from "@/lib/security-guards-pricing";
+import type {OrderLine} from "@/lib/checkout-pricing";
 
 const DEPOSIT_PCT = 30;
-const MIN_CHARGE_USD = 50;
+const MIN_CHARGE_USD = 0.5;
 
 const armedRateCard = SECURITY_GUARD_RATE_CARDS.find((c) => c.id === "armed")!;
 const unarmedRateCard = SECURITY_GUARD_RATE_CARDS.find(
@@ -149,7 +149,7 @@ export function CartDrawer() {
     const frame=requestAnimationFrame(()=>{scrollArea.current?.scrollTo({top:0});if(step==="details")nameInput.current?.focus({preventScroll:true});});
     return()=>cancelAnimationFrame(frame);
   },[step,open]);
-  const [payMode, setPayMode] = useState<"full" | "deposit">("deposit");
+  const [payMode,setPayMode] = useState<"deposit"|"full">("deposit");
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPhoneCountryCode, setCustomerPhoneCountryCode] = useState("+1");
@@ -158,17 +158,8 @@ export function CartDrawer() {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [quoteRequestLoading, setQuoteRequestLoading] = useState(false);
 
-  const checkoutEligibleItems = useMemo(
-    () =>
-      items.filter(
-        (item) =>
-          (item.category === "exotic-car" || item.category === "yacht") &&
-          item.bookingSelection &&
-          item.bookingQuote?.payableOnline,
-      ),
-    [items],
-  );
-
+  const [priced, setPriced] = useState<{fingerprint:string;lines:OrderLine[];knownTotalCents:number;depositCents:number}|null>(null);
+  const [pricingError,setPricingError]=useState<string|null>(null);
   const hasSecurityItems = useMemo(
     () =>
       items.some(
@@ -189,31 +180,24 @@ export function CartDrawer() {
     [addons, hasSecurityItems],
   );
 
-  const checkoutBaseTotal = useMemo(
-    () =>
-      checkoutEligibleItems.reduce(
-        (sum, item) => sum + (item.bookingQuote?.totalUsd ?? 0),
-        0,
-      ),
-    [checkoutEligibleItems],
-  );
-
-  const addonsTotalUsd = useMemo(
-    () => computeSecurityGuardsAddonTotalUsd(addonsForRequest),
-    [addonsForRequest],
-  );
-
-  const checkoutTotal = useMemo(
-    () => checkoutBaseTotal + addonsTotalUsd,
-    [checkoutBaseTotal, addonsTotalUsd],
-  );
-
-  const chargeToday = useMemo(() => {
-    if (checkoutTotal <= 0) return null;
-    if (payMode === "full") return Math.round(checkoutTotal * 100) / 100;
-    return Math.round(checkoutTotal * (DEPOSIT_PCT / 100) * 100) / 100;
-  }, [checkoutTotal, payMode]);
-
+  const fingerprint=JSON.stringify({items,addons:addonsForRequest});
+  const currentPrice=priced?.fingerprint===fingerprint?priced:null;
+  useEffect(()=>{
+    if(!open||!items.length)return;
+    const controller=new AbortController();
+    setPricingError(null);
+    setPriced(null);
+    fetch("/api/stripe/quote",{method:"POST",headers:{"Content-Type":"application/json"},body:fingerprint,signal:controller.signal})
+      .then(async res=>{const data=await res.json();if(!res.ok)throw new Error(data.error??"Could not check prices.");return data;})
+      .then(data=>setPriced({...data,fingerprint}))
+      .catch(error=>{if(!controller.signal.aborted)setPricingError(error.message);});
+    return()=>controller.abort();
+  },[open,fingerprint,items.length]);
+  const checkoutEligibleItems=items.filter((_,i)=>currentPrice?.lines[i]?.status==="priced");
+  const checkoutBaseTotal=(currentPrice?.knownTotalCents??0)/100;
+  const checkoutTotal=checkoutBaseTotal;
+  const chargeToday=currentPrice?(payMode==="full"?currentPrice.knownTotalCents:currentPrice.depositCents)/100:null;
+  const hasQuoteLines=currentPrice?.lines.some(line=>line.status==="price_follows")??false;
   const customerPhoneFull=useMemo(()=>internationalCartPhone(customerPhoneCountryCode,customerPhone),[customerPhone,customerPhoneCountryCode]);
 
   const hasContactDetails =
@@ -221,17 +205,8 @@ export function CartDrawer() {
     customerEmail.trim().length > 0 &&
     customerPhoneFull.length > 0;
 
-  const canPay =
-    !cartNeedsQuote(items,addonsForRequest) &&
-    checkoutEligibleItems.length > 0 &&
-    checkoutEligibleItems.length === items.length &&
-    hasContactDetails &&
-    chargeToday !== null &&
-    chargeToday >= MIN_CHARGE_USD;
-
-  const needsQuoteWhatsApp =
-    cartNeedsQuote(items,addonsForRequest);
-
+  const canPay = !!currentPrice && hasContactDetails && (chargeToday??0)>=MIN_CHARGE_USD;
+  const needsQuoteWhatsApp = !!currentPrice && currentPrice.knownTotalCents===0;
   const startCheckout = useCallback(async () => {
     if (!canPay) {
       setCheckoutError(
@@ -245,8 +220,10 @@ export function CartDrawer() {
     setCheckoutLoading(true);
     try {
       const body = {
+        expectedDepositCents: currentPrice?.depositCents,
+        expectedAmountCents:payMode==="full"?currentPrice?.knownTotalCents:currentPrice?.depositCents,
         paymentType: payMode,
-        items: checkoutEligibleItems,
+        items,
         addons: addonsForRequest,
         customerName,
         customerEmail,
@@ -257,9 +234,9 @@ export function CartDrawer() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      const data = (await res.json()) as { url?: string; error?: string };
+      const data = (await res.json()) as { url?: string; error?: string; code?: string };
       if (!res.ok) {
-        setCheckoutError(res.status===503?t("cart.errors.checkoutFailed"):data.error ?? t("cart.errors.checkoutFailed"));
+        setCheckoutError(data.code === "booking_unavailable" ? t("cart.ux.bookingUnavailable") : res.status===503?t("cart.errors.checkoutFailed"):data.error ?? t("cart.errors.checkoutFailed"));
         return;
       }
       if (data.url) window.location.href = data.url;
@@ -272,12 +249,14 @@ export function CartDrawer() {
   }, [
     addonsForRequest,
     canPay,
-    checkoutEligibleItems,
+    currentPrice?.depositCents,
+    currentPrice?.knownTotalCents,
+    payMode,
+    items,
     customerEmail,
     customerName,
     customerPhoneFull,
     hasContactDetails,
-    payMode,
     t,
   ]);
 
@@ -343,7 +322,6 @@ export function CartDrawer() {
     customerPhoneFull,
     hasContactDetails,
     items,
-    payMode,
     setOpen,
     t,
   ]);
@@ -369,7 +347,7 @@ export function CartDrawer() {
       <ul className={css.items}>{items.map(line=>{const image=thumbnail(line),online=checkoutEligibleItems.some(item=>item.key===line.key);return <li key={line.key} className={css.item}>
        <Link href={line.href} onClick={closeCart} className={css.photo} tabIndex={-1} aria-hidden="true">{image?<img src={image} alt=""/>:<ShoppingBag size={24} strokeWidth={1}/>}</Link>
        <div className={css.itemContent}><p className={css.category}>{labelForCategory(line.category,t)}</p><Link href={line.href} onClick={closeCart} className={css.itemTitle}>{line.title}</Link>{line.subtitle&&<p className={css.itemSubtitle}>{line.subtitle}</p>}
-        <p className={css.price}>{online?money(line.bookingQuote!.totalUsd):line.priceHint||t("cart.ux.onRequest")}</p>
+        <p className={css.price}>{online?money((currentPrice?.lines[items.indexOf(line)]?.totalCents??0)/100):t("cart.ux.onRequest")}</p>
         {line.bookingQuote?.description&&<p className={css.dates}><CalendarDays size={13}/>{line.bookingQuote.description}</p>}
         <span className={css.itemStatus} data-online={online}>{online?<Check size={11}/>:<MessageCircle size={11}/>} {t(online?"cart.ux.ready":"cart.ux.quote")}</span>
         <div className={css.itemActions}><Link href={line.href} onClick={closeCart}>{t(line.bookingSelection?"cart.ux.editDates":"cart.ux.viewDetails")}<ArrowUpRight size={12}/></Link><button type="button" aria-label={t("cart.ux.removeItem",{title:line.title})} onClick={()=>removeItem(line.key)}><Trash2 size={12}/>{t("cart.ux.removeText")}</button></div>
@@ -382,7 +360,7 @@ export function CartDrawer() {
        <label className={css.addon}><input type="checkbox" checked={addons.photoshoot} onChange={e=>patchAddons({photoshoot:e.target.checked})}/><span><strong>{t("cart.photoshoot")}</strong><small>{t("cart.ux.onRequest")}</small></span></label>
        {(addonsForRequest.securityArmed||addonsForRequest.securityUnarmed)&&<p className={css.hint}>{t("cart.ux.securityNote")}</p>}
       </div></details>
-      {needsQuoteWhatsApp&&<div className={css.notice}><MessageCircle size={18}/><p>{t(checkoutBaseTotal>0?"cart.ux.mixedNote":"cart.ux.requestNote")}</p></div>}
+      {hasQuoteLines&&<div className={css.notice}><MessageCircle size={18}/><p>{t(checkoutBaseTotal>0?"cart.ux.mixedNote":"cart.ux.requestNote")}</p></div>}
       <button type="button" className={css.continueShopping} onClick={closeCart}><ArrowLeft size={14}/>{t("cart.ux.continueBrowsing")}</button>
      </>:<>
       <div className={css.detailsIntro}><h3>{t("cart.ux.contactHeading")}</h3><p>{t("cart.ux.contactHint")}</p></div>
@@ -390,19 +368,23 @@ export function CartDrawer() {
        <label htmlFor="cart-customer-name">{t("cart.name")}<input ref={nameInput} id="cart-customer-name" type="text" autoComplete="name" required maxLength={150} value={customerName} onChange={e=>setCustomerName(e.target.value)} placeholder={t("cart.ux.namePlaceholder")}/></label>
        <label htmlFor="cart-customer-email">{t("cart.email")}<input id="cart-customer-email" type="email" autoComplete="email" required maxLength={254} value={customerEmail} onChange={e=>setCustomerEmail(e.target.value)} placeholder={t("cart.ux.emailPlaceholder")}/></label>
        <div><label htmlFor="cart-customer-phone">{t("cart.phone")}</label><div className={css.phone}><select id="cart-customer-phone-country-code" aria-label={t("cart.ux.countryCode")} autoComplete="tel-country-code" value={customerPhoneCountryCode} onChange={e=>setCustomerPhoneCountryCode(e.target.value)}>{PHONE_COUNTRY_CODES.map(option=><option key={option.code} value={option.code}>{option.label}</option>)}</select><input id="cart-customer-phone" type="tel" inputMode="tel" autoComplete="tel-national" required maxLength={30} value={customerPhone} onChange={e=>setCustomerPhone(e.target.value)} placeholder={t("cart.ux.phonePlaceholder")}/></div></div>
-       {!needsQuoteWhatsApp&&<fieldset className={css.payment}><legend>{t("cart.ux.paymentHeading")}</legend>{(["deposit","full"] as const).map(mode=><label key={mode} data-selected={payMode===mode}><input type="radio" name="cart-payment-mode" value={mode} checked={payMode===mode} onChange={()=>setPayMode(mode)}/><span><strong>{t(mode==="deposit"?"cart.payDeposit":"cart.payFull",{pct:DEPOSIT_PCT})}</strong><small>{t(mode==="deposit"?"cart.ux.depositHint":"cart.ux.fullHint")}</small></span><b>{money(mode==="deposit"?Math.round(checkoutTotal*30)/100:checkoutTotal)}</b></label>)}</fieldset>}
+       {!needsQuoteWhatsApp&&currentPrice&&<fieldset className={css.payment}><legend>{t("cart.ux.paymentHeading")}</legend><label data-selected={payMode==="deposit"}><input type="radio" name="payment-plan" value="deposit" checked={payMode==="deposit"} onChange={()=>setPayMode("deposit")}/><span><strong>{t("cart.payDeposit",{pct:DEPOSIT_PCT})}</strong><small>{t("cart.ux.depositHint")}</small></span><b>{money(currentPrice.depositCents/100)}</b></label><label data-selected={payMode==="full"}><input type="radio" name="payment-plan" value="full" checked={payMode==="full"} onChange={()=>setPayMode("full")}/><span><strong>{t("cart.ux.payFull")}</strong><small>{t("cart.ux.fullKlarnaHint")}</small></span><b>{money(currentPrice.knownTotalCents/100)}</b></label></fieldset>}
+       {hasQuoteLines&&<p className={css.smallPrint}>{t("cart.ux.mixedNote")}</p>}
       </form>
       <div className={css.notice}>{needsQuoteWhatsApp?<MessageCircle size={19}/>:<ShieldCheck size={19}/>}<p>{t(needsQuoteWhatsApp?"cart.ux.whatsappNote":"cart.ux.secureNote")}</p></div>
-      <details className={css.review}><summary>{t("cart.ux.reviewLabel")}<span>{items.length}</span></summary><ul>{items.map(line=><li key={line.key}><span>{line.title}</span><small>{line.bookingQuote?.payableOnline?money(line.bookingQuote.totalUsd):t("cart.ux.onRequest")}</small></li>)}</ul>{selectedExtras>0&&<p className={css.hint}>{formatCartAddonsLocalized(addonsForRequest,t)}</p>}</details>
+      <details className={css.review}><summary>{t("cart.ux.reviewLabel")}<span>{items.length}</span></summary><ul>{items.map(line=><li key={line.key}><span>{line.title}</span><small>{currentPrice?.lines[items.indexOf(line)]?.status==="priced"?money((currentPrice.lines[items.indexOf(line)].totalCents??0)/100):t("cart.ux.onRequest")}</small></li>)}</ul>{selectedExtras>0&&<p className={css.hint}>{formatCartAddonsLocalized(addonsForRequest,t)}</p>}</details>
       <button type="button" className={css.continueShopping} onClick={()=>{setStep("selection");setCheckoutError(null);}}><ArrowLeft size={14}/>{t("cart.ux.back")}</button>
      </>}
     </div>
     <footer className={css.footer}>
      {items.length>0?<>
-      {needsQuoteWhatsApp?<><div className={css.total}><span>{t("cart.ux.finalQuote")}</span><strong className={css.quoteTotal}>{t("cart.ux.quoteTotal")}</strong></div>{checkoutTotal>0&&<div className={css.subtotal}><span>{t("cart.ux.pricedSubtotal")}</span><span>{money(checkoutTotal)}</span></div>}</>:<><div className={css.total}><span>{t("cart.ux.total")}</span><strong>{money(checkoutTotal)}</strong></div>{step==="details"&&<><div className={css.subtotal}><span>{t("cart.ux.dueToday")}</span><strong>{money(chargeToday??0)}</strong></div>{payMode==="deposit"&&<div className={css.subtotal}><span>{t("cart.ux.remaining")}</span><span>{money(checkoutTotal-(chargeToday??0))}</span></div>}</>}{step==="details"&&payMode==="deposit"&&<p className={css.smallPrint}>{t("cart.ux.balanceNote")}</p>}</>}
+      {needsQuoteWhatsApp?<><div className={css.total}><span>{t("cart.ux.finalQuote")}</span><strong className={css.quoteTotal}>{t("cart.ux.quoteTotal")}</strong></div>{checkoutTotal>0&&<div className={css.subtotal}><span>{t("cart.ux.pricedSubtotal")}</span><span>{money(checkoutTotal)}</span></div>}</>:<><div className={css.total}><span>{t(hasQuoteLines?"cart.ux.pricedSubtotal":"cart.ux.total")}</span><strong>{money(checkoutTotal)}</strong></div>{step==="details"&&<><div className={css.subtotal}><span>{t("cart.ux.dueToday")}</span><strong>{money(chargeToday??0)}</strong></div>{payMode==="deposit"&&<div className={css.subtotal}><span>{t("cart.ux.remaining")}</span><span>{money(checkoutTotal-(chargeToday??0))}</span></div>}</>}{step==="details"&&payMode==="deposit"&&<p className={css.smallPrint}>{t("cart.ux.balanceNote")}</p>}</>}
+      {!currentPrice&&!pricingError&&<p role="status">{t("cart.ux.checkingPrices")}</p>}
+      {pricingError&&<p className={css.error} role="alert">{pricingError}</p>}
+      {hasQuoteLines&&<p className={css.smallPrint}>{t("cart.ux.mixedNote")}</p>}
       {checkoutError&&<div className={css.error} role="alert"><strong>{t("cart.ux.errorHeading")}</strong><p>{checkoutError}</p></div>}
       {!needsQuoteWhatsApp&&step==="details"&&(chargeToday??0)<MIN_CHARGE_USD&&<p className={css.error}>{t("cart.ux.minimum")}</p>}
-      {step==="selection"?<button key="cart-continue" type="button" className={css.primary} onClick={e=>{e.preventDefault();showDetails();}}>{t("cart.ux.continue")}<ArrowRight size={17}/></button>:<button key="cart-submit" type="submit" form="cart-checkout-form" className={css.primary} disabled={busy||(!needsQuoteWhatsApp&&(chargeToday??0)<MIN_CHARGE_USD)}>{busy?<Loader2 size={17} className="animate-spin"/>:needsQuoteWhatsApp?<MessageCircle size={17}/>:<LockKeyhole size={16}/>} {t(needsQuoteWhatsApp?"cart.ux.whatsapp":"cart.ux.payNow")}<ArrowRight size={16}/></button>}
+      {step==="selection"?<button key="cart-continue" type="button" className={css.primary} onClick={e=>{e.preventDefault();showDetails();}}>{t("cart.ux.continue")}<ArrowRight size={17}/></button>:<button key="cart-submit" type="submit" form="cart-checkout-form" className={css.primary} disabled={busy||!currentPrice||(!needsQuoteWhatsApp&&(chargeToday??0)<MIN_CHARGE_USD)}>{busy?<Loader2 size={17} className="animate-spin"/>:needsQuoteWhatsApp?<MessageCircle size={17}/>:<LockKeyhole size={16}/>} {t(needsQuoteWhatsApp?"cart.ux.whatsapp":"cart.ux.payNow")}<ArrowRight size={16}/></button>}
       <div className={css.footerMeta}><span><ShieldCheck size={12}/>{t("cart.ux.savedNote")}</span><Link href={CONTACT_TRIP_BUILDER_HREF} onClick={closeCart}>{t("cart.ux.contactSupport")}</Link></div>
      </>:<p className={css.emptyFooter}>{t("cart.ux.savedNote")}</p>}
     </footer>

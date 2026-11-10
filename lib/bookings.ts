@@ -10,7 +10,7 @@ export type BookingStatus =
   | "paid"
   | "owner_reserved"
   | "cancelled";
-export type BookingPaymentMode = "stripe" | "skip_with_code";
+export type BookingPaymentMode = "stripe" | "skip_with_code" | "zelle";
 export type BookingSource = "website" | "instagram" | "whatsapp" | "manual";
 export type BookingPaymentType = "full" | "deposit";
 
@@ -58,6 +58,7 @@ export type BookingQuote = {
 };
 
 export type BookingRecord = {
+  orderId?: string;
   service?: "yachts"|"exotic-cars"|"chauffeur-services";
   id: string;
   category: BookingCategory;
@@ -114,7 +115,7 @@ export function parseSingleUsd(priceLine?: string): number | null {
   if (!match) return null;
   if (/[–-]/.test(normalized)) return null;
   const value = Number.parseFloat(match[1]!);
-  return Number.isFinite(value) ? Math.round(value) : null;
+  return Number.isFinite(value) ? Math.round(value * 100) / 100 : null;
 }
 
 export function formatUsd(value: number): string {
