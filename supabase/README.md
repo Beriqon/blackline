@@ -1,5 +1,9 @@
 # Blackline workspace
 
+## Supplier management setup
+
+Supplier management is currently a non-saving preview: `supplierStorageEnabled` in `components/admin-suppliers.tsx` is disabled, database reads/writes are skipped, and the save action is disabled. Enable it only after applying and verifying the database setup. The supplier directory uses `public.suppliers`. Apply `suppliers.sql` once to the linked Blackline project before using the page. This schema is prepared locally and has not yet been applied: the current Supabase connector cannot access the linked project. The table uses the existing administrator membership check and timestamp-based conflict detection. Anonymous users cannot access supplier contact details or costs. Suppliers can be marked Inactive; the UI preserves their records instead of deleting them. Product rates are internal USD reference costs, with a separate rate basis and tax-included/excluded flag. They do not change retail prices or automatically assign suppliers or costs to bookings.
+
 The application uses Supabase Postgres and Storage. The linked project already has the schema, 275 catalog products, five photo galleries and initial settings. Existing product images remain deployable static assets referenced by the catalog; new uploads go to the `website-media` bucket.
 
 `schema.sql`, `booking-availability.sql` and `shared-vehicle-availability.sql` document the applied schema. Do not run them again on the existing project. The Supabase MCP migration history records the applied migrations. `scripts/export-database-seed.cjs` regenerates idempotent catalog/settings seed SQL for a fresh environment; it never imports demo bookings or browser preview data.
