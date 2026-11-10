@@ -75,6 +75,16 @@ test('PDF image loading rejects private URLs, credential URLs, and path traversa
   './stripe-client':{getAppBaseUrl:()=> 'http://localhost:3000'},
   'node:fs/promises':{realpath:async()=>{reads++;return 'C:/public';},readFile:async()=>{reads++;throw Error('should not read');}},
  },{fetch:async()=>{requests++;throw Error('should not fetch');}});
- for(const source of ['http://127.0.0.1/private','https://169.254.169.254/metadata','https://images.unsplash.com.evil.test/photo','https://images.unsplash.com@evil.test/photo','https://user:pass@images.unsplash.com/photo','/../.env.local','/..%2f.env.local','/..%5c.env.local','//evil.test/photo'])assert.equal(await confirmationImage(source),null);
+ for(const source of ['http://127.0.0.1/private','https://169.254.169.254/metadata','https://images.unsplash.com.evil.test/photo','https://images.unsplash.com@evil.test/photo','https://user:pass@images.unsplash.com/photo','/../.env.local','/..%2f.env.local','/..%5c.env.local','//evil.test/photo','/%2fevil.test/photo','/%09/evil.test/photo'])assert.equal(await confirmationImage(source),null);
  assert.equal(requests,0);assert.equal(reads,0);
+});
+test('PDF local photos are fetched from the configured static origin without filesystem reads',async()=>{
+ const png=await require('sharp')({create:{width:2,height:2,channels:3,background:'#c6a46c'}}).png().toBuffer();let requested;
+ const api=load('lib/confirmation-image.ts',{'./stripe-client':{getAppBaseUrl:()=> 'https://www.blacklineconcierge.group'},'node:fs/promises':{realpath:()=>{throw Error('Must not trace public assets');},readFile:()=>{throw Error('Must not bundle photos');}}},{fetch:async(url,options)=>{requested={url:String(url),options};return new Response(png,{headers:{'Content-Type':'image/png'}});}});
+ const image=await api.confirmationImage('/images/cars/example.png');assert.ok(image?.length>0);assert.equal(image[0],0xff);assert.equal(image[1],0xd8);assert.equal(requested.url,'https://www.blacklineconcierge.group/images/cars/example.png');assert.equal(requested.options.redirect,'error');
+});
+test('unavailable or oversized photos do not stop PDF generation',async()=>{
+ const factory=fetch=>load('lib/confirmation-image.ts',{'./stripe-client':{getAppBaseUrl:()=> 'https://www.blacklineconcierge.group'}},{fetch});
+ assert.equal(await factory(async()=>new Response('missing',{status:404})).confirmationImage('/images/missing.jpg'),null);
+ assert.equal(await factory(async()=>new Response(new Uint8Array(7*1024*1024),{headers:{'Content-Type':'image/jpeg'}})).confirmationImage('/images/large.jpg'),null);
 });

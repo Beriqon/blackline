@@ -63,4 +63,6 @@ Applied migrations: `supabase/stripe-live.sql` and `supabase/stripe-live-balance
 - Transactional database fixtures verified production holds, overlapping-order rejection, Zelle conflicts, upgrade retries, live restpayments and late-paid inventory review. All fixtures were rolled back; no real customers were modified.
 - Existing Stripe sandbox and Zelle flows remain covered by the test suite.
 
+After a production build, run `npm run payments:bundle-check` to check all three PDF function traces. These functions bundle only the PDF font; product photos are fetched from the configured website/static origin or the trusted image hosts. Do not package the entire `public` photo library into a function or enable larger functions to accommodate it.
+
 Official references: https://docs.stripe.com/get-started/checklist/go-live · https://docs.stripe.com/webhooks · https://docs.stripe.com/payments/payment-methods/pmd-registration

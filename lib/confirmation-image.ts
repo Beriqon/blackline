@@ -1,6 +1,4 @@
 import "server-only";
-import { readFile, realpath } from "node:fs/promises";
-import path from "node:path";
 import sharp from "sharp";
 import { getAppBaseUrl } from "./stripe-client";
 
@@ -34,19 +32,14 @@ export async function confirmationImage(src: string | undefined): Promise<Uint8A
     let bytes: Uint8Array;
     if (src.startsWith("/") && !src.startsWith("//")) {
       const pathname = decodeURIComponent(src.split("?")[0]);
-      if (pathname.includes("\0") || pathname.includes("\\") || pathname.split("/").includes("..")) return null;
-      const root = await realpath(path.join(process.cwd(), "public"));
-      try {
-        const file = await realpath(path.resolve(root, `.${pathname}`));
-        if (!file.startsWith(root + path.sep)) return null;
-        bytes = await readFile(file);
-      } catch {
-        // Serverless deployments can serve public assets without bundling them
-        // into the function. Only use the configured application origin here.
-        const base = new URL(getAppBaseUrl());
-        if (base.protocol !== "https:" && !(process.env.NODE_ENV === "development" && ["localhost", "127.0.0.1"].includes(base.hostname))) return null;
-        bytes = await fetchImage(new URL(pathname, base));
-      }
+      if ([...pathname].some(char => char.charCodeAt(0) < 32 || char.charCodeAt(0) === 127) || pathname.includes("\\") || pathname.startsWith("//") || pathname.split("/").includes("..")) return null;
+      // Public images are served as static assets, not shipped inside every
+      // PDF function. Dynamic filesystem reads would trace the entire gallery.
+      const base = new URL(getAppBaseUrl());
+      if (base.username || base.password || (base.protocol !== "https:" && !(process.env.NODE_ENV === "development" && ["localhost", "127.0.0.1"].includes(base.hostname)))) return null;
+      const url = new URL(pathname, base);
+      if (url.origin !== base.origin) return null;
+      bytes = await fetchImage(url);
     } else {
       const url = new URL(src);
       if (!trustedRemote(url)) return null;
