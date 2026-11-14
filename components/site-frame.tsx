@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 
 export function SiteFrame({children,header,footer,floating}:{children:ReactNode;header:ReactNode;footer:ReactNode;floating:ReactNode}) {
  const pathname=usePathname();
- if(pathname==="/admin"||pathname.startsWith("/admin/"))return <main className="flex-1">{children}</main>;
+ if(pathname==="/admin"||pathname.startsWith("/admin/")||pathname==="/broker"||pathname.startsWith("/broker/"))return <main className="flex-1">{children}</main>;
  if(pathname==="/payment/checkout"||pathname==="/payment/success"||pathname==="/payment/zelle"||pathname==="/payment/balance")return <main className="flex-1">{children}</main>;
  return <>{header}<main className="flex-1">{children}</main>{footer}{floating}<PromotionPopup/><CookiePreferences/></>;
 }

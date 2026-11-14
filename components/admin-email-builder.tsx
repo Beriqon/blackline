@@ -4,6 +4,7 @@ import Link from "next/link";
 import {useEffect,useState} from "react";
 import {ArrowDown,ArrowLeft,ArrowUp,Copy,Mail,Plus,Save,Trash2} from "lucide-react";
 import {MarketingAudience} from "./admin-email-marketing";
+import {loadRows, saveRow} from "@/lib/workspace-store";
 import {blockKinds,copyDraft,emailStarterLayouts,makeBlock,makeDraft,readEmailDrafts,renderCampaignHtml,safeEmailImage,saveEmailDraft,type BlockKind,type EmailBlock,type EmailDraft} from "@/lib/admin-email-drafts";
 import styles from "@/app/admin/dashboard/dashboard.module.css";
 import css from "./admin-email-builder.module.css";
@@ -31,6 +32,9 @@ function PhotoField({label,value,onChange,onError}:{label:string;value:string;on
 }
 
 export function AdminEmailMarketing({mode="campaign",...props}:AudienceProps & {mode?:"campaign"|"template"}){
+ const [templates,setTemplates]=useState<EmailDraft[]>([]);
+ const [templatesReady,setTemplatesReady]=useState(false);
+ const [saving,setSaving]=useState(false);
  const [drafts,setDrafts]=useState<EmailDraft[]>([]);
  const section=mode;
  const [draft,setDraft]=useState<EmailDraft|null>(null);
@@ -41,6 +45,10 @@ export function AdminEmailMarketing({mode="campaign",...props}:AudienceProps & {
  const [notice,setNotice]=useState("");
  const [error,setError]=useState("");
  useEffect(()=>{
+  let active=true;
+  void loadRows<EmailDraft>("email_templates").then(rows=>{
+   if(active){setTemplates(rows);setTemplatesReady(true);}
+  }).catch(()=>{if(active)setError("Shared templates could not be loaded. Reload to try again.");});
   function load(){
    try{setDrafts(readEmailDrafts());}
    catch{setError("Local drafts could not be opened in this browser.");}
@@ -54,7 +62,7 @@ export function AdminEmailMarketing({mode="campaign",...props}:AudienceProps & {
   }
   initialize();
   window.addEventListener("storage",load);
-  return ()=>window.removeEventListener("storage",load);
+  return ()=>{active=false;window.removeEventListener("storage",load);};
  },[mode]);
  const open=(item:EmailDraft)=>{setDraft(item);setStep(mode==="campaign"?"review":"design");setError("");setNotice("");};
  const update=(change:Partial<EmailDraft>)=>setDraft(current=>current?{...current,...change}:current);
@@ -67,9 +75,22 @@ export function AdminEmailMarketing({mode="campaign",...props}:AudienceProps & {
   [blocks[index],blocks[target]]=[blocks[target],blocks[index]];
   update({blocks});
  };
- const save=(item:EmailDraft)=>{
+ const save=async(item:EmailDraft)=>{
+  if(saving)return;
   setError("");
   if(!item.name.trim()){setError("Enter a name before saving.");return false;}
+  if(item.kind==="template"){
+   if(!templatesReady){setError("Shared templates are unavailable. Reload before saving.");return;}
+   const saved={...item,name:item.name.trim(),audienceIds:[],sampleAudience:false,updatedAt:new Date().toISOString()};
+   setSaving(true);
+   try{
+    await saveRow("email_templates",saved.id,saved);
+    setTemplates(current=>[saved,...current.filter(row=>row.id!==saved.id)]);
+    setNotice("Template saved to the shared workspace.");
+   }catch(error){setError(error instanceof Error?error.message:"Could not save the shared template.");}
+   finally{setSaving(false);}
+   return;
+  }
   try{
    const next=saveEmailDraft({...item,name:item.name.trim()});
    setDrafts(next);
@@ -77,15 +98,16 @@ export function AdminEmailMarketing({mode="campaign",...props}:AudienceProps & {
    return true;
   }catch{setError("Could not save locally. Browser storage may be full or unavailable. Try removing large images.");return false;}
  };
- const visible=drafts.filter(item=>item.kind===section);
- const templateDrafts=drafts.filter(item=>item.kind==="template");
+ const sharedIds=new Set(templates.map(item=>item.id));
+ const templateDrafts=[...templates,...drafts.filter(item=>item.kind==="template"&&!sharedIds.has(item.id))].sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt));
+ const visible=mode==="template"?templateDrafts:drafts.filter(item=>item.kind==="campaign");
  const name=section==="campaign"?"campaign":"template";
  return <div className={css.page}>
   <header className={css.header}>
    <div><p className={styles.eyebrow}>BLACKLINE / MARKETING</p><h1>{mode==="campaign"?"Email marketing":draft?"Template editor":"Email templates"}</h1></div>
    {mode==="campaign"?<Link className={styles.secondary} href="/admin/dashboard?view=email-templates">Manage templates</Link>:draft&&<button className={styles.secondary} onClick={()=>{setDraft(null);setNotice("");setError("");}}><ArrowLeft size={15}/>Back to library</button>}
   </header>
-  <aside className={css.notice}><strong>Sending coming soon</strong><p>Drafts and templates are saved in this browser. Shared storage and email delivery are awaiting integration.</p></aside>
+  <aside className={css.notice}>{mode==="template" ? <p>Templates are shared across your workspace. Open and save an older browser template to add it to the shared library.</p> : <p>Campaign drafts are saved in this browser. Saved workspace templates are available to use in campaigns.</p>}</aside>
   {notice&&<p role="status" className={css.notice}>{notice}</p>}
   {error&&<p role="alert" className={css.error}>{error}</p>}
   {(mode==="campaign"||!draft)&&<section className={css.panel}>
@@ -112,8 +134,8 @@ export function AdminEmailMarketing({mode="campaign",...props}:AudienceProps & {
      <button aria-pressed={step==="review"} onClick={()=>setStep("review")}>{draft.kind==="campaign"?"Preview & send":"Preview design"}</button>
     </nav>
     <div className={css.actions}>
-     {draft.kind==="campaign"&&<button className={styles.secondary} onClick={()=>{const template=copyDraft(draft,"template");if(draft.name.trim())template.name=draft.name.trim();save(template);}}><Copy size={14}/>Save as template</button>}
-     <button className={styles.primary} onClick={()=>save(draft)}><Save size={15}/>Save {draft.kind==="campaign"?"draft":"template"}</button>
+     {draft.kind==="campaign"&&<button className={styles.secondary} disabled={saving||!templatesReady} onClick={()=>{const template=copyDraft(draft,"template");if(draft.name.trim())template.name=draft.name.trim();save(template);}}><Copy size={14}/>Save as template</button>}
+     <button className={styles.primary} disabled={saving||(draft.kind==="template"&&!templatesReady)} onClick={()=>void save(draft)}><Save size={15}/>Save {draft.kind==="campaign"?"draft":"template"}</button>
     </div>
    </div>
    <div className={css.editor}>

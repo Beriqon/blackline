@@ -1,0 +1,100 @@
+.shell { min-height: 100svh; display: grid; grid-template-columns: 224px minmax(0, 1fr); background: #101010; color: #eee9df; }
+.sidebar { padding: 28px 16px; background: #151515; border-right: 1px solid #c6a46c33; }
+.brand { display: block; padding: 0 12px 24px; color: #e5cfaa; letter-spacing: .18em; }
+.brand small { display: block; margin-top: 6px; font-size: .65rem; }
+.sidebar nav { display: grid; gap: 5px; }
+.shell button, .shell select, .shell input, .shell textarea { min-height: 44px; padding: 8px 12px; border: 1px solid #c6a46c55; background: #191919; color: inherit; border-radius: 5px; }
+.shell button, .shell select { cursor: pointer; }
+.shell button:hover, .sidebar button[aria-current] { background: #28241e; }
+.sidebar button { text-align: left; border-color: transparent; }
+.shell :focus-visible { outline: 2px solid #dfc79d; outline-offset: 3px; }
+.header, .toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.header { padding: 18px clamp(16px, 4vw, 48px); border-bottom: 1px solid #c6a46c33; }
+.header label, .toolbar label { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.body { max-width: 1200px; margin: auto; padding: 32px clamp(16px, 4vw, 48px); }
+.body h1 { margin: 10px 0 20px; font: 400 clamp(2rem, 5vw, 3.5rem)/1.15 var(--font-playfair), Georgia, serif; }
+.body h2 { margin: 8px 0; font-size: 1.25rem; }
+.body p, .body li { color: #a8a8a8; margin: 8px 0; }
+.grid, .fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.grid, .toolbar { margin: 16px 0; }
+.toolbar:last-child { margin-bottom: 0; }
+.card { padding: clamp(16px, 3vw, 24px); border: 1px solid #c6a46c33; border-radius: 8px; background: #151515; }
+.card > button { margin-top: 10px; }
+.fields label { display: grid; align-content: start; gap: 6px; min-width: 0; }
+.fields input, .fields textarea, .fields select { width: 100%; color-scheme: dark; }
+.photo { width: 100%; height: auto; aspect-ratio: 16/8; object-fit: cover; border-radius: 5px; margin-bottom: 12px; }
+.badge { display: inline-block; padding: 4px 9px; border: 1px solid #c6a46c55; border-radius: 99px; font-size: .8rem; color: #e5cfaa; }
+.badge[data-verified="true"] { color: #e5cfaa; border-color: #e5cfaa66; }
+.shell .primary { background: #d8c098; color: #181818; font-weight: 650; }
+.shell .primary:hover { background: #e8d3ad; }
+@media (max-width: 800px) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  .sidebar { padding: 16px; border-right: 0; border-bottom: 1px solid #c6a46c33; }
+  .brand { padding: 0 0 12px; }
+  .sidebar nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 580px) {
+  .grid, .fields { grid-template-columns: minmax(0, 1fr); }
+}
+
+.sidebar { background: #0c0c0c; }
+.sidebar { position: sticky; top: 0; height: 100svh; display: flex; flex-direction: column; padding: 0; }
+.sidebar nav { display: block; overflow-y: auto; padding: 0 12px 16px; }
+.sidebar .brandButton, .sidebar .brandButton:hover { background: transparent; border: 0; border-radius: 0; padding: 31px 26px 24px; }
+.navItem button { width: 100%; background: transparent; border-color: transparent; }
+.navItem button[aria-current] { border-color: #c6a46c30; }
+.sidebarBottom { margin-top: auto; padding: 16px; border-top: 1px solid #bfa57620; }
+.sidebarBottom a { width: 100%; justify-content: flex-start; }
+.overviewRow { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px 21px; border-bottom: 1px solid #bfa57620; }
+.overviewRow > span { color: #aaa; }
+.overviewPanel { margin-top: 20px; }
+.settingsNav { display: flex; gap: 8px; margin-bottom: 16px; }
+.settingsNav button[aria-pressed="true"], .settingsBody button[type="submit"], .settingsBody form div > button { background: #c5ab7b; color: #181818; }
+.settingsBody { padding: 16px 21px; }
+.securityForm { max-width: 420px; display: grid; gap: 12px; }
+.securityForm label { display: grid; gap: 6px; }
+.securityForm p { margin: 0; font-size: .85rem; }
+.header { background: #121212; }
+.sidebar button:disabled, .shell button:disabled { opacity: .45; cursor: default; }
+.filters { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin: 16px 0; padding: 16px; border: 1px solid #bfa57625; background: #151515; }
+.filters label { display: grid; gap: 5px; min-width: 0; }
+.filters input, .filters select { max-width: 100%; }
+.results { display: grid; gap: 8px; margin: 16px 0; }
+.listing { display: grid; grid-template-columns: 84px minmax(0, 1fr) auto auto; align-items: center; gap: 16px; padding: 12px; border: 1px solid #bfa57625; background: #151515; overflow-wrap: anywhere; }
+.listing .photo { width: 84px; aspect-ratio: 3/2; margin: 0; background: #202020; }
+.listing h2 { font-size: 1rem; }
+.card summary { cursor: pointer; }
+.fields .check { display: flex; align-items: center; }
+.fields .check input { width: auto; min-height: auto; accent-color: #c5ab7b; }
+@media (max-width: 580px) {
+  .listing { grid-template-columns: 64px minmax(0, 1fr); gap: 8px 12px; }
+  .listing .photo { width: 64px; }
+  .listing .badge { justify-self: start; }
+  .filters label { width: 100%; }
+}
+@media (max-width: 800px) {
+  .sidebar { position: static; height: auto; }
+  .sidebar nav { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .navItem p { display: none; }
+  .sidebarBottom a { width: auto; }
+  .header { height: auto; }
+}
+@media (max-width: 480px) {
+  .overviewRow { grid-template-columns: minmax(0, 1fr) auto; }
+  .overviewRow > strong { grid-column: 1 / -1; }
+}
+.brokerApp :is(aside, header) button:disabled { opacity: .45; cursor: default; }
+.brokerApp aside nav button { width: 100%; text-align: left; }
+.brokerApp .brandButton { cursor: pointer; align-items: flex-start; }
+.brokerApp .header select { background: #191919; border: 1px solid #bfa57640; padding: 6px; }
+.brokerApp .body { padding-bottom: 28px; }
+.brokerApp .body > .badge { margin-top: 8px; }
+.brokerApp .filters :is(input, select, button), .brokerApp .toolbar :is(select, button), .brokerApp .listing button, .brokerApp .fields :is(input,select,textarea), .brokerApp .securityForm input { min-height: 38px; padding: 8px 12px; border: 1px solid #bfa57640; background: #191919; color: inherit; }
+.brokerApp button.primary { background: #c5ab7b; color: #181818; }
+.headerAccount { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px 14px; }
+.verification { display: inline-flex; align-items: center; gap: 7px; padding: 6px 11px; border-radius: 999px; border: 1px solid #ac967457; background: #211d17; color: #d0bda2; font-weight: 600; white-space: nowrap; }
+.verification[data-verified="true"] { color: #f2d8a4; background: linear-gradient(115deg, #35291a, #201b15); border-color: #bd965b99; box-shadow: inset 0 1px #eac38b24; }
+.verification svg { flex-shrink: 0; }
+@media (max-width: 580px) {
+  .headerAccount { justify-content: flex-start; }
+}
