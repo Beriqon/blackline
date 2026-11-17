@@ -9,6 +9,7 @@ export type CheckoutOrder = {
   customerName: string; customerEmail: string; customerPhone: string;
   lines: OrderLine[]; knownTotalCents: number; depositCents: number;
   remainingCents: number; bookingIds: string[]; createdAtIso: string;
+  discount?: { code: string; amountCents: number };
   stripeSessionId?: string;
   paymentType?:"deposit"|"full"; amountDueCents?:number;
   amountPaidCents?:number; balancePaidAtIso?:string;

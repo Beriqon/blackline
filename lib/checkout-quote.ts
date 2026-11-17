@@ -10,13 +10,16 @@ import { depositCents, experienceTotalCents, findCartProduct, type OrderLine } f
 import type { CheckoutOrder } from "./checkout-orders";
 import {bookingDateTime} from "./booking-time";
 
-export type CheckoutBody = { items?: CartLine[]; addons?: CartAddonsState; customerName?: string; customerEmail?: string; customerPhone?: string; expectedDepositCents?: number;expectedAmountCents?:number;paymentType?:"deposit"|"full" };
+import { checkoutDiscount } from "./discount-codes";
+
+export type CheckoutBody = { discountCode?: string; items?: CartLine[]; addons?: CartAddonsState; customerName?: string; customerEmail?: string; customerPhone?: string; expectedDepositCents?: number;expectedAmountCents?:number;paymentType?:"deposit"|"full" };
 
 export async function quoteCheckout(body: CheckoutBody) {
   if(body?.paymentType!==undefined&&body.paymentType!=="deposit"&&body.paymentType!=="full")throw Error("Choose a 30% deposit or full payment.");
   if (!body || !Array.isArray(body.items) || !body.items.length || body.items.length > 30) throw new Error("Choose between 1 and 30 experiences.");
   const products = await publicProducts();
   const lines: OrderLine[] = [], bookings: BookingRecord[] = [];
+  const bookingsByLine = new Map<number, BookingRecord>();
   const seen = new Set<string>();
   const id = `BL-${randomUUID().toUpperCase()}`;
   for (const item of body.items) {
@@ -48,7 +51,9 @@ export async function quoteCheckout(body: CheckoutBody) {
         : `${quote.description} · ${selection.charterDate} at ${selection.startTime}`;
       if (quote.payableOnline && quote.totalUsd > 0 && product.unit !== "on request") {
         totalCents = Math.round(quote.totalUsd * 100);
-        bookings.push({ ...booking, paymentMode: "stripe", paymentType:body.paymentType??"deposit", depositUsd: depositCents(totalCents) / 100, notes: `Order ${id}`, orderId: id });
+        const pricedBooking: BookingRecord = { ...booking, paymentMode: "stripe", paymentType:body.paymentType??"deposit", depositUsd: depositCents(totalCents) / 100, notes: `Order ${id}`, orderId: id };
+        bookings.push(pricedBooking);
+        bookingsByLine.set(lines.length, pricedBooking);
       }
     } else {
       totalCents = experienceTotalCents(item, product);
@@ -65,10 +70,29 @@ export async function quoteCheckout(body: CheckoutBody) {
   for (const [enabled, title] of [[addons?.femaleHosts, "Female hosts"], [addons?.photoshoot, "Photo / video shoot"], [addons?.securityArmed, "Armed security"], [addons?.securityUnarmed, "Unarmed security"]] as const) {
     if (enabled) lines.push({ productId: `addon:${title}`, title, description: title === "Female hosts" ? `${Math.min(8, Math.max(1, Math.floor(Number(addons?.femaleHostsCount) || 1)))} hosts; scope and price to be agreed separately` : "Scope and price to be agreed separately", totalCents: null, status: "price_follows" });
   }
-  const knownTotalCents = lines.reduce((sum, line) => sum + (line.totalCents ?? 0), 0);
-  if (!Number.isSafeInteger(knownTotalCents) || knownTotalCents > 50_000_000) throw new Error("Please contact your concierge for this amount.");
+  const subtotal = lines.reduce((sum, line) => sum + (line.totalCents ?? 0), 0);
+  if (!Number.isSafeInteger(subtotal) || subtotal > 50_000_000) throw new Error("Please contact your concierge for this amount.");
+  const discount = await checkoutDiscount(body.discountCode, subtotal);
+  const knownTotalCents = subtotal - (discount?.amountCents ?? 0);
   const due = depositCents(knownTotalCents);
-  const order: CheckoutOrder = { id, testMode: stripeMode()==="test", status: "pending", customerName: body.customerName?.trim() ?? "", customerEmail: body.customerEmail?.trim() ?? "", customerPhone: body.customerPhone?.trim() ?? "", lines, knownTotalCents, depositCents: due, remainingCents: knownTotalCents - due, bookingIds: bookings.map(b => b.id), createdAtIso: new Date().toISOString() };
+  if (discount) {
+    if (due < 50) throw Error("This discount would bring the deposit below the minimum payment.");
+    let runningSubtotal = 0;
+    let allocated = 0;
+    lines.forEach((line, index) => {
+      if (line.totalCents === null) return;
+      runningSubtotal += line.totalCents;
+      const cumulativeDiscount = Math.round(discount.amountCents * runningSubtotal / subtotal);
+      line.totalCents -= cumulativeDiscount - allocated;
+      allocated = cumulativeDiscount;
+      const booking = bookingsByLine.get(index);
+      if (booking) {
+        booking.totalUsd = line.totalCents / 100;
+        booking.depositUsd = depositCents(line.totalCents) / 100;
+      }
+    });
+  }
+  const order: CheckoutOrder = { id, testMode: stripeMode()==="test", status: "pending", customerName: body.customerName?.trim() ?? "", customerEmail: body.customerEmail?.trim() ?? "", customerPhone: body.customerPhone?.trim() ?? "", lines, knownTotalCents, discount, depositCents: due, remainingCents: knownTotalCents - due, bookingIds: bookings.map(b => b.id), createdAtIso: new Date().toISOString() };
   order.paymentType=body.paymentType??"deposit";
   order.amountDueCents=order.paymentType==="full"?knownTotalCents:due;
   order.remainingCents=knownTotalCents-order.amountDueCents;

@@ -158,7 +158,9 @@ export function CartDrawer() {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [quoteRequestLoading, setQuoteRequestLoading] = useState(false);
 
-  const [priced, setPriced] = useState<{fingerprint:string;lines:OrderLine[];knownTotalCents:number;depositCents:number}|null>(null);
+  const [discountInput, setDiscountInput] = useState("");
+  const [discountCode, setDiscountCode] = useState("");
+  const [priced, setPriced] = useState<{fingerprint:string;discount?:{code:string;amountCents:number};lines:OrderLine[];knownTotalCents:number;depositCents:number}|null>(null);
   const [pricingError,setPricingError]=useState<string|null>(null);
   const hasSecurityItems = useMemo(
     () =>
@@ -180,7 +182,7 @@ export function CartDrawer() {
     [addons, hasSecurityItems],
   );
 
-  const fingerprint=JSON.stringify({items,addons:addonsForRequest});
+  const fingerprint=JSON.stringify({items,addons:addonsForRequest,discountCode});
   const currentPrice=priced?.fingerprint===fingerprint?priced:null;
   useEffect(()=>{
     if(!open||!items.length)return;
@@ -223,6 +225,7 @@ export function CartDrawer() {
         expectedDepositCents: currentPrice?.depositCents,
         expectedAmountCents:payMode==="full"?currentPrice?.knownTotalCents:currentPrice?.depositCents,
         paymentType: payMode,
+        discountCode,
         items,
         addons: addonsForRequest,
         customerName,
@@ -252,6 +255,7 @@ export function CartDrawer() {
     currentPrice?.depositCents,
     currentPrice?.knownTotalCents,
     payMode,
+    discountCode,
     items,
     customerEmail,
     customerName,
@@ -378,6 +382,19 @@ export function CartDrawer() {
     </div>
     <footer className={css.footer}>
      {items.length>0?<>
+      <div className={css.discount}>
+        <label htmlFor="cart-discount-code">{t("cart.ux.discountCode")}</label>
+        <div>
+          <input id="cart-discount-code" value={discountInput} maxLength={30} autoComplete="off" onChange={event => setDiscountInput(event.target.value)} onKeyDown={event => {
+            if (event.key !== "Enter") return;
+            event.preventDefault();
+            if (!busy) setDiscountCode(discountInput.trim().toUpperCase());
+          }} />
+          <button type="button" disabled={busy || !discountInput.trim() || discountInput.trim().toUpperCase() === discountCode} onClick={() => setDiscountCode(discountInput.trim().toUpperCase())}>{t("cart.ux.applyDiscount")}</button>
+          {discountCode && <button type="button" disabled={busy} onClick={() => { setDiscountCode(""); setDiscountInput(""); }}>{t("cart.ux.removeDiscount")}</button>}
+        </div>
+      </div>
+      {currentPrice?.discount && <div className={css.subtotal}><span>{t("cart.ux.discountCode")} · {currentPrice.discount.code}</span><strong>−{money(currentPrice.discount.amountCents / 100)}</strong></div>}
       {needsQuoteWhatsApp?<><div className={css.total}><span>{t("cart.ux.finalQuote")}</span><strong className={css.quoteTotal}>{t("cart.ux.quoteTotal")}</strong></div>{checkoutTotal>0&&<div className={css.subtotal}><span>{t("cart.ux.pricedSubtotal")}</span><span>{money(checkoutTotal)}</span></div>}</>:<><div className={css.total}><span>{t(hasQuoteLines?"cart.ux.pricedSubtotal":"cart.ux.total")}</span><strong>{money(checkoutTotal)}</strong></div>{step==="details"&&<><div className={css.subtotal}><span>{t("cart.ux.dueToday")}</span><strong>{money(chargeToday??0)}</strong></div>{payMode==="deposit"&&<div className={css.subtotal}><span>{t("cart.ux.remaining")}</span><span>{money(checkoutTotal-(chargeToday??0))}</span></div>}</>}{step==="details"&&payMode==="deposit"&&<p className={css.smallPrint}>{t("cart.ux.balanceNote")}</p>}</>}
       {!currentPrice&&!pricingError&&<p role="status">{t("cart.ux.checkingPrices")}</p>}
       {pricingError&&<p className={css.error} role="alert">{pricingError}</p>}
