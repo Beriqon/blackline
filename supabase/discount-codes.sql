@@ -8,7 +8,7 @@ create table public.discount_codes (
 );
 alter table public.discount_codes enable row level security;
 revoke all on public.discount_codes from public, anon, authenticated;
-grant select, insert, update on public.discount_codes to authenticated;
+grant select, insert, update, delete on public.discount_codes to authenticated;
 create policy discount_codes_admin on public.discount_codes for all to authenticated
   using ((select public.is_blackline_admin())) with check ((select public.is_blackline_admin()));
 

@@ -1,0 +1,26 @@
+.columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 22px; align-items: start; }
+.icon { color: #cbb383; }
+.form { display: grid; gap: 24px; padding-top: 10px; }
+.field { display: grid; gap: 9px; font-size: 12px; color: #bfb7aa; min-width: 0; }
+.field input { width: 100%; box-sizing: border-box; padding: 13px 14px; border: 1px solid #ffffff20; background: #111; color: #eee4d3; border-radius: 0; font: inherit; color-scheme: dark; }
+.field input[name=code] { text-transform: uppercase; letter-spacing: .1em; }
+.field input:focus-visible { outline: 1px solid #cbb383; outline-offset: 2px; }
+.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.typePicker { border: 0; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.typePicker legend { margin-bottom: 9px; color: #bfb7aa; font-size: 12px; }
+.typePicker label { position: relative; display: flex; align-items: center; gap: 9px; padding: 14px 12px; border: 1px solid #ffffff20; cursor: pointer; color: #bbb3a7; font-size: 12px; }
+.typePicker label:has(:checked) { border-color: #cbb38388; background: #cbb3830c; color: #e5d1aa; }
+.typePicker input { accent-color: #cbb383; }
+.typePicker small { display: block; margin-top: 5px; font-size: 10px; line-height: 1.5; color: #999; }
+.typePicker b { margin-left: auto; font-size: 20px; font-weight: 400; color: #cbb383; }
+.formFooter { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; padding-top: 20px; border-top: 1px solid #ffffff14; }
+.codes { list-style: none; padding: 0; margin: 0; }
+.code { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; padding: 20px 0; border-bottom: 1px solid #ffffff14; }
+.code strong { font-size: 13px; letter-spacing: .06em; color: #e5d1aa; }
+.actions { display: flex; align-items: center; gap: 8px; }
+.delete { display: inline-flex; align-items: center; justify-content: center; border: 1px solid #c88e7950; color: #d4a08c; padding: 9px 12px; font-size: 12px; cursor: pointer; }
+.delete:hover { background: #c88e7914; }
+.delete:disabled { opacity: .5; cursor: wait; }
+.confirm { flex-basis: 100%; display: grid; gap: 12px; padding: 14px; border: 1px solid #c88e7930; background: #c88e7908; }
+@media (max-width: 1050px) { .columns { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 600px) { .fields, .typePicker { grid-template-columns: minmax(0, 1fr); } }

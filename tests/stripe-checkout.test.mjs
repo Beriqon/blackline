@@ -12,7 +12,7 @@ const require=createRequire(import.meta.url);
 function load(path,mocks={},env={}){
  const source=ts.transpileModule(fs.readFileSync(new URL('../'+path,import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText;
  const exports={};
- vm.runInNewContext(source,{exports,require:id=>id.endsWith('/stripe-mode')?loadStripeMode(env):id==='server-only'?{}:id in mocks?mocks[id]:id==='stripe'?{__esModule:true,default:Stripe}:require(id),process:{env},Request,Response,Error,console,Date,Set,URL});
+ vm.runInNewContext(source,{exports,require:id=>id.endsWith('/stripe-mode')?loadStripeMode(env):id==='server-only'?{}:id in mocks?mocks[id]:id==='stripe'?{__esModule:true,default:Stripe}:require(id),process:{env},Request,Response,Error,console,Date,Set,Map,URL});
  return exports;
 }
 const product={id:'catalog:jetskis-jetcars:ski',service:'jetskis-jetcars',status:'visible',price:150.25,unit:'per hour',rates:'$150.25 per hour',name:'Jet ski'};
@@ -28,11 +28,11 @@ test('cart payment button sends the reviewed deposit to checkout',async()=>{
  }
  visit(ast);assert.ok(callback);
  const reviewedItems=[{id:'car'},{id:'villa'}];let sent,redirect;
- const context={canPay:true,hasContactDetails:true,currentPrice:{depositCents:20970},payMode:'deposit',items:reviewedItems,addonsForRequest:{},customerName:'Test',customerEmail:'test@example.com',customerPhoneFull:'+12025550101',setCheckoutError:()=>{},setCheckoutLoading:()=>{},t:key=>key,window:{location:{set href(value){redirect=value;}}},fetch:async(url,request)=>{sent={url,body:JSON.parse(request.body)};return Response.json({url:'https://checkout.stripe.com/test'});}};
+ const context={discountCode:'BLACKLINE10',canPay:true,hasContactDetails:true,currentPrice:{depositCents:20970},payMode:'deposit',items:reviewedItems,addonsForRequest:{},customerName:'Test',customerEmail:'test@example.com',customerPhoneFull:'+12025550101',setCheckoutError:()=>{},setCheckoutLoading:()=>{},t:key=>key,window:{location:{set href(value){redirect=value;}}},fetch:async(url,request)=>{sent={url,body:JSON.parse(request.body)};return Response.json({url:'https://checkout.stripe.com/test'});}};
  const compiled=ts.transpileModule(`(${callback})`,{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText;
  const run=vm.runInNewContext(compiled,context);
  await run();assert.equal(sent.url,'/api/stripe/checkout');assert.equal(sent.body.expectedDepositCents,20970);
- assert.deepEqual(sent.body.items,reviewedItems);assert.equal(redirect,'https://checkout.stripe.com/test');
+ assert.equal(sent.body.discountCode,'BLACKLINE10');assert.deepEqual(sent.body.items,reviewedItems);assert.equal(redirect,'https://checkout.stripe.com/test');
 });
 
 test('checkout creates embedded USD Elements sessions with dynamic methods and an internal redirect',async()=>{
@@ -134,6 +134,7 @@ test('a mixed quote retains every line and charges only known database prices',a
  const villa={id:'catalog:villas:villa',service:'villas',status:'visible',name:'Villa',price:0,unit:'on request'};
  const pricing={depositCents,experienceTotalCents,findCartProduct};
  const {quoteCheckout}=load('lib/checkout-quote.ts',{
+  './discount-codes':{checkoutDiscount:async()=>undefined},
   './booking-time':require('../lib/booking-time.ts'),
   './catalog-server':{publicProducts:async()=>[car,product,villa],publishedProduct:async()=>({})},
   './bookings-store':{prepareBookingRecord:async()=>({id:'bk_test',totalUsd:500})},
@@ -184,4 +185,27 @@ test('fulfillment checks payment state, mode, integration, order reference and a
  assert.equal(calls.length,0);
  await assert.rejects(()=>fulfillTestSession({...session,client_reference_id:'other'},'evt_test'));
  await fulfillTestSession(session,'evt_test');assert.equal(calls[1][0],'paid');assert.equal(calls[1][1].amountCents,24000);
+});
+
+test('discount lookup normalizes codes and enforces payable totals', async () => {
+ let requested;
+ let result = {data:{kind:'percent',amount:10},error:null};
+ const {checkoutDiscount} = load('lib/discount-codes.ts', {
+  './supabase-server':{publicDatabase:()=>({rpc:(_name,args)=>{
+   requested=args;
+   return {maybeSingle:async()=>result};
+  }})},
+ }, {BLACKLINE_BOOKING_TOKEN:'unit-test-token'});
+ assert.equal(await checkoutDiscount(undefined,10000),undefined);
+ const discount=await checkoutDiscount(' blackline10 ',10000);
+ assert.equal(discount.code,'BLACKLINE10');
+ assert.equal(discount.amountCents,1000);
+ assert.equal(requested.code,'BLACKLINE10');
+ result={data:{kind:'fixed',amount:2500},error:null};
+ assert.equal((await checkoutDiscount('SAVE25',10000)).amountCents,2500);
+ await assert.rejects(()=>checkoutDiscount('SAVE25',2500),/cannot be applied/);
+ result={data:null,error:null};
+ await assert.rejects(()=>checkoutDiscount('EXPIRED',10000),/invalid or expired/);
+ result={data:null,error:{message:'database unavailable'}};
+ await assert.rejects(()=>checkoutDiscount('BLACKLINE10',10000),/temporarily unavailable/);
 });

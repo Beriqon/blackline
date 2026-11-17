@@ -1,15 +1,18 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Trash2, TicketPercent } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 import styles from "@/app/admin/dashboard/dashboard.module.css";
 import layout from "./admin-social-analytics.module.css";
+
+import css from "./admin-discount-codes.module.css";
 
 type Code = { id: string; kind: "percent" | "fixed"; amount: number; expires_on: string | null; active: boolean };
 
 export function AdminDiscountCodes() {
   const [codes, setCodes] = useState<Code[] | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
   const [kind, setKind] = useState<Code["kind"]>("percent");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -72,33 +75,66 @@ export function AdminDiscountCodes() {
     }
   }
 
+  async function remove(code: Code) {
+    if (busy) return;
+    setBusy(true);
+    setMessage("");
+    try {
+      const { error } = await supabaseBrowser().from("discount_codes")
+        .delete().eq("id", code.id).select("id").single();
+      if (error) throw error;
+      setCodes(previous => previous?.filter(row => row.id !== code.id) ?? null);
+      setDeleting(null);
+      setMessage(`${code.id} deleted.`);
+    } catch {
+      setMessage("The code could not be deleted. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div className={layout.page}>
       <div className={styles.pageHeading}>
         <div><p className={styles.eyebrow}>BLACKLINE / MARKETING &amp; CONTENT</p><h1>Discount codes</h1><p>Create offers customers can apply to services priced online.</p></div>
       </div>
-      <div className={layout.columns}>
+      <div className={css.columns}>
         <section className={layout.card}>
-          <div className={layout.heading}><h2>Create a code</h2></div>
-          <form onSubmit={create}>
-            <label className={styles.fullField}>Code<input name="code" placeholder="BLACKLINE10" pattern="[A-Za-z0-9][A-Za-z0-9_\-]{2,29}" maxLength={30} required /></label>
-            <label className={styles.fullField}>Discount type<select value={kind} onChange={event => setKind(event.target.value as Code["kind"])}><option value="percent">Percentage</option><option value="fixed">Fixed amount (USD)</option></select></label>
-            <label className={styles.fullField}>{kind === "percent" ? "Discount (%)" : "Discount (USD)"}<input key={kind} name="amount" type="number" min={kind === "percent" ? 1 : 0.01} max={kind === "percent" ? 99 : 500000} step={kind === "percent" ? 1 : 0.01} required /></label>
-            <label className={styles.fullField}>Expires on (optional, Miami time)<input name="expiry" type="date" /></label>
-            <button className={styles.primary} disabled={!codes || busy}><Plus size={16} />Create code</button>
+          <div className={layout.heading}><h2>Create a code</h2><TicketPercent size={21} className={css.icon} /></div>
+          <form className={css.form} onSubmit={create}>
+            <label className={css.field}>Code<input name="code" placeholder="BLACKLINE10" pattern="[A-Za-z0-9][A-Za-z0-9_\-]{2,29}" maxLength={30} required /></label>
+            <fieldset className={css.typePicker}>
+              <legend>Discount type</legend>
+              <label><input type="radio" name="kind" value="percent" checked={kind === "percent"} onChange={() => setKind("percent")} /><span>Percentage<small>A percentage off the total</small></span><b>%</b></label>
+              <label><input type="radio" name="kind" value="fixed" checked={kind === "fixed"} onChange={() => setKind("fixed")} /><span>Fixed amount<small>A dollar amount off the total</small></span><b>$</b></label>
+            </fieldset>
+            <div className={css.fields}>
+            <label className={css.field}>{kind === "percent" ? "Discount (%)" : "Discount (USD)"}<input key={kind} name="amount" type="number" min={kind === "percent" ? 1 : 0.01} max={kind === "percent" ? 99 : 500000} step={kind === "percent" ? 1 : 0.01} required /></label>
+            <label className={css.field}>Expires on (optional, Miami time)<input name="expiry" type="date" /></label>
+            </div><div className={css.formFooter}><p>Customers enter this code in their cart.</p><button className={styles.primary} disabled={!codes || busy}><Plus size={16} />{busy ? "Saving…" : "Create code"}</button></div>
           </form>
         </section>
         <section className={layout.card}>
           <div className={layout.heading}><h2>Saved codes</h2></div>
           {!codes && !message && <p>Loading discount codes…</p>}
           {codes?.length === 0 && <p>No discount codes yet.</p>}
-          <ul className={layout.traffic}>
+          <ul className={css.codes}>
             {codes?.map(code => (
-              <li className={layout.trafficLabel} key={code.id}>
+              <li className={css.code} key={code.id}>
                 <div><strong>{code.id}</strong>
                   <p>{code.kind === "percent" ? `${code.amount}% off` : `$${(code.amount / 100).toFixed(2)} off`} · {code.active ? "Enabled" : "Disabled"}{code.expires_on && ` · Expires ${code.expires_on}`}</p>
                 </div>
-                <button type="button" className={styles.secondary} disabled={busy} onClick={() => void toggle(code)}>{code.active ? "Disable" : "Enable"}</button>
+                <div className={css.actions}>
+                  <button type="button" className={styles.secondary} disabled={busy} onClick={() => void toggle(code)}>{code.active ? "Disable" : "Enable"}</button>
+                  <button type="button" className={css.delete} disabled={busy} aria-label={`Delete ${code.id}`} onClick={() => setDeleting(code.id)}><Trash2 size={16} /></button>
+                </div>
+                {deleting === code.id && <div className={css.confirm}>
+                  <p>Delete <strong>{code.id}</strong>? This code will stop working for new checkouts.</p>
+                  <div className={css.actions}>
+                    <button type="button" className={styles.secondary} disabled={busy} onClick={() => setDeleting(null)}>Cancel</button>
+                    <button type="button" className={css.delete} disabled={busy} onClick={() => void remove(code)}>Delete code</button>
+                  </div>
+                </div>}
               </li>
             ))}
           </ul>
