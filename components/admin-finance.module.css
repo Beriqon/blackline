@@ -3,3 +3,28 @@
 .weekLabel{font-size:10px;color:#aaa;margin:23px 24px 0;padding-top:18px;border-top:1px solid #ffffff12}.weekLabel+.weekdays{margin-top:13px;padding-top:0;border-top:0}@media(max-width:700px){.weekLabel{margin-left:17px;margin-right:17px}}
 
 @media(max-width:700px){.figure{overflow-x:auto}.figure>svg{min-width:510px}.figure figcaption{min-width:280px}}
+
+.finance{grid-template-columns:minmax(0,1fr)}
+.trend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding:0 24px 24px}
+.trendPeriod{display:grid;gap:12px;padding:14px;border:1px solid var(--line);min-width:0}
+.trendPeriod>p{color:#d5cbbb;font-size:12px;font-weight:600}
+.trendMetric{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 8px;align-items:baseline;color:#b1aea8;font-size:11px}
+.trendMetric>strong{font-variant-numeric:tabular-nums;color:#e6dfd2;overflow-wrap:anywhere}
+.trendTrack{grid-column:1/-1;background:#ffffff10;height:5px}
+.trendTrack>i{display:block;height:100%;background:#cbb383}
+.trendMetric[data-metric="Profit before tax"] .trendTrack>i{background:#9eaf98}
+.trendMetric[data-negative=true] .trendTrack>i{background:#d39484}
+.profitBreakdown dl{display:block}
+.profitBreakdown dt{overflow-wrap:anywhere}
+.profitBreakdown dd{margin:0;text-align:right}
+.taxInput input{width:5.25rem;min-height:40px;font-size:16px}
+.periods button{min-height:44px}
+@media(max-width:700px){
+  .finance>div:first-child{align-items:flex-start;flex-wrap:wrap}
+  .periods{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
+  .trend{grid-template-columns:minmax(0,1fr);padding:0 17px 17px;gap:10px}
+  .kpi>strong{font-size:clamp(20px,5.5vw,29px)}
+  .kpi>p{font-size:11px}
+  .ledger{min-width:0}
+  .finance .ledger th,.finance .ledger td{padding:10px 8px;white-space:normal;overflow-wrap:anywhere}
+}

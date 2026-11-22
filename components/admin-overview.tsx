@@ -20,9 +20,9 @@ const workspaceLinks=[
  {view:"products",label:"Products & collections",description:"Rates, photos and website visibility.",Icon:Package},
  {view:"affiliates",label:"Affiliates & sources",description:"Referral partners and commercial agreements.",Icon:ArrowUpRight},
  {view:"suppliers",label:"Supplier management",description:"Rental partners and agreed product costs.",Icon:Handshake},
+ {view:"finance",label:"Financial overview",description:"Stripe payments, verified Zelle receipts and recorded expenses.",Icon:ChartNoAxesCombined},
 ];
 const previewLinks=[
- {view:"finance",label:"Financial overview",description:"Revenue, costs, profit and product performance.",note:"Fictional figures · no financial sync",Icon:ChartNoAxesCombined},
  {view:"brokers",label:"Brokers",description:"Applications, listings and your broker network.",note:"Preview profiles · saving disabled",Icon:Users},
  {view:"email-marketing",label:"Email marketing",description:"Audiences, newsletters and customer campaigns.",note:"Audience & email preview · sending disabled",Icon:Mail},
 ];
@@ -47,6 +47,6 @@ export function AdminOverview({bookings,products,ready,saving,stripeError,refres
   <section className={css.catalog}><div><p className={styles.eyebrow}>MANAGE THE EXPERIENCE</p><h2>Your collections</h2><p>Go straight to the service you want to manage.</p><Link className={css.textLink} href={href("products")}>All products<ArrowUpRight size={14}/></Link></div><div className={css.collectionLinks}>{ADMIN_SERVICES.map(([key,label])=>{const slug=({"jetskis-jetcars":"on-the-water","vip-nightlife":"vip-venues","photographer":"photo-video-shoots"} as Record<string,string>)[key]??key;return <Link key={key} href={`/admin/collections/${slug}`}><span>{label}</span><small>{ready?products.filter(p=>p.service===key).length:"—"}</small><ChevronRight size={12}/></Link>;})}</div></section>
   <section aria-labelledby="overview-preview"><div className={css.sectionHeading}><div><p className={styles.eyebrow}>COMING TO YOUR WORKSPACE</p><h2 id="overview-preview">Explore what’s next</h2><p>These sections are previews or in development. They do not save data or change live bookings.</p></div><span className={css.soon}>Soon</span></div><div className={css.previewLinks}>{previewLinks.map(l=><Link key={l.view} href={href(l.view)}><div><l.Icon size={19}/><span className={css.soon}>Soon</span></div><h3>{l.label}</h3><p>{l.description}</p><small>{l.note}</small><span className={css.previewArrow}><ArrowUpRight size={16}/></span></Link>)}</div></section>
   <section className={css.website}><div><p className={styles.eyebrow}>KEEP EVERYTHING CURRENT</p><h2>Website & workspace</h2></div><div>{[{view:"promotion",label:"Promotion popup",detail:"Update your website offer",Icon:Megaphone},{view:"photos",label:"Photoshoot photos",detail:"Manage website galleries",Icon:Camera},{view:"settings",label:"Settings",detail:"Business, account & preferences",Icon:SlidersHorizontal}].map(l=><Link href={href(l.view)} key={l.view}><l.Icon size={18}/><span><strong>{l.label}</strong><small>{l.detail}</small></span><ChevronRight size={14}/></Link>)}</div></section>
-  <p className={css.footnote}>Financial figures are intentionally kept in Financial overview while that section uses demo data. Outstanding balances above come from recorded payment information; unknown payments are not assumed to be paid.</p>
+  <p className={css.footnote}>Financial overview reports received payments and expenses. Outstanding balances above come from recorded booking payments.</p>
  </div>;
 }

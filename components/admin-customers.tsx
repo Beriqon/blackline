@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Users, Plus, Search, X, Pencil, Mail, MessageCircle, CalendarClock, ArrowUpRight, Phone } from "lucide-react";
+import { Users, Plus, Search, X, Pencil, Mail, MessageCircle, CalendarClock, ArrowUpRight, Phone, Trash2 } from "lucide-react";
 import { type AdminBooking } from "@/lib/admin-demo-data";
 import { blankCustomer, customerDirectory, CUSTOMER_KEY, CUSTOMER_STATUSES, matchesBooking, normalizeEmail, normalizePhone, readCustomers, saveCustomers, type AdminCustomer } from "@/lib/admin-customers";
 import styles from "@/app/admin/dashboard/dashboard.module.css";
 import css from "./admin-customers.module.css";
-import {AdminTrash,useAdminTrash} from "./admin-trash";
+import {AdminTrash,type useAdminTrash} from "./admin-trash";
 import {customerIsDeleted} from "@/lib/admin-trash";
 import {CustomerBookingHistory} from "./customer-booking-history";
 import {agreedBookingValue,customerContactLinks} from "@/lib/customer-insights";
@@ -16,7 +16,7 @@ const money = (n: number) => new Intl.NumberFormat("en-US", { style: "currency",
 const date = (s: string) => s ? new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(new Date(s.length === 10 ? s + "T12:00:00" : s)) : "Not recorded";
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 
-export function AdminCustomers({ bookings, ready: bookingsReady, onBooking }: { bookings: AdminBooking[]; ready: boolean; onBooking: (booking: AdminBooking) => void }) {
+export function AdminCustomers({ bookings, ready: bookingsReady, onBooking, trashStore }: { bookings: AdminBooking[]; ready: boolean; onBooking: (booking: AdminBooking) => void; trashStore: ReturnType<typeof useAdminTrash> }) {
   const [saving,setSaving]=useState(false);
   const [saved, setSaved] = useState<AdminCustomer[]>([]), [ready, setReady] = useState(false);
   const [query, setQuery] = useState(""), [status, setStatus] = useState("all"), [followUpOnly, setFollowUpOnly] = useState(false), [sort, setSort] = useState("name");
@@ -27,10 +27,14 @@ export function AdminCustomers({ bookings, ready: bookingsReady, onBooking }: { 
     const sync = (e: StorageEvent) => { if (e.key === CUSTOMER_KEY || e.key === null) load(); };
     load(); window.addEventListener("storage", sync); return () => window.removeEventListener("storage", sync);
   }, []);
-  const trashStore=useAdminTrash();
   const customers = customerDirectory(saved, bookings).filter(c=>!customerIsDeleted(c,trashStore.entries));
   const liveCustomers=customers.filter(c=>!c.testMode);
   const enabled = ready && bookingsReady && !saving;
+  const preview = isLocalDashboardPreview();
+  const canDelete = enabled && trashStore.ready && !trashStore.busy && !preview;
+  const [deleteTarget, setDeleteTarget] = useState<AdminCustomer | null>(null);
+  const [deleteError, setDeleteError] = useState("");
+  const deletion = useRef<HTMLDialogElement>(null);
   const linked = (c: AdminCustomer) => bookings.filter(b => matchesBooking(c, b));
   const value = (c: AdminCustomer) => agreedBookingValue(linked(c));
   const due = (c: AdminCustomer) => c.status !== "Archived" && !!c.followUp && c.followUp <= today();
@@ -38,6 +42,24 @@ export function AdminCustomers({ bookings, ready: bookingsReady, onBooking }: { 
   const selected = customers.find(c => c.id === selectedId);
   const openEditor = (c?: AdminCustomer) => { if(c?.testMode)return; profile.current?.close(); setDraft(c ? structuredClone(c) : blankCustomer()); setError(""); editor.current?.showModal(); };
   const openProfile = (c: AdminCustomer) => { setSelectedId(c.id); profile.current?.showModal(); };
+  const openDelete = (customer: AdminCustomer) => {
+    if (!canDelete) return;
+    setDeleteTarget(customer);
+    setDeleteError("");
+    deletion.current?.showModal();
+  };
+  const deleteCustomer = async () => {
+    if (!deleteTarget || !canDelete) return;
+    setDeleteError("");
+    try {
+      await trashStore.trash({ kind: "customer", recordId: deleteTarget.id, name: deleteTarget.name, customer: deleteTarget });
+      deletion.current?.close();
+      profile.current?.close();
+      setFeedback("Customer moved to Trash. You can restore the profile there.");
+    } catch {
+      setDeleteError("The customer could not be moved to Trash. Try again.");
+    }
+  };
   const closeEditor = () => { editor.current?.close(); setDraft(null); setError(""); };
   const contact = (c: AdminCustomer) => {
     const phone = c.phone || linked(c).find(b=>b.phone)?.phone || "";
@@ -50,14 +72,30 @@ export function AdminCustomers({ bookings, ready: bookingsReady, onBooking }: { 
     <div className={styles.pageHeading}><div><p className={styles.eyebrow}>BLACKLINE / RELATIONSHIPS</p><h1>Know your guests. <em>Keep in touch.</em></h1><p>Every customer, their plans and the details that make the next visit personal.</p></div><button className={styles.primary} disabled={!enabled} onClick={() => openEditor()}><Plus size={16}/>Add customer</button></div>
     <div className={styles.stats}>{[["Customers", liveCustomers.length, "Including guests from workspace bookings"], ["VIP guests", liveCustomers.filter(c => c.status === "VIP").length, "Your closest relationships"], ["Returning guests", liveCustomers.filter(c => linked(c).filter(b => !b.testMode&&!b.quoteRequest&&(b.status === "Confirmed" || b.status === "Completed")).length > 1).length, "Two or more agreed bookings"], ["Follow-ups due", liveCustomers.filter(due).length, "Today and overdue"]].map(([label, n, hint]) => <article className={styles.stat} key={label}><div><span>{label}</span><Users size={17}/></div><strong>{enabled ? n : "—"}</strong><p>{hint}</p></article>)}</div>
     <p className={css.muted}>Guests from Stripe orders, Zelle submissions and quote requests appear automatically with their contact details and booking history. Matching email addresses or phone numbers share one profile. Test bookings stay labeled and are excluded from live booking value.</p>
+    {preview && <p className={styles.formHint}>This is a read-only preview. Sign in through the admin login to delete customers.</p>}
     {feedback && <p className={css.feedback} role="status">{feedback}</p>}
     <section className={styles.panel}><div className={styles.panelHeading}><div><p className={styles.eyebrow}>YOUR CUSTOMER DIRECTORY</p><h2>People behind the plans</h2></div><span className={css.muted}>{enabled ? rows.length : "…"} customers</span></div>
       <div className={`${styles.tableTools} ${css.filters}`}><label><Search size={15}/><input aria-label="Search customers" placeholder="Name, email, phone or preferences…" value={query} onChange={e => setQuery(e.target.value)}/></label><select aria-label="Customer status" value={status} onChange={e => setStatus(e.target.value)}><option value="all">All customers</option>{CUSTOMER_STATUSES.map(s => <option key={s}>{s}</option>)}</select><select aria-label="Sort customers" value={sort} onChange={e => setSort(e.target.value)}><option value="name">Name: A–Z</option><option value="value">Highest booked value</option><option value="followUp">Next follow-up</option></select><button className={styles.secondary} aria-pressed={followUpOnly} onClick={() => setFollowUpOnly(!followUpOnly)}><CalendarClock size={14}/>Follow-ups due</button></div>
       {(query || status !== "all" || followUpOnly) && <div className={css.results}><span>{rows.length} matching customers</span><button onClick={clear}>Clear filters</button></div>}
-      {!enabled ? <p className={css.empty}>{ready ? "Loading booking history…" : "Customer storage is loading or unavailable."}</p> : rows.length ? <div className={styles.tableScroll}><table><thead><tr><th>Customer</th><th>Relationship</th><th>Booking insight</th><th>Next follow-up</th><th>Keep in touch</th><th/></tr></thead><tbody>{rows.map(c => <tr key={c.id}><td><a href="#customer-profile" className={styles.customerButton} aria-haspopup="dialog" onClick={e => {e.preventDefault();openProfile(c);}}>{c.name}</a>{c.testMode&&<span className={css.testBadge}>TEST BOOKINGS ONLY</span>}{c.containsTestBookings&&!c.testMode&&<small>Includes labeled test bookings</small>}{c.company&&<small>{c.company}</small>}{c.email&&<small>{c.email}</small>}{c.phone&&<small>{c.phone}</small>}{c.bookingIds.some(id => id.startsWith("BL-DEMO")) && <small>Includes demo booking history</small>}</td><td><span className={styles.productStatus} data-status={c.status === "Archived" ? "archived" : "visible"}>{c.status}</span><small>{c.source}</small></td><td><strong>{linked(c).length} {linked(c).length === 1 ? "booking" : "bookings"} · {money(value(c))}</strong><small>{c.testMode?"Test bookings · no real money":"Confirmed & completed value"}</small></td><td><span className={due(c) ? css.due : ""}>{c.followUp ? date(c.followUp) : "Not scheduled"}</span></td><td>{contact(c)}</td><td><a href="#customer-profile" className={styles.iconButton} aria-label={`View customer ${c.name}`} aria-haspopup="dialog" onClick={e => {e.preventDefault();openProfile(c);}}><ArrowUpRight size={17}/></a></td></tr>)}</tbody></table></div> : <div className={css.empty}><Users size={30}/><h3>{customers.length ? "No customers match your filters." : "Your next great relationship starts here."}</h3><p>Add a customer now, even before their first booking.</p><button className={styles.secondary} onClick={customers.length ? clear : () => openEditor()}>{customers.length ? "Clear filters" : "Add your first customer"}</button></div>}
+      {!enabled ? <p className={css.empty}>{ready ? "Loading booking history…" : "Customer storage is loading or unavailable."}</p> : rows.length ? <div className={styles.tableScroll}><table><thead><tr><th>Customer</th><th>Relationship</th><th>Booking insight</th><th>Next follow-up</th><th>Keep in touch</th><th/></tr></thead><tbody>{rows.map(c => <tr key={c.id}><td><a href="#customer-profile" className={styles.customerButton} aria-haspopup="dialog" onClick={e => {e.preventDefault();openProfile(c);}}>{c.name}</a>{c.testMode&&<span className={css.testBadge}>TEST BOOKINGS ONLY</span>}{c.containsTestBookings&&!c.testMode&&<small>Includes labeled test bookings</small>}{c.company&&<small>{c.company}</small>}{c.email&&<small>{c.email}</small>}{c.phone&&<small>{c.phone}</small>}{c.bookingIds.some(id => id.startsWith("BL-DEMO")) && <small>Includes demo booking history</small>}</td><td><span className={styles.productStatus} data-status={c.status === "Archived" ? "archived" : "visible"}>{c.status}</span><small>{c.source}</small></td><td><strong>{linked(c).length} {linked(c).length === 1 ? "booking" : "bookings"} · {money(value(c))}</strong><small>{c.testMode?"Test bookings · no real money":"Confirmed & completed value"}</small></td><td><span className={due(c) ? css.due : ""}>{c.followUp ? date(c.followUp) : "Not scheduled"}</span></td><td>{contact(c)}</td><td><a href="#customer-profile" className={styles.iconButton} aria-label={`View customer ${c.name}`} aria-haspopup="dialog" onClick={e => {e.preventDefault();openProfile(c);}}><ArrowUpRight size={17}/></a> <button type="button" className={styles.deleteLink} disabled={!canDelete} aria-label={`Delete customer ${c.name}`} aria-haspopup="dialog" onClick={() => openDelete(c)}><Trash2 size={15}/>Delete</button></td></tr>)}</tbody></table></div> : <div className={css.empty}><Users size={30}/><h3>{customers.length ? "No customers match your filters." : "Your next great relationship starts here."}</h3><p>Add a customer now, even before their first booking.</p><button className={styles.secondary} onClick={customers.length ? clear : () => openEditor()}>{customers.length ? "Clear filters" : "Add your first customer"}</button></div>}
     </section><p className={styles.formHint}>Saved securely in the shared workspace. WhatsApp opens the customer chat, Call opens your calling app, and Email opens a draft. You choose when to send a message or place the call. Follow-up dates are reminders in this directory; automatic notifications are not connected.</p>
 
-    <dialog id="customer-profile" ref={profile} className={styles.dialog} aria-labelledby="customer-profile-title" onClose={() => setSelectedId(null)}><div className={styles.dialogHeader}><div><p className={styles.eyebrow}>BLACKLINE / CUSTOMER PROFILE</p><h2 id="customer-profile-title">{selected?.name ?? "Customer"}</h2></div><a href="#" aria-label="Close customer profile" onClick={e => {e.preventDefault();profile.current?.close();}}><X size={20}/></a></div>{selected && <><div className={styles.dialogBody}><div className={css.profileTop}><span className={styles.productStatus}>{selected.testMode?"Stripe test customer":selected.status}</span><button className={styles.secondary} disabled={!enabled||!!selected.testMode} onClick={() => openEditor(selected)}><Pencil size={14}/>Edit customer</button></div><dl className={css.details}>{[["Email", selected.email], ["Phone / WhatsApp", selected.phone], ["Company", selected.company], ["Source", selected.source], ["Last contacted", selected.lastContact ? date(selected.lastContact) : ""], ["Next follow-up", selected.followUp ? date(selected.followUp) : ""]].map(([label, text]) => <div key={label}><dt>{label}</dt><dd>{text || "Not recorded"}</dd></div>)}</dl>{contact(selected)}<p className={styles.formHint}>Review your message before sending. Contact dates are recorded manually in Edit customer.</p><div className={css.note}><h3>Preferences & personal details</h3><p>{selected.preferences || "Record favorite experiences, travel preferences or special requests."}</p><h3>Internal notes</h3><p>{selected.notes || "No internal notes yet."}</p></div><CustomerBookingHistory bookings={linked(selected)} readOnly={isLocalDashboardPreview()} onOpen={b=>{profile.current?.close();onBooking(b);}}/></div>{<div className={styles.dialogActions}><button className={styles.deleteLink} disabled={!enabled||!trashStore.ready||trashStore.busy} onClick={async()=>{if(!window.confirm(`Move ${selected.name} to Trash? Their bookings and payment history will remain unchanged.`))return;try{await trashStore.trash({kind:"customer",recordId:selected.id,name:selected.name,customer:selected});profile.current?.close();setFeedback("Customer moved to Trash. Their bookings are retained.");}catch{setFeedback("Customer could not be deleted. Reload and try again.");}}}>Delete customer</button></div>}</>}</dialog>
+    <dialog id="customer-profile" ref={profile} className={styles.dialog} aria-labelledby="customer-profile-title" onClose={() => setSelectedId(null)}><div className={styles.dialogHeader}><div><p className={styles.eyebrow}>BLACKLINE / CUSTOMER PROFILE</p><h2 id="customer-profile-title">{selected?.name ?? "Customer"}</h2></div><a href="#" aria-label="Close customer profile" onClick={e => {e.preventDefault();profile.current?.close();}}><X size={20}/></a></div>{selected && <><div className={styles.dialogBody}><div className={css.profileTop}><span className={styles.productStatus}>{selected.testMode?"Stripe test customer":selected.status}</span><button className={styles.secondary} disabled={!enabled||!!selected.testMode} onClick={() => openEditor(selected)}><Pencil size={14}/>Edit customer</button></div><dl className={css.details}>{[["Email", selected.email], ["Phone / WhatsApp", selected.phone], ["Company", selected.company], ["Source", selected.source], ["Last contacted", selected.lastContact ? date(selected.lastContact) : ""], ["Next follow-up", selected.followUp ? date(selected.followUp) : ""]].map(([label, text]) => <div key={label}><dt>{label}</dt><dd>{text || "Not recorded"}</dd></div>)}</dl>{contact(selected)}<p className={styles.formHint}>Review your message before sending. Contact dates are recorded manually in Edit customer.</p><div className={css.note}><h3>Preferences & personal details</h3><p>{selected.preferences || "Record favorite experiences, travel preferences or special requests."}</p><h3>Internal notes</h3><p>{selected.notes || "No internal notes yet."}</p></div><CustomerBookingHistory bookings={linked(selected)} readOnly={isLocalDashboardPreview()} onOpen={b=>{profile.current?.close();onBooking(b);}}/></div>{<div className={styles.dialogActions}><button className={styles.deleteLink} disabled={!canDelete} onClick={() => openDelete(selected)}>Delete customer</button></div>}</>}</dialog>
+
+    <dialog ref={deletion} className={styles.dialog} aria-labelledby="customer-delete-title"
+      onClose={() => setDeleteTarget(null)} onCancel={event => { if (trashStore.busy) event.preventDefault(); }}>
+      <div className={styles.dialogHeader}><h2 id="customer-delete-title">Delete customer?</h2></div>
+      <div className={styles.dialogBody}>
+        <p>Move {deleteTarget?.name} to Trash? You can restore the profile there. Their booking and payment history will be retained.</p>
+        {deleteError && <p className={styles.error} role="alert">{deleteError}</p>}
+      </div>
+      <div className={styles.dialogActions}>
+        <button type="button" className={styles.secondary} disabled={trashStore.busy} onClick={() => deletion.current?.close()}>Cancel</button>
+        <button type="button" className={styles.danger} disabled={!canDelete || !deleteTarget} onClick={() => void deleteCustomer()}>
+          {trashStore.busy ? "Moving…" : "Move to Trash"}
+        </button>
+      </div>
+    </dialog>
 
     <dialog ref={editor} className={styles.dialog} aria-labelledby="customer-editor-title" onClose={() => { setDraft(null); setError(""); }}><div className={styles.dialogHeader}><div><p className={styles.eyebrow}>BLACKLINE / CUSTOMERS</p><h2 id="customer-editor-title">{draft && customers.some(c => c.id === draft.id) ? "Edit customer" : "New customer"}</h2></div><button aria-label="Close customer editor" onClick={closeEditor}><X size={20}/></button></div>{draft && <form onSubmit={async e => {
       e.preventDefault(); if (!enabled) return;
