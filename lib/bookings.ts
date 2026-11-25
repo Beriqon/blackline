@@ -1,5 +1,6 @@
 import {bookingDateTime} from "./booking-time";
 import { computeFleetTotals, durationOptionsFromYacht } from "@/lib/yacht-fleet-pricing";
+import {CHAUFFEUR_DURATION_HOURS, CHAUFFEUR_MINIMUM_HOURS, chauffeurDurationHours} from "./chauffeur-duration";
 import { ALL_EXOTIC_CARS, type ExoticCar } from "@/lib/exotic-cars-data";
 import { getYachtBySlug, type Yacht } from "@/lib/yachts-data";
 
@@ -168,8 +169,8 @@ export function getExoticCarBookingModes(car: ExoticCar): ExoticCarBookingMode[]
   return ["self-drive"];
 }
 
-export const CHAUFFEUR_DURATION_HOURS = [2, 4, 6, 8] as const;
-export const CHAUFFEUR_DEFAULT_DURATION_HOURS = 4;
+export {CHAUFFEUR_DURATION_HOURS};
+export const CHAUFFEUR_DEFAULT_DURATION_HOURS = CHAUFFEUR_MINIMUM_HOURS;
 
 export function getExoticCarBookingConfig(car: ExoticCar) {
   return {
@@ -217,7 +218,7 @@ export function selectionToRange(selection: BookingSelection, live?: ExoticCar |
     }
     const start = parseDateTime(selection.startDate, selection.startTime ?? "",selection.timeZone);
     if (!start) throw new Error("Choose a valid chauffeur date and time.");
-    const hours = clampHours(selection.durationHours, 4);
+    const hours = chauffeurDurationHours(selection.durationHours);
     const end = new Date(start.getTime() + hours * 60 * 60 * 1000);
     return {
       startIso: start.toISOString(),
@@ -302,7 +303,7 @@ export function computeBookingQuote(selection: BookingSelection, live?: ExoticCa
 
     const rateLine = car.section === "hourly" ? car.priceLine : car.chauffeurPriceLine;
     const hourlyRate = parseSingleUsd(rateLine);
-    const hours = clampHours(selection.durationHours, 4);
+    const hours = chauffeurDurationHours(selection.durationHours);
     const total = hourlyRate ? hourlyRate * hours : 0;
     const payableOnline = hourlyRate !== null;
     return {

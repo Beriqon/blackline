@@ -65,6 +65,9 @@ export async function prepareBookingRecord(args: {
   const service=selection.category==="yacht"?"yachts":selection.service==="chauffeur-services"?"chauffeur-services":"exotic-cars";
   const live=selection.category==="yacht"?await publishedProduct(service,selection.itemId,getYachtBySlug(selection.itemId)):await publishedProduct(service,selection.itemId,getExoticCarById(selection.itemId));
   if(!live)throw new Error("This product is not currently available.");
+  if(selection.category==="exotic-car"&&(selection.service==="chauffeur-services"||("section" in live&&live.section==="hourly"))&&selection.rentalMode!=="chauffeur"){
+    throw new Error("Choose chauffeur service for this vehicle.");
+  }
   await assertAvailability(args.selection,live);
   const range=selectionToRange(args.selection,live);
   const quote = computeBookingQuote(args.selection,live);

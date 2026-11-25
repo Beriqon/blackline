@@ -4,6 +4,7 @@ import {NextResponse} from "next/server";
 import {getStripe} from "@/lib/stripe-client";
 import {grantZelleAccess,sameOrigin,zelleDatabase} from "@/lib/zelle-server";
 import type {ZelleOrder} from "@/lib/zelle-types";
+import {syncCheckoutMarketing} from "@/lib/checkout-marketing";
 export const runtime="nodejs";
 export async function POST(request:Request){
  if(!sameOrigin(request))return NextResponse.json({error:"Invalid request origin."},{status:403});
@@ -16,6 +17,7 @@ export async function POST(request:Request){
   if(session.status==="open")await stripe.checkout.sessions.expire(sessionId);
   const order=stripeMode()==="live"?await orderDatabase<ZelleOrder>("zelle",{sessionId}):await zelleDatabase<ZelleOrder>("create",{sessionId});
   await grantZelleAccess(order.id);
+  if (!session.livemode) syncCheckoutMarketing(order.marketingConsent);
   return NextResponse.json({url:`/payment/zelle?order_id=${encodeURIComponent(order.id)}`},{headers:{"Cache-Control":"no-store"}});
  }catch{return NextResponse.json({error:"Could not reserve this selection for Zelle. It may already be booked. Refresh your selection or contact your concierge before transferring money."},{status:409});}
 }

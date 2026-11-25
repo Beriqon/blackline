@@ -10,6 +10,7 @@ import {depositCents,experienceTotalCents,findCartProduct} from '../lib/checkout
 
 const require=createRequire(import.meta.url);
 function load(path,mocks={},env={}){
+ mocks={"@/lib/checkout-marketing":{checkoutMarketingConsent:()=>undefined,syncCheckoutMarketing:()=>{}},...mocks};
  const source=ts.transpileModule(fs.readFileSync(new URL('../'+path,import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText;
  const exports={};
  vm.runInNewContext(source,{exports,require:id=>id.endsWith('/stripe-mode')?loadStripeMode(env):id==='server-only'?{}:id in mocks?mocks[id]:id==='stripe'?{__esModule:true,default:Stripe}:require(id),process:{env},Request,Response,Error,console,Date,Set,Map,URL});
@@ -29,9 +30,11 @@ test('cart payment button sends the reviewed deposit to checkout',async()=>{
  visit(ast);assert.ok(callback);
  const reviewedItems=[{id:'car'},{id:'villa'}];let sent,redirect;
  const context={discountCode:'BLACKLINE10',canPay:true,hasContactDetails:true,currentPrice:{depositCents:20970},payMode:'deposit',items:reviewedItems,addonsForRequest:{},customerName:'Test',customerEmail:'test@example.com',customerPhoneFull:'+12025550101',setCheckoutError:()=>{},setCheckoutLoading:()=>{},t:key=>key,window:{location:{set href(value){redirect=value;}}},fetch:async(url,request)=>{sent={url,body:JSON.parse(request.body)};return Response.json({url:'https://checkout.stripe.com/test'});}};
+ context.marketingOptIn=true;
  const compiled=ts.transpileModule(`(${callback})`,{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText;
  const run=vm.runInNewContext(compiled,context);
  await run();assert.equal(sent.url,'/api/stripe/checkout');assert.equal(sent.body.expectedDepositCents,20970);
+ assert.equal(sent.body.marketingOptIn,true);
  assert.equal(sent.body.discountCode,'BLACKLINE10');assert.deepEqual(sent.body.items,reviewedItems);assert.equal(redirect,'https://checkout.stripe.com/test');
 });
 

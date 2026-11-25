@@ -1,17 +1,41 @@
 "use client";
 
 import Link from "next/link";
-import {useEffect,useState} from "react";
+import {useEffect,useRef,useState} from "react";
 import {ArrowDown,ArrowLeft,ArrowUp,Copy,Mail,Plus,Save,Trash2} from "lucide-react";
 import {MarketingAudience} from "./admin-email-marketing";
-import {loadRows, saveRow} from "@/lib/workspace-store";
-import {blockKinds,copyDraft,emailStarterLayouts,makeBlock,makeDraft,readEmailDrafts,renderCampaignHtml,safeEmailImage,saveEmailDraft,type BlockKind,type EmailBlock,type EmailDraft} from "@/lib/admin-email-drafts";
+import {loadRows, saveRow, uploadPhoto} from "@/lib/workspace-store";
+import {blockKinds,copyDraft,emailStarterLayouts,makeBlock,makeDraft,readEmailDrafts,renderCampaignHtml,safeEmailImage,saveEmailDraft,type BlockKind,type CampaignReview,type EmailBlock,type EmailDraft} from "@/lib/admin-email-drafts";
+import {marketingAudience,selectedMarketingRecipients} from "@/lib/admin-email-audience";
+import type {AdminCustomer} from "@/lib/admin-customers";
+import {isLocalDashboardPreview} from "@/lib/dashboard-preview";
 import styles from "@/app/admin/dashboard/dashboard.module.css";
 import css from "./admin-email-builder.module.css";
 import type {ComponentProps} from "react";
 
-type AudienceProps = Omit<ComponentProps<typeof MarketingAudience>,"selectedIds"|"onSelection"|"sample"|"setSample">;
+type AudienceProps = Omit<ComponentProps<typeof MarketingAudience>,"customers"|"selectedIds"|"onSelection"|"sample"|"setSample">;
 const presets = [...Object.entries(emailStarterLayouts).map(([id, layout]) => [id, layout.label]), ["blank", "Blank layout"]];
+
+class DeliveryError extends Error {
+ constructor(message:string,readonly recipientsChanged:boolean){super(message);}
+}
+
+async function requestDelivery<T>(body: object): Promise<T> {
+ const response = await fetch("/api/admin/email-marketing", {
+  method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body),
+ });
+ const result = await response.json().catch(() => null);
+ if (!response.ok || !result) throw new DeliveryError(result?.error ?? "The email service did not respond. Check Resend before trying again.",result?.recipientsChanged===true);
+ return result as T;
+}
+
+async function publishCampaignImages(draft: EmailDraft) {
+ const publish = (url: string) => url.startsWith("data:") ? uploadPhoto(url) : url;
+ const blocks = await Promise.all(draft.blocks.map(async block => ({
+  ...block, image: await publish(block.image), secondImage: await publish(block.secondImage),
+ })));
+ return {...draft, blocks};
+}
 
 function PhotoField({label,value,onChange,onError}:{label:string;value:string;onChange:(value:string)=>void;onError:(error:string)=>void}){
  return <div className={css.photoField}>
@@ -35,6 +59,10 @@ export function AdminEmailMarketing({mode="campaign",...props}:AudienceProps & {
  const [templates,setTemplates]=useState<EmailDraft[]>([]);
  const [templatesReady,setTemplatesReady]=useState(false);
  const [saving,setSaving]=useState(false);
+ const [delivery,setDelivery]=useState<"test"|"prepare"|"send"|null>(null);
+ const deliveryLock=useRef(false);
+ const [customers,setCustomers]=useState<AdminCustomer[]|null>(null);
+ const [customerError,setCustomerError]=useState("");
  const [drafts,setDrafts]=useState<EmailDraft[]>([]);
  const section=mode;
  const [draft,setDraft]=useState<EmailDraft|null>(null);
@@ -44,6 +72,13 @@ export function AdminEmailMarketing({mode="campaign",...props}:AudienceProps & {
  const [mobile,setMobile]=useState(false);
  const [notice,setNotice]=useState("");
  const [error,setError]=useState("");
+ useEffect(()=>{
+  if(mode!=="campaign"||isLocalDashboardPreview())return;
+  let active=true;
+  void loadRows<AdminCustomer>("customers").then(rows=>{if(active)setCustomers(rows);})
+   .catch(()=>{if(active)setCustomerError("Customer profiles could not be loaded. Reload to review campaign recipients.");});
+  return ()=>{active=false;};
+ },[mode]);
  useEffect(()=>{
   let active=true;
   void loadRows<EmailDraft>("email_templates").then(rows=>{
@@ -102,6 +137,56 @@ export function AdminEmailMarketing({mode="campaign",...props}:AudienceProps & {
  const templateDrafts=[...templates,...drafts.filter(item=>item.kind==="template"&&!sharedIds.has(item.id))].sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt));
  const visible=mode==="template"?templateDrafts:drafts.filter(item=>item.kind==="campaign");
  const name=section==="campaign"?"campaign":"template";
+ const previewOnly=isLocalDashboardPreview();
+ const recipients=draft&&!draft.review&&!draft.sampleAudience&&customers&&props.ready&&props.trashReady
+  ? selectedMarketingRecipients(marketingAudience(customers,props.bookings,props.trash),new Set(draft.audienceIds))
+  : [];
+ const persistCampaign=(item:EmailDraft)=>{
+  const next=saveEmailDraft(item);
+  setDrafts(next);
+  setDraft(next.find(row=>row.id===item.id)??item);
+ };
+ const deliver=async(action:"test"|"prepare"|"send")=>{
+  if(!draft||deliveryLock.current||previewOnly)return;
+  deliveryLock.current=true;
+  setDelivery(action);
+  setNotice("");
+  setError("");
+  try{
+   if(action==="send"){
+    if(!draft.review||draft.review.status==="sent")return;
+    const attempted:CampaignReview={...draft.review,status:"attempted"};
+    persistCampaign({...draft,review:attempted});
+    await requestDelivery({action,token:attempted.token});
+    persistCampaign({...draft,review:{...attempted,status:"sent"}});
+    setNotice("Resend accepted the campaign. Check Resend for delivery status.");
+    return;
+   }
+   const prepared=await publishCampaignImages(draft);
+   setDraft(prepared);
+   if(action==="test"){
+    await requestDelivery({action,draft:prepared,requestId:crypto.randomUUID()});
+    setNotice("Resend accepted the test email for blackline235@gmail.com.");
+    return;
+   }
+   const review=await requestDelivery<Omit<CampaignReview,"status">>({
+    action,draft:prepared,recipients:recipients.map(contact=>contact.email),postalAddress:draft.postalAddress,
+   });
+   persistCampaign({...prepared,review:{...review,status:"ready"}});
+  }catch(error){
+   if(error instanceof DeliveryError&&error.recipientsChanged&&draft.review){
+    try{persistCampaign({...draft,review:{...draft.review,status:"ready"}});}
+    catch{setError("Could not save changes in this browser.");return;}
+   }
+   setError(error instanceof Error?error.message:"Could not complete the email request.");
+  }
+  finally{deliveryLock.current=false;setDelivery(null);}
+ };
+ const discardReview=()=>{
+  if(!draft||draft.review?.status!=="ready")return;
+  try{persistCampaign({...draft,review:undefined});setError("");}
+  catch{setError("Could not save changes in this browser.");}
+ };
  return <div className={css.page}>
   <header className={css.header}>
    <div><p className={styles.eyebrow}>BLACKLINE / MARKETING</p><h1>{mode==="campaign"?"Email marketing":draft?"Template editor":"Email templates"}</h1></div>
@@ -110,6 +195,8 @@ export function AdminEmailMarketing({mode="campaign",...props}:AudienceProps & {
   <aside className={css.notice}>{mode==="template" ? <p>Templates are shared across your workspace. Open and save an older browser template to add it to the shared library.</p> : <p>Campaign drafts are saved in this browser. Saved workspace templates are available to use in campaigns.</p>}</aside>
   {notice&&<p role="status" className={css.notice}>{notice}</p>}
   {error&&<p role="alert" className={css.error}>{error}</p>}
+  {customerError&&<p role="alert" className={css.error}>{customerError}</p>}
+  <fieldset disabled={!!delivery} className={css.workflow}>
   {(mode==="campaign"||!draft)&&<section className={css.panel}>
    <div className={css.library}>
     <p className={css.libraryDescription}>{section==="campaign"
@@ -130,7 +217,7 @@ export function AdminEmailMarketing({mode="campaign",...props}:AudienceProps & {
   {draft&&<>
    <div className={css.toolbar}>
     <nav className={css.tabs} aria-label="Editor sections">
-     <button aria-pressed={step==="design"} onClick={()=>setStep("design")}>Design email</button>
+     <button aria-pressed={step==="design"} disabled={!!draft.review} onClick={()=>setStep("design")}>Design email</button>
      <button aria-pressed={step==="review"} onClick={()=>setStep("review")}>{draft.kind==="campaign"?"Preview & send":"Preview design"}</button>
     </nav>
     <div className={css.actions}>
@@ -173,10 +260,27 @@ export function AdminEmailMarketing({mode="campaign",...props}:AudienceProps & {
     </section>:<section className={css.panel}><div className={css.fields}>
      <h2>{draft.name||"Untitled draft"}</h2><p>{draft.subject||"No subject entered"}</p>
      {draft.kind==="campaign"&&<>
-      <p>{draft.audienceIds.length} {draft.sampleAudience?"sample ":""}customers selected</p>
-      <a className={styles.secondary} href="#campaign-recipients">Choose recipients</a>
-      <p>Connect Resend to enable sending. You can save this campaign as a draft now.</p>
-      <button className={styles.primary} disabled>Send campaign · Soon</button>
+      {previewOnly&&<p>Sign in as an administrator to send email.</p>}
+      {!draft.review&&<>
+       <p>{recipients.length} existing customers selected. Customers with an active marketing subscription are eligible. Record their consent in Customers.</p>
+       <a className={styles.secondary} href="#campaign-recipients">Choose recipients</a>
+       <label>Business mailing address<textarea rows={2} maxLength={350} value={draft.postalAddress??""} onChange={event=>update({postalAddress:event.target.value})}/></label>
+       <div className={css.actions}>
+        <button className={styles.secondary} disabled={previewOnly} onClick={()=>void deliver("test")}>{delivery==="test"?"Sending test…":"Send test to Blackline Gmail"}</button>
+        <button className={styles.primary} disabled={previewOnly||!recipients.length||!draft.postalAddress?.trim()} onClick={()=>void deliver("prepare")}>{delivery==="prepare"?"Preparing recipients…":"Review recipients"}</button>
+       </div>
+      </>}
+      {draft.review&&<>
+       <p>{draft.review.count} eligible {draft.review.count===1?"recipient":"recipients"} · {draft.review.excluded} excluded</p>
+       {draft.review.status==="sent"?<p>Submitted to Resend for delivery.</p>:<>
+        <p>{draft.review.status==="attempted"?"Check the existing broadcast before retrying. Retrying uses the same Resend broadcast.":"Confirm to send this campaign to the eligible recipients above."}</p>
+        <div className={css.actions}>
+         <button className={styles.primary} disabled={previewOnly} onClick={()=>void deliver("send")}>{delivery==="send"?"Submitting…":draft.review.status==="attempted"?"Retry or check status":"Confirm and send campaign"}</button>
+         {draft.review.status==="ready"&&<button className={styles.secondary} onClick={discardReview}>Back to editing</button>}
+        </div>
+       </>}
+      </>}
+      <a className={styles.secondary} href="https://resend.com/broadcasts" target="_blank" rel="noreferrer">View campaigns in Resend</a>
      </>}
     </div></section>}
     <section className={css.panel}>
@@ -184,10 +288,11 @@ export function AdminEmailMarketing({mode="campaign",...props}:AudienceProps & {
      {draft.blocks.length?<iframe className={css.frame} data-mobile={mobile} title="Email design preview" sandbox="" srcDoc={renderCampaignHtml(draft,{preview:true})}/>:<p className={css.empty}>Add a block to start your design.</p>}
     </section>
    </div>
-   {mode==="campaign"&&<section id="campaign-recipients">
-    <MarketingAudience key={draft.id} {...props} selectedIds={draft.audienceIds} onSelection={audienceIds=>update({audienceIds})} sample={draft.sampleAudience} setSample={sampleAudience=>update({sampleAudience})}/>
-    <div className={css.library}><button className={styles.primary} onClick={()=>save(draft)}>Save campaign draft</button><button className={styles.secondary} disabled>Send campaign · Soon</button></div>
+   {mode==="campaign"&&!draft.review&&<section id="campaign-recipients">
+    <MarketingAudience key={draft.id} {...props} ready={props.ready&&(customers!==null||previewOnly)} customers={customers??[]} selectedIds={draft.audienceIds} onSelection={audienceIds=>update({audienceIds})} sample={draft.sampleAudience} setSample={sampleAudience=>update({sampleAudience})}/>
+    <div className={css.library}><button className={styles.primary} onClick={()=>save(draft)}>Save campaign draft</button></div>
    </section>}
   </>}
+  </fieldset>
  </div>;
 }

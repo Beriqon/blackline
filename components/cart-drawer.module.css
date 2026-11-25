@@ -6,3 +6,5 @@
 .discount input { flex: 1; min-width: 0; }
 .discount button:not(:disabled) { cursor: pointer; }
 .discount button:disabled { opacity: .5; }
+
+.form .marketingOptIn{display:flex;align-items:flex-start;gap:12px;padding:13px;border:1px solid #c7ac7735;line-height:1.55;cursor:pointer}.form .marketingOptIn input[type=checkbox]{appearance:auto;width:17px;height:17px;min-height:0;padding:0;margin:2px 0 0;flex:none;accent-color:#c7ac77}.marketingOptIn strong,.marketingOptIn small{display:block}.marketingOptIn small{color:#aeb6a0;margin-top:3px;font-size:10px}

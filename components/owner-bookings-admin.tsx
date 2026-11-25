@@ -11,6 +11,7 @@ import {
   type Yacht,
 } from "@/lib/yachts-data";
 import type { BookingRecord, BookingSelection, BookingSource } from "@/lib/bookings";
+import {CHAUFFEUR_DURATION_HOURS,CHAUFFEUR_MINIMUM_HOURS} from "@/lib/chauffeur-duration";
 import type { QuoteRequestRecord } from "@/lib/quote-requests-store";
 
 const fieldClass =
@@ -80,7 +81,7 @@ export function OwnerBookingsAdmin({
   const [startDate, setStartDate] = useState(todayPlus(1));
   const [endDate, setEndDate] = useState(todayPlus(1));
   const [startTime, setStartTime] = useState("10:00");
-  const [durationHours, setDurationHours] = useState(4);
+  const [durationHours, setDurationHours] = useState<number>(CHAUFFEUR_MINIMUM_HOURS);
   const [selfDriveStartTime, setSelfDriveStartTime] = useState("09:00");
   const [selfDriveEndTime, setSelfDriveEndTime] = useState("20:00");
   const [yachtId, setYachtId] = useState<string>(() => {
@@ -180,6 +181,7 @@ export function OwnerBookingsAdmin({
             startDate,
             startTime,
             durationHours,
+            service: selectedCar?.section==="hourly" ? "chauffeur-services" : "exotic-cars",
           }
       : {
           category,
@@ -363,9 +365,9 @@ export function OwnerBookingsAdmin({
                     onChange={(e) => setDurationHours(Number.parseInt(e.target.value, 10))}
                     className={fieldClass}
                   >
-                    {[2, 4, 6, 8].map((value) => (
+                    {CHAUFFEUR_DURATION_HOURS.map((value) => (
                       <option key={value} value={value}>
-                        {value} hrs
+                        {value} hrs{value===CHAUFFEUR_MINIMUM_HOURS?" (minimum)":""}
                       </option>
                     ))}
                   </select>

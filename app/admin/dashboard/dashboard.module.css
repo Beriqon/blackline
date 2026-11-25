@@ -15,3 +15,44 @@
 .collectionNav{margin:4px 0 5px 20px;padding-left:5px;border-left:1px solid #bfa57625}
 .collectionNav .navLink,.collectionNav .navActive{font-size:10px;padding:8px 9px;min-height:33px}
 .collectionNav svg{width:14px;height:14px}
+
+.sidebarHeading{display:flex;align-items:flex-start;justify-content:space-between}
+.brand .compactBrand,.sidebarClose,.sidebarToggle{display:none}
+.sidebarToggle,.sidebarClose{
+ align-items:center;justify-content:center;flex:none;width:36px;height:36px;
+ border:1px solid #bfa57640;background:#161616;color:#cbb38b;cursor:pointer
+}
+.sidebarToggle:hover,.sidebarClose:hover{background:#bfa57614;color:#e6ddc9}
+
+@media(width > 900px){
+ .sidebarToggle{display:inline-flex}
+ .app[data-sidebar-collapsed=true] .sidebar{width:64px}
+ .app[data-sidebar-collapsed=true] .main{margin-left:64px}
+ .app[data-sidebar-collapsed=true] .sidebarHeading{justify-content:center}
+ .app[data-sidebar-collapsed=true] .brand{width:100%;padding:20px 0;align-items:center}
+ .app[data-sidebar-collapsed=true] .brand > :not(.compactBrand){display:none}
+ .app[data-sidebar-collapsed=true] .brand .compactBrand{
+  display:block;font-family:Georgia,serif;font-size:23px;letter-spacing:0;color:#e6ddc9
+ }
+ .app[data-sidebar-collapsed=true] .workspace,
+ .app[data-sidebar-collapsed=true] .navCaption,
+ .app[data-sidebar-collapsed=true] :is(.navLink,.navActive) > :is(span,small),
+ .app[data-sidebar-collapsed=true] .sidebarBottom span{display:none}
+ .app[data-sidebar-collapsed=true] .sidebar nav{padding:0 7px 12px}
+ .app[data-sidebar-collapsed=true] .collectionNav{margin:0;padding:0;border:0}
+ .app[data-sidebar-collapsed=true] :is(.navLink,.navActive){
+  justify-content:center;gap:0;min-height:40px;padding:8px 0
+ }
+ .app[data-sidebar-collapsed=true] :is(.navLink,.navActive) > svg{flex:none;width:17px;height:17px}
+ .app[data-sidebar-collapsed=true] .sidebarBottom{display:grid;gap:5px;padding:9px 7px}
+ .app[data-sidebar-collapsed=true] .sidebarBottom > :is(a,button){justify-content:center;padding:0;min-height:36px}
+}
+@media(max-width:900px){
+ .sidebar{visibility:hidden;transition:transform .25s,visibility 0s linear .25s}
+ .sidebarOpen{visibility:visible;transition:transform .25s}
+ .sidebarHeading .brand{padding-right:7px}
+ .sidebarClose{display:inline-flex;width:32px;height:32px;margin:24px 12px 0 0}
+}
+@media(max-width:900px) and (prefers-reduced-motion:reduce){
+ .sidebar,.sidebarOpen{transition:none}
+}

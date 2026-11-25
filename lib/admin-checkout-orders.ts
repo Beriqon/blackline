@@ -17,6 +17,7 @@ export function checkoutOrderToAdmin({order,bookings}:AdminCheckoutOrder,product
  return {
   id:order.id,createdAtIso:order.createdAtIso,testMode:order.testMode?true:undefined,paymentStatus:order.status,source:"Website",affiliate:"",status:order.status==="payment_review"?"Pending":"Confirmed",
   name:order.customerName,email:order.customerEmail,phone:order.customerPhone,notes:"",
+  marketingConsent:order.marketingConsent,
   stripeOrder:{requiresReview:order.status==="payment_review",reviewReason:(order as CheckoutOrder&{reviewReason?:string}).reviewReason,paymentType:order.paymentType,knownTotalCents:order.knownTotalCents,paidCents:order.amountPaidCents??order.amountDueCents??order.depositCents,remainingCents:order.remainingCents,createdAtIso:order.createdAtIso,paidAtIso:order.paidAtIso},
   items:order.lines.map(line=>{
    const product=products.find(p=>p.id===line.productId);

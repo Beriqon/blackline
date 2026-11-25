@@ -21,10 +21,10 @@ const workspaceLinks=[
  {view:"affiliates",label:"Affiliates & sources",description:"Referral partners and commercial agreements.",Icon:ArrowUpRight},
  {view:"suppliers",label:"Supplier management",description:"Rental partners and agreed product costs.",Icon:Handshake},
  {view:"finance",label:"Financial overview",description:"Stripe payments, verified Zelle receipts and recorded expenses.",Icon:ChartNoAxesCombined},
+ {view:"email-marketing",label:"Email marketing",description:"Design, test and send customer campaigns.",Icon:Mail},
 ];
 const previewLinks=[
  {view:"brokers",label:"Brokers",description:"Applications, listings and your broker network.",note:"Preview profiles · saving disabled",Icon:Users},
- {view:"email-marketing",label:"Email marketing",description:"Audiences, newsletters and customer campaigns.",note:"Audience & email preview · sending disabled",Icon:Mail},
 ];
 type Props={bookings:AdminBooking[];products:AdminProduct[];ready:boolean;saving:boolean;stripeError:string;refreshing:boolean;onRefresh:()=>void;onNewBooking:()=>void;onNewProduct:()=>void;onBooking:(booking:AdminBooking,section?:"balance"|"review")=>void};
 

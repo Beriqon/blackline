@@ -7,6 +7,7 @@ import type {
 } from "@/lib/quote-requests-store";
 import { createQuoteRequest } from "@/lib/quote-requests-store";
 import {normalizeQuoteContact} from "@/lib/quote-contact";
+import {checkoutMarketingConsent, syncCheckoutMarketing} from "@/lib/checkout-marketing";
 
 export const runtime = "nodejs";
 
@@ -14,6 +15,7 @@ type Body = {
   customerName?: string;
   customerEmail?: string;
   customerPhone?:string;
+  marketingOptIn?: boolean;
   source?: BookingSource;
   message?: string;
   summary?: string;
@@ -43,6 +45,7 @@ export async function POST(request: Request) {
   if(!["website","whatsapp","instagram"].includes(source))return NextResponse.json({error:"Invalid request source."},{status:400});
 
   try {
+    const marketingConsent = checkoutMarketingConsent(request, body.marketingOptIn, customerEmail);
     const quoteRequest = await createQuoteRequest({
       customerName,
       customerEmail,
@@ -52,8 +55,10 @@ export async function POST(request: Request) {
       summary: body.summary,
       items: Array.isArray(body.items)?body.items.filter(i=>i&&typeof i.id==="string"&&typeof i.title==="string").map(i=>({id:i.id.slice(0,250),title:i.title.slice(0,250),category:typeof i.category==="string"?i.category.slice(0,80):"other",subtitle:typeof i.subtitle==="string"?i.subtitle.slice(0,2000):undefined})):undefined,
       status: "pending",
+      marketingConsent,
     });
 
+    syncCheckoutMarketing(marketingConsent);
     return NextResponse.json({ quoteRequest });
   } catch (error) {
     return NextResponse.json(

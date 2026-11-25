@@ -809,6 +809,7 @@
       "startTime": "Hora de inicio",
       "duration": "Duración",
       "hoursShort": "{hours} horas",
+      "minimumHours": "{hours} horas (mínimo)",
       "noSlotsLeft": "Sin horarios disponibles",
       "summaryTitle": "Resumen de reserva",
       "quoteRequired": "Cotización requerida",

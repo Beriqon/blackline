@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { quoteCheckout, type CheckoutBody } from "@/lib/checkout-quote";
 import { orderDatabase, saveCheckoutOrder } from "@/lib/checkout-orders";
 import { getAppBaseUrl, getStripe, getBookingProduct } from "@/lib/stripe-client";
+import {checkoutMarketingConsent, syncCheckoutMarketing} from "@/lib/checkout-marketing";
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
@@ -17,6 +18,7 @@ export async function POST(request: Request) {
   const full=order.paymentType==="full",amountDue=order.amountDueCents??order.depositCents;
   if ((body.expectedAmountCents??body.expectedDepositCents) !== amountDue) return NextResponse.json({ error: "The current price has changed. Close and reopen your selection to review it before payment." }, { status: 409 });
   if (order.depositCents < 50) return NextResponse.json({ error: "This selection has no payable deposit. Request a quote instead." }, { status: 400 });
+  order.marketingConsent = checkoutMarketingConsent(request, body.marketingOptIn, order.customerEmail);
   let sessionId: string | undefined;
   let saved = false;
   let stage = "product";
@@ -42,6 +44,7 @@ export async function POST(request: Request) {
     if (session.livemode !== (stripeMode()==="live") || !session.client_secret) throw new Error("Invalid checkout session.");
     stage = "attach_session";
     await orderDatabase("attach", { orderId: order.id, sessionId });
+    if (session.livemode) syncCheckoutMarketing(order.marketingConsent);
     return NextResponse.json({ url: `/payment/checkout?session_id=${encodeURIComponent(session.id)}`, orderId: order.id });
   } catch (error) {
     const inventoryConflict = stage === "reservation" && error instanceof Error && /slot is no longer available|already has .*reservation|already has .*booking|no longer available/i.test(error.message);

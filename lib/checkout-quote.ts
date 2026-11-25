@@ -12,7 +12,7 @@ import {bookingDateTime} from "./booking-time";
 
 import { checkoutDiscount } from "./discount-codes";
 
-export type CheckoutBody = { discountCode?: string; items?: CartLine[]; addons?: CartAddonsState; customerName?: string; customerEmail?: string; customerPhone?: string; expectedDepositCents?: number;expectedAmountCents?:number;paymentType?:"deposit"|"full" };
+export type CheckoutBody = { discountCode?: string; items?: CartLine[]; addons?: CartAddonsState; customerName?: string; customerEmail?: string; customerPhone?: string; marketingOptIn?: boolean; expectedDepositCents?: number;expectedAmountCents?:number;paymentType?:"deposit"|"full" };
 
 export async function quoteCheckout(body: CheckoutBody) {
   if(body?.paymentType!==undefined&&body.paymentType!=="deposit"&&body.paymentType!=="full")throw Error("Choose a 30% deposit or full payment.");
@@ -43,7 +43,7 @@ export async function quoteCheckout(body: CheckoutBody) {
       if (selection.category === "exotic-car") {
         const car = live as import("./exotic-cars-data").ExoticCar;
         if (!getExoticCarBookingModes(car).includes(selection.rentalMode)) throw new Error("Choose a valid rental mode.");
-        if (selection.rentalMode === "chauffeur" && (!Number.isInteger(selection.durationHours) || selection.durationHours! < 1 || selection.durationHours! > 12)) throw new Error("Choose a valid rental duration.");
+        if (selection.rentalMode === "chauffeur" && selection.durationHours === undefined) throw new Error("Choose a chauffeur duration.");
       }
       const quote = computeBookingQuote(selection, live);
       description = selection.category === "exotic-car"

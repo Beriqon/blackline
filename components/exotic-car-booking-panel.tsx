@@ -75,7 +75,7 @@ export function ExoticCarBookingPanel({ car, className, chauffeurOnly = false }:
   const [endDate, setEndDate] = useState(todayPlus(1));
   const [startTime, setStartTime] = useState<string>(config.chauffeurSlots[0]!);
   const [durationHours, setDurationHours] = useState<number>(
-    config.chauffeurDurationHours[1] ?? config.chauffeurDurationHours[0]!,
+    config.chauffeurDurationHours[0],
   );
   const [localError, setLocalError] = useState<string | null>(null);
 
@@ -299,7 +299,9 @@ export function ExoticCarBookingPanel({ car, className, chauffeurOnly = false }:
             >
               {config.chauffeurDurationHours.map((hours) => (
                 <option key={hours} value={hours}>
-                  {t("exoticCarsPage.booking.hoursShort", { hours })}
+                  {hours===config.chauffeurDurationHours[0]
+                    ? t("exoticCarsPage.booking.minimumHours", {hours})
+                    : t("exoticCarsPage.booking.hoursShort", {hours})}
                 </option>
               ))}
             </select>

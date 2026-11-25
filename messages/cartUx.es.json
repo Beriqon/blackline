@@ -33,6 +33,8 @@
  "continue": "Continuar",
  "back": "Volver a la selección",
  "contactHeading": "¿Cómo podemos contactarte?",
+ "marketingOptIn": "Sí, quiero recibir correos de Blackline Concierge.",
+ "marketingOptInHint": "Recibe novedades, recomendaciones en Miami y ofertas ocasionales. Puedes cancelar tu suscripción en cualquier momento.",
  "contactHint": "Usamos estos datos para coordinar las experiencias que elegiste.",
  "namePlaceholder": "Tu nombre completo",
  "emailPlaceholder": "tu@ejemplo.com",

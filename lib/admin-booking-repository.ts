@@ -1,6 +1,7 @@
 import type {AdminBooking,AdminProduct} from "./admin-demo-data";
 import type {BookingRecord} from "./bookings";
 import {cachedRows,saveRow,removeRow} from "./workspace-store";
+import {CHAUFFEUR_MINIMUM_HOURS,CHAUFFEUR_MINIMUM_MESSAGE} from "./chauffeur-duration";
 export function checkoutToAdmin(record:BookingRecord,products:AdminProduct[]):AdminBooking{
  const service=record.service??(record.category==="yacht"?"yachts":"exotic-cars");
  const product=products.find(p=>p.id===`catalog:${service}:${record.itemId}`||p.id===record.itemId);
@@ -8,7 +9,18 @@ export function checkoutToAdmin(record:BookingRecord,products:AdminProduct[]):Ad
 }
 export async function saveAdminBooking(booking:AdminBooking){
  if(booking.stripeOrder||booking.zelleOrder||booking.quoteRequest)throw new Error("Online payment orders are read-only. Payment adjustments must be handled separately.");
- if(!booking.checkoutId){await saveRow("bookings",booking.id,booking);return;}
+ if(!booking.checkoutId){
+  const previous = [...(cachedRows<AdminBooking>("bookings").find(row=>row.id===booking.id)?.items ?? [])];
+  for(const item of booking.items){
+   if(item.service!=="chauffeur-services")continue;
+   const start=Date.parse(item.start),end=Date.parse(item.end);
+   if(end-start>=CHAUFFEUR_MINIMUM_HOURS*60*60*1000)continue;
+   const index=previous.findIndex(old=>old.service===item.service&&old.product===item.product&&Date.parse(old.start)===start&&Date.parse(old.end)===end);
+   if(index<0)throw new Error(CHAUFFEUR_MINIMUM_MESSAGE);
+   previous.splice(index,1);
+  }
+  await saveRow("bookings",booking.id,booking);return;
+ }
  const original=cachedRows<BookingRecord>("checkout_bookings").find(b=>b.id===booking.checkoutId);
  if(!original)throw new Error("Reload this booking before saving.");
  const item=booking.items[0];

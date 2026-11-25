@@ -1,4 +1,5 @@
-.page { display: grid; gap: 20px; }
+.page { display:grid; grid-template-columns:minmax(0,1fr); gap:20px; min-width:0; container:email-workspace / inline-size; }
+.workflow { display:grid; grid-template-columns:minmax(0,1fr); gap:20px; min-width:0; margin:0; padding:0; border:0; }
 .header,.toolbar,.previewHeader { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
 .header h1 { font: 400 34px var(--font-playfair), Georgia, serif; color:#e1d4bd; margin-top:8px; }
 .notice,.error { padding:14px 18px; border:1px solid #cbb38345; background:#cbb3830a; color:#d4c099; font-size:12px; line-height:1.8; }
@@ -11,10 +12,11 @@
 .tabs button[aria-pressed=true] { color:#e1c595; background:#cbb38318; }
 .library,.fields { padding:18px; }
 .library { display:flex; align-items:end; gap:12px; flex-wrap:wrap; }
+.library label { flex:1 1 11rem; }
 .libraryDescription { flex-basis:100%; color:#b8ae9f; font-size:13px; line-height:1.65; }
-.fields { display:grid; gap:14px; }
-.fields label,.library label { display:grid; gap:7px; color:#c0b6a6; font-size:12px; }
-.fields input,.fields select,.fields textarea,.library select { min-width:0; background:#101010; color:#dfd0b6; border:1px solid #ffffff23; padding:9px 11px; font:inherit; }
+.fields { display:grid; grid-template-columns:minmax(0,1fr); gap:14px; overflow-wrap:anywhere; }
+.fields label,.library label { display:grid; grid-template-columns:minmax(0,1fr); gap:7px; min-width:0; color:#c0b6a6; font-size:12px; }
+.fields input,.fields select,.fields textarea,.library select { width:100%; min-width:0; max-width:100%; min-height:40px; background:#101010; color:#dfd0b6; border:1px solid #ffffff23; padding:9px 11px; font:inherit; }
 .fields textarea { resize:vertical; }
 .fields input[type=color] { width:54px; height:34px; padding:4px; }
 .fields small,.record small,.previewHeader small { display:block; color:#a49a89; font-size:11px; }
@@ -25,12 +27,36 @@
 .record { display:flex; gap:13px; align-items:center; text-align:left; flex:1; color:#d7c3a1; cursor:pointer; }
 .record strong { display:block; font-size:13px; }
 .empty { color:#a9a194; padding:24px; font-size:13px; }
-.editor { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); gap:18px; align-items:start; }
-.blocks { display:grid; gap:8px; padding:0 18px; }
+.editor { display:grid; grid-template-columns:minmax(0,1fr); gap:18px; align-items:start; }
+.blocks { display:grid; grid-template-columns:minmax(0,1fr); gap:8px; padding:0 18px; }
 .block { border:1px solid #ffffff18; }
 .block summary { cursor:pointer; padding:12px; color:#dbc5a0; text-transform:capitalize; font-size:13px; }
 .block summary small { color:#a49a89; margin-left:8px; text-transform:none; overflow-wrap:anywhere; }
 .previewHeader { padding:14px; color:#d8c39e; }
-.frame { width:100%; display:block; border:0; height:690px; background:#e8e2d7; margin:auto; }
+.frame { width:100%; display:block; border:0; height:clamp(450px,72dvh,690px); background:#e8e2d7; margin:auto; }
 .frame[data-mobile=true] { max-width:375px; }
-@media(max-width:1000px) { .editor { grid-template-columns:minmax(0,1fr); } }
+@container email-workspace (min-width:760px) {
+ .editor { grid-template-columns:minmax(280px, 2fr) minmax(0,3fr); }
+}
+@container email-workspace (max-width:560px) {
+ .workflow { gap:14px; }
+ .header,.toolbar,.previewHeader { gap:10px; }
+ .header h1 { font-size:clamp(25px,8cqi,31px); line-height:1.15; }
+ .toolbar { align-items:stretch; }
+ .toolbar > * { width:100%; }
+ .toolbar .tabs { padding:0; gap:6px; }
+ .toolbar .tabs button,.toolbar .actions > button,.fields .actions > button { flex:1 1 120px; }
+ .page :is(button,a[class]) { min-height:44px; }
+ .page :is(button,a[class]) svg { flex-shrink:0; }
+ .library,.fields { padding:14px; }
+ .library { display:grid; grid-template-columns:minmax(0,1fr); gap:10px; }
+ .libraryDescription { margin:0; }
+ .blocks { padding-inline:14px; }
+ .block summary { min-height:44px; }
+ .fields input,.fields textarea,.fields select,.library select { font-size:16px; }
+ .fields .actions { gap:8px; }
+ .previewHeader { padding:10px 14px; }
+ .previewHeader .tabs { padding:0; gap:4px; }
+ .previewHeader > div:first-child { min-width:0; overflow-wrap:anywhere; }
+ .frame { height:clamp(300px,54dvh,480px); }
+}

@@ -744,7 +744,9 @@ export function CustomPackageWhatsApp({
                           >
                             {CHAUFFEUR_DURATION_HOURS.map((hours) => (
                               <option key={hours} value={hours}>
-                                {pb("hours", { count: hours })}
+                                {hours===CHAUFFEUR_DEFAULT_DURATION_HOURS
+                                  ? t("exoticCarsPage.booking.minimumHours", {hours})
+                                  : pb("hours", {count:hours})}
                               </option>
                             ))}
                           </select>

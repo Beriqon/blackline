@@ -1,7 +1,8 @@
 
 export type BlockKind = "logo" | "cover" | "heading" | "text" | "button" | "image" | "gallery" | "footer";
 export type EmailBlock = { id: string; kind: BlockKind; text: string; image: string; alt: string; url: string; secondImage: string; secondAlt: string; color: string; background: string };
-export type EmailDraft = { id: string; kind: "campaign" | "template"; name: string; subject: string; preheader: string; blocks: EmailBlock[]; audienceIds: string[]; sampleAudience: boolean; updatedAt: string };
+export type CampaignReview = {id: string; token: string; count: number; excluded: number; status: "ready" | "attempted" | "sent"};
+export type EmailDraft = { id: string; kind: "campaign" | "template"; name: string; subject: string; preheader: string; blocks: EmailBlock[]; audienceIds: string[]; sampleAudience: boolean; updatedAt: string; postalAddress?: string; review?: CampaignReview };
 
 export const blockKinds: BlockKind[] = ["logo", "cover", "heading", "text", "button", "image", "gallery", "footer"];
 export function makeBlock(kind: BlockKind): EmailBlock {
@@ -69,7 +70,7 @@ export function makeDraft(kind:EmailDraft["kind"], layout = "offer"): EmailDraft
 }
 
 export function copyDraft(source:EmailDraft,kind:EmailDraft["kind"]):EmailDraft {
- return {...source,id:crypto.randomUUID(),kind,name:source.name ? source.name+" copy" : "",blocks:source.blocks.map(block=>({...block,id:crypto.randomUUID()})),audienceIds:[],sampleAudience:false,updatedAt:""};
+ return {...source,id:crypto.randomUUID(),kind,name:source.name ? source.name+" copy" : "",blocks:source.blocks.map(block=>({...block,id:crypto.randomUUID()})),audienceIds:[],sampleAudience:false,updatedAt:"",review:undefined,postalAddress:kind==="campaign"?source.postalAddress:undefined};
 }
 
 const key = "blackline-email-drafts-v1";
@@ -97,7 +98,7 @@ export function safeEmailImage(value:string,assetOrigin=""){
 }
 const safeLink=(url:string)=>/^https:\/\/[^\s]+$/i.test(url.trim())?url.trim():"";
 const color=(value:string,fallback:string)=>/^#[0-9a-f]{6}$/i.test(value)?value:fallback;
-export function renderCampaignHtml(draft:EmailDraft,{assetOrigin="",preview=false}={}):string {
+export function renderCampaignHtml(draft:EmailDraft,{assetOrigin="",preview=false,marketingFooter=""}={}):string {
  const photo=(url:string,alt:string)=>{
   const src=safeEmailImage(url,assetOrigin);
   return src ? '<img src="'+escape(src)+'" alt="'+escape(alt)+'" width="560" style="display:block;width:100%;max-width:560px;height:auto;border:0">' : "";
@@ -118,5 +119,9 @@ export function renderCampaignHtml(draft:EmailDraft,{assetOrigin="",preview=fals
   }
   return '<tr><td style="padding:22px 24px;background:'+background+';color:'+foreground+';font:15px/1.65 Arial,sans-serif;overflow-wrap:anywhere">'+content+'</td></tr>';
  }).join("");
- return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="referrer" content="no-referrer"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;background:#e8e2d7"><span style="display:none">'+escape(draft.preheader)+'</span><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;margin:0 auto">'+rows+'</table></body></html>';
+ const neutralizeVariables=(value:string)=>value.replace(/[{}]/g,character=>character==="{"?"&#123;":"&#125;");
+ const footer=marketingFooter?'<tr><td style="padding:22px 24px;background:#f6f3ed;color:#29251e;font:13px/1.6 Arial,sans-serif">Blackline Concierge<br>'+neutralizeVariables(escape(marketingFooter)).replace(/\r?\n/g,"<br>")+'<br><a href="mailto:blackline235@gmail.com">Contact Blackline</a> · <a href="{{{RESEND_UNSUBSCRIBE_URL}}}">Unsubscribe</a></td></tr>':"";
+ const content=marketingFooter?neutralizeVariables(rows):rows;
+ const preheader=marketingFooter?neutralizeVariables(escape(draft.preheader)):escape(draft.preheader);
+ return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="referrer" content="no-referrer"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;background:#e8e2d7"><span style="display:none">'+preheader+'</span><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;margin:0 auto">'+content+footer+'</table></body></html>';
 }

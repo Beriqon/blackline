@@ -3,6 +3,7 @@ import "server-only";
 
 
 import type { BookingSource } from "@/lib/bookings";
+import type {CheckoutMarketingConsent} from "./checkout-marketing";
 
 export type QuoteRequestStatus = "pending" | "quoted" | "confirmed" | "cancelled";
 
@@ -26,6 +27,7 @@ export type QuoteRequestRecord = {
   message: string;
   summary?: string;
   items?: QuoteRequestItem[];
+  marketingConsent?: CheckoutMarketingConsent;
 };
 
 async function readStore():Promise<{quoteRequests:QuoteRequestRecord[]}>{return {quoteRequests:await bookingDatabase<QuoteRequestRecord[]>("list_quotes")};}
@@ -47,6 +49,7 @@ export async function createQuoteRequest(args: {
   summary?: string;
   items?: QuoteRequestItem[];
   status?: QuoteRequestStatus;
+  marketingConsent?: CheckoutMarketingConsent;
 }): Promise<QuoteRequestRecord> {
   const payload = await readStore();
   const nowIso = new Date().toISOString();
@@ -60,6 +63,7 @@ export async function createQuoteRequest(args: {
     message: args.message.trim(),
     summary: args.summary?.trim() || undefined,
     items: args.items?.length ? args.items : undefined,
+    marketingConsent: args.marketingConsent,
     createdAtIso: nowIso,
     updatedAtIso: nowIso,
   };

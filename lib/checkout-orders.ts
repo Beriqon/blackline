@@ -3,6 +3,7 @@ import type { BookingRecord } from "./bookings";
 import type { OrderLine } from "./checkout-pricing";
 import { publicDatabase } from "./supabase-server";
 import {stripeMode} from './stripe-mode';
+import type {CheckoutMarketingConsent} from "./checkout-marketing";
 
 export type CheckoutOrder = {
   id: string; testMode: boolean; status: "pending" | "deposit_paid" | "expired" | "payment_review";
@@ -10,6 +11,7 @@ export type CheckoutOrder = {
   lines: OrderLine[]; knownTotalCents: number; depositCents: number;
   remainingCents: number; bookingIds: string[]; createdAtIso: string;
   discount?: { code: string; amountCents: number };
+  marketingConsent?: CheckoutMarketingConsent;
   stripeSessionId?: string;
   paymentType?:"deposit"|"full"; amountDueCents?:number;
   amountPaidCents?:number; balancePaidAtIso?:string;

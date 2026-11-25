@@ -152,6 +152,7 @@ export function CartDrawer() {
   const [payMode,setPayMode] = useState<"deposit"|"full">("deposit");
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
+  const [marketingOptIn, setMarketingOptIn] = useState(false);
   const [customerPhoneCountryCode, setCustomerPhoneCountryCode] = useState("+1");
   const [customerPhone, setCustomerPhone] = useState("");
   const [checkoutLoading, setCheckoutLoading] = useState(false);
@@ -231,6 +232,7 @@ export function CartDrawer() {
         customerName,
         customerEmail,
         customerPhone: customerPhoneFull,
+        marketingOptIn,
       };
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
@@ -260,6 +262,7 @@ export function CartDrawer() {
     customerEmail,
     customerName,
     customerPhoneFull,
+    marketingOptIn,
     hasContactDetails,
     t,
   ]);
@@ -307,6 +310,8 @@ export function CartDrawer() {
           summary: "Quote request (selection)",
           customerName,
           customerEmail,
+          customerPhone: customerPhoneFull,
+          marketingOptIn,
         }),
       });
       if(!response.ok)throw new Error("Quote request failed");
@@ -324,6 +329,7 @@ export function CartDrawer() {
     customerEmail,
     customerName,
     customerPhoneFull,
+    marketingOptIn,
     hasContactDetails,
     items,
     setOpen,
@@ -370,7 +376,8 @@ export function CartDrawer() {
       <div className={css.detailsIntro}><h3>{t("cart.ux.contactHeading")}</h3><p>{t("cart.ux.contactHint")}</p></div>
       <form id="cart-checkout-form" onSubmit={e=>{e.preventDefault();if(busy)return;if(!/^\+\d{7,15}$/.test(customerPhoneFull)){setCheckoutError(t("cart.ux.phoneError"));return;}void(needsQuoteWhatsApp?startQuoteWhatsApp():startCheckout());}} className={css.form}>
        <label htmlFor="cart-customer-name">{t("cart.name")}<input ref={nameInput} id="cart-customer-name" type="text" autoComplete="name" required maxLength={150} value={customerName} onChange={e=>setCustomerName(e.target.value)} placeholder={t("cart.ux.namePlaceholder")}/></label>
-       <label htmlFor="cart-customer-email">{t("cart.email")}<input id="cart-customer-email" type="email" autoComplete="email" required maxLength={254} value={customerEmail} onChange={e=>setCustomerEmail(e.target.value)} placeholder={t("cart.ux.emailPlaceholder")}/></label>
+       <label htmlFor="cart-customer-email">{t("cart.email")}<input id="cart-customer-email" type="email" autoComplete="email" required maxLength={254} value={customerEmail} onChange={e=>{setCustomerEmail(e.target.value);setMarketingOptIn(false);}} placeholder={t("cart.ux.emailPlaceholder")}/></label>
+       <label className={css.marketingOptIn}><input type="checkbox" checked={marketingOptIn} onChange={e=>setMarketingOptIn(e.target.checked)}/><span><strong>{t("cart.ux.marketingOptIn")}</strong><small>{t("cart.ux.marketingOptInHint")}</small></span></label>
        <div><label htmlFor="cart-customer-phone">{t("cart.phone")}</label><div className={css.phone}><select id="cart-customer-phone-country-code" aria-label={t("cart.ux.countryCode")} autoComplete="tel-country-code" value={customerPhoneCountryCode} onChange={e=>setCustomerPhoneCountryCode(e.target.value)}>{PHONE_COUNTRY_CODES.map(option=><option key={option.code} value={option.code}>{option.label}</option>)}</select><input id="cart-customer-phone" type="tel" inputMode="tel" autoComplete="tel-national" required maxLength={30} value={customerPhone} onChange={e=>setCustomerPhone(e.target.value)} placeholder={t("cart.ux.phonePlaceholder")}/></div></div>
        {!needsQuoteWhatsApp&&currentPrice&&<fieldset className={css.payment}><legend>{t("cart.ux.paymentHeading")}</legend><label data-selected={payMode==="deposit"}><input type="radio" name="payment-plan" value="deposit" checked={payMode==="deposit"} onChange={()=>setPayMode("deposit")}/><span><strong>{t("cart.payDeposit",{pct:DEPOSIT_PCT})}</strong><small>{t("cart.ux.depositHint")}</small></span><b>{money(currentPrice.depositCents/100)}</b></label><label data-selected={payMode==="full"}><input type="radio" name="payment-plan" value="full" checked={payMode==="full"} onChange={()=>setPayMode("full")}/><span><strong>{t("cart.ux.payFull")}</strong><small>{t("cart.ux.fullKlarnaHint")}</small></span><b>{money(currentPrice.knownTotalCents/100)}</b></label></fieldset>}
        {hasQuoteLines&&<p className={css.smallPrint}>{t("cart.ux.mixedNote")}</p>}

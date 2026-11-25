@@ -847,6 +847,7 @@
       "startTime": "Start time",
       "duration": "Duration",
       "hoursShort": "{hours} hrs",
+      "minimumHours": "{hours} hours (minimum)",
       "noSlotsLeft": "No slots left",
       "summaryTitle": "Booking summary",
       "quoteRequired": "Quote required",
